@@ -511,7 +511,15 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
       <div class="chart-grid" id="cgrid"></div>
     </div>
 
+    <div id="paylasim-bitis"></div>
     <!-- rasyo tablosu -->
+    <div class="rasyo-section">
+      <div class="section-title"><span>Finansal Rasyolar — Dönemsel</span></div>
+      <div class="rasyo-scroll" id="rtbl-wrap">
+      <table class="rtbl" id="rtbl-main"><thead id="rthead"></thead><tbody id="rtbod"></tbody></table>
+      </div>
+    </div>
+
     <!-- Reklam: içerik arası -->
     <div class="ad-wrap ad-mid" id="ad-dash-mid" style="margin-bottom:1.5rem">
     <ins class="adsbygoogle"
@@ -520,100 +528,9 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
      data-ad-slot="8642395705"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
-<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
-    <div class="sec-hd" style="margin-top:.5rem"><span>Finansal Rasyolar — Dönemsel</span></div>
-    <div class="rtbl-wrap" id="rtbl-wrap">
-      <table class="rtbl" id="rtbl-main"><thead id="rthead"></thead><tbody id="rtbody"></tbody></table>
-    </div>
 
-    <!-- Reklam: analiz bölümü öncesi -->
-    <div class="ad-wrap ad-mid" id="ad-dash-bottom" style="margin-bottom:1.5rem">
-    <ins class="adsbygoogle"
-     style="display:block;width:100%;min-height:90px"
-     data-ad-client="ca-pub-5073510636579335"
-     data-ad-slot="8642395705"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
-    <!-- ══ ANALİZ SKORU AÇIKLAMASI ══ -->
-    <div class="analiz-section" id="analiz-section">
-      <div class="sec-hd"><span>Analiz Skoru Nasıl Hesaplanır?</span></div>
-
-      <!-- ONO tekrar tablosu + K katsayısı -->
-      <div class="sec-hd" style="margin-top:1.5rem;margin-bottom:.8rem;font-size:.62rem">
-        <span>Dönemsel Olumlu / Nötr / Olumsuz + K Katsayısı</span>
-      </div>
-      <div style="overflow-x:auto;margin-bottom:2rem" id="analiz-ono-wrap"></div>
-
-      <!-- Hisse artış puanı -->
-      <div id="hisse-puan-wrap" style="margin-bottom:1.5rem"></div>
-
-      <!-- Toplam puan tablosu -->
-      <div id="toplam-puan-wrap" style="margin-bottom:2rem"></div>
-
-      <!-- Açıklama maddeleri -->
-      <div class="analiz-madde-wrap" id="analiz-maddeler"></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Ortak Footer — hem ana sayfa hem hisse sayfasında görünür -->
-<div class="site-footer" id="site-footer">
-  <div style="text-align:center;padding:.5rem 0 .5rem;font-family:var(--mono);font-size:.7rem;color:var(--muted)" id="view-count"></div>
-  <div class="footer-disclaimer">
-    BilancoAnaliz34, Borsa İstanbul'da (BIST) işlem gören 442 hisse senedinin finansal tablolarını analiz eden bağımsız bir yatırım analiz platformudur.
-    Her hisse için bilanço verileri, gelir tablosu, FAVÖK, net borç, özkaynak karlılığı ve PD/DD, F/K, FD/FAVÖK gibi temel finansal rasyolar sunulmaktadır.
-    ONO (Olumlu-Nötr-Olumsuz) analiz sistemi ile her hissenin dönemsel performansı değerlendirilerek 0-100 arasında bir yatırım puanı hesaplanmaktadır.
-    Platformumuz; bireysel yatırımcıların temel analiz yapmasına, hisse senetlerini karşılaştırmasına ve bilanço verilerini kolayca yorumlamasına yardımcı olmaktadır.
-    Tüm veriler Kamuyu Aydınlatma Platformu (KAP) ve diğer kamuya açık kaynaklardan derlenmektedir.
-    Yatırım kararlarınızda profesyonel finansal danışmanlık almayı unutmayınız.
-    <br><br>⚠ Bu sitedeki içerikler yalnızca bilgilendirme amaçlıdır ve yatırım tavsiyesi niteliği taşımaz.
-    Sunulan veriler ve analizler hiçbir şekilde alım-satım kararı için temel alınamaz.
-    Tüm yatırım kararları tamamen yatırımcının kendi sorumluluğundadır.
-  </div>
-  <div class="footer-links">
-    <a href="/cdn-cgi/l/email-protection#582b39353d2c3b393668696a183f35393134763b3735">İletişim</a> ·
-    <span>© 2025 BilancoAnaliz34</span>
-    <span>·</span>
-    <a href="#" onclick="showPolicy('privacy')" class="footer-link">Gizlilik Politikası</a>
-    <span>·</span>
-    <a href="#" onclick="showPolicy('terms')" class="footer-link">Kullanım Koşulları</a>
-    <span>·</span>
-    <a href="https://x.com/BilancoAnaliz34" target="_blank" class="footer-link">@bilancoanaliz34</a>
-  </div>
-</div>
-
-<!-- Admin Paneli — ?admin ile açılır -->
-<div id="admin-panel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center">
-  <div class="admin-box">
-    <div class="admin-title">⚙ Veri Güncelleme</div>
-    <div class="admin-hint">Güncellenmiş Excel dosyasını seçin — site otomatik güncellenir.</div>
-    <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem">
-      <div class="admin-hint" style="margin-bottom:.6rem">Yeni hisse logosu ekle:</div>
-      <div class="admin-row" style="gap:.5rem;align-items:center">
-        <input type="text" id="logo-ticker-input" placeholder="Hisse kodu (örn: EREGL)" style="width:140px;font-family:var(--mono);font-size:.72rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.5rem .7rem;color:var(--text);outline:none" autocomplete="off">
-        <label class="admin-file-label" style="flex:1;padding:.5rem">
-          <input type="file" id="logo-file-input" accept="image/*" onchange="handleLogoUpload(this)">
-          <span id="logo-file-txt">📷 Logo seç</span>
-        </label>
-      </div>
-      <div class="onedrive-status" id="logo-status"></div>
-    </div>
-    <div class="admin-row">
-      <label class="admin-file-label" id="admin-file-label">
-        <input type="file" id="excel-file-input" accept=".xlsx,.xls" onchange="handleExcelUpload(this)">
-        <span id="admin-file-txt">📂 Excel dosyası seç</span>
-      </label>
-    </div>
-    <div class="admin-btns">
-      <button class="btn-admin-close" onclick="closeAdmin()">✕ Kapat</button>
-    </div>
-    <div class="onedrive-status" id="onedrive-status"></div>
-    <div class="admin-tip">1-Borsa_Çalışma.xlsx dosyasını seçin.</div>
-  </div>
+    <div id="view-count" style="text-align:center;padding:.5rem 0 .5rem;font-family:var(--mono);font-size:.7rem;color:var(--muted)"></div>
 </div>
 
 <!-- Policy Modal -->
