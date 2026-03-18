@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bilancoanaliz34.com.tr/sitemap.xml
