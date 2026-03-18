@@ -248,14 +248,14 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .ch-val-num{font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--text);white-space:nowrap}
 
 /* rasyo tablo */
-.rtbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.7rem;margin-bottom:0;table-layout:fixed}
-.rtbl th{padding:.45rem .45rem;text-align:right;color:var(--muted);font-size:.62rem;font-weight:400;border-bottom:1px solid var(--border);white-space:nowrap}
+.rtbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.65rem;margin-bottom:0;table-layout:fixed}
+.rtbl th{padding:.4rem .3rem;text-align:right;color:var(--muted);font-size:.62rem;font-weight:400;border-bottom:1px solid var(--border);white-space:nowrap}
 .rtbl th:first-child,.rtbl th:nth-child(2){text-align:left}
-.rtbl td{padding:.45rem .45rem;border-bottom:1px solid rgba(37,40,37,.4);color:var(--text2);white-space:nowrap;text-align:right;font-weight:400;overflow:hidden;text-overflow:ellipsis}
+.rtbl td{padding:.4rem .3rem;border-bottom:1px solid rgba(37,40,37,.4);color:var(--text2);white-space:nowrap;text-align:right;font-weight:400;overflow:hidden;text-overflow:ellipsis}
 .rtbl tr:hover td{background:rgba(255,255,255,.015)}
 .rt-name-hd{text-align:left!important}
-.rt-simge{width:18px;text-align:center!important;padding:.45rem .15rem!important;overflow:visible}
-.rt-name{font-size:.68rem!important;color:var(--text)!important;white-space:nowrap;text-align:left!important;font-weight:400!important;min-width:90px}
+.rt-simge{width:14px;text-align:center!important;padding:.45rem .1rem!important;overflow:visible}
+.rt-name{font-size:.65rem!important;color:var(--text)!important;white-space:nowrap;text-align:left!important;font-weight:400!important;min-width:70px;max-width:100px}
 .rt-dot{font-size:.72rem;font-weight:600}
 .rt-dot.up{color:var(--green)}.rt-dot.dn{color:var(--red)}.rt-dot.nt{color:var(--muted)}
 .rtbl-fiyat{margin-top:0;margin-bottom:2rem}
@@ -1740,8 +1740,12 @@ function renderCharts(){
             ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},
               callback:v=>Math.abs(v)>=1000?(v/1000).toFixed(0)+'Mr':v.toFixed(0)},
             grid:{
-              color:(ctx)=>ctx.tick.value===0?'rgba(60,50,35,.75)':'rgba(140,122,94,.12)',
-              lineWidth:(ctx)=>ctx.tick.value===0?2:1
+              color:(ctx)=>ctx.tick&&ctx.tick.value===0?'rgba(80,60,40,.6)':'rgba(140,122,94,.12)',
+              lineWidth:(ctx)=>ctx.tick&&ctx.tick.value===0?1.5:0.8,
+              drawBorder:false
+            },
+            border:{
+              display:false
             }
           }
         }
@@ -2108,7 +2112,7 @@ function trimCanvas(canvas){
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
   const data = ctx.getImageData(0, 0, w, h).data;
-  const bg = [13, 15, 14]; // #0d0f0e
+  const bg = [245, 240, 232]; // #F5F0E8
   const thresh = 15;
 
   function isBg(r,g,b){ return Math.abs(r-bg[0])<thresh && Math.abs(g-bg[1])<thresh && Math.abs(b-bg[2])<thresh; }
@@ -2175,21 +2179,24 @@ async function xPaylas(){
     const basTop     = basEl.getBoundingClientRect().top  + window.scrollY - pageTop - 20;
     const sonBottom  = sonEl.getBoundingClientRect().bottom + window.scrollY - pageTop + 20;
 
-    const dashEl2 = document.getElementById('dash');
-    const dashRect = dashEl2.getBoundingClientRect();
-    const scrollX  = window.scrollX;
+    // page div'ini hedef al — topbar hariç, yan boşluksuz
+    const pageEl = document.querySelector('#dash .page') || document.getElementById('dash');
+    const pageRect = pageEl.getBoundingClientRect();
+    const pageOffsetTop = pageRect.top + window.scrollY;
+    const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop;
+    const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 20;
 
-    const canvas = await html2canvas(dashEl2, {
+    const canvas = await html2canvas(pageEl, {
       scale: 1.5,
       useCORS: true,
       allowTaint: true,
-      backgroundColor: '#0d0f0e',
+      backgroundColor: '#F5F0E8',
       logging: false,
       x: 0,
-      y: basTop,
-      width: dashEl2.offsetWidth,
-      height: sonBottom - basTop,
-      windowWidth: dashEl2.offsetWidth
+      y: captureY,
+      width: pageEl.offsetWidth,
+      height: captureH,
+      windowWidth: pageEl.offsetWidth
     });
 
     // Siyah kenarları kırp
