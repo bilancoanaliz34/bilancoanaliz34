@@ -284,11 +284,12 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .rasyo-scroll{position:relative;overflow-x:auto}
 .yoy-box{
   position:absolute;
-  border:2.5px solid rgba(154,111,26,.85);
+  border:2px dashed rgba(59,130,200,.8);
   border-radius:3px;
   pointer-events:none;
   top:0;bottom:0;
   z-index:10;
+  background:rgba(59,130,200,.05);
 }
 .fiyat-sep{padding:.5rem 0 .3rem}
 /* Analiz bölümü */
@@ -558,7 +559,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
       <div class="analiz-ust-wrap">
         <div class="ono-tablo-wrap" id="analiz-ono-wrap"></div>
       </div>
-      <div class="analiz-maddeler" id="analiz-maddeler"></div>
+      <div class="analiz-maddeler" id="analiz-maddeler" style="margin-top:2rem"></div>
     </div>
 
     <!-- Reklam: analiz sonrası -->
@@ -1633,7 +1634,7 @@ function renderCharts(){
     const prevFill =lastY.map(v=>v===null?'transparent':def.colors[0]);
     const currFill =thisY.map(v=>v===null?'transparent':def.colors[1]);
     const prevBord =lastY.map(v=>v===null?'transparent':def.colors[2]);
-    const currBord =thisY.map(v=>v===null?'transparent':v<0?'rgba(224,48,48,.95)':def.colors[3]);
+    const currBord =thisY.map(v=>v===null?'transparent':def.colors[3]);
 
     // YoY değişim hesapla (4.Çeyrek = son dönem baz alınır)
     // Her grafik altı için: prevY/12 → latY/12 karşılaştırması
@@ -1738,7 +1739,10 @@ function renderCharts(){
           y:{
             ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},
               callback:v=>Math.abs(v)>=1000?(v/1000).toFixed(0)+'Mr':v.toFixed(0)},
-            grid:{color:'rgba(140,122,94,.12)',lineWidth:1}
+            grid:{
+              color:(ctx)=>ctx.tick.value===0?'rgba(60,50,35,.75)':'rgba(140,122,94,.12)',
+              lineWidth:(ctx)=>ctx.tick.value===0?2:1
+            }
           }
         }
       }
