@@ -281,9 +281,10 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 
 /* YoY kutu overlay */
 .rtbl-wrap{position:relative;overflow:visible}
+.rasyo-scroll{position:relative;overflow-x:auto}
 .yoy-box{
   position:absolute;
-  border:2.5px solid rgba(201,168,76,.9);
+  border:2.5px solid rgba(154,111,26,.85);
   border-radius:3px;
   pointer-events:none;
   top:0;bottom:0;
@@ -536,7 +537,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
     <!-- rasyo tablosu -->
     <div class="rasyo-section">
       <div class="section-title" style="font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--gold);padding:.5rem 0 .8rem;letter-spacing:.05em;text-transform:uppercase;border-bottom:2px solid var(--gold);margin-bottom:1rem"><span>Finansal Rasyolar — Dönemsel</span></div>
-      <div class="rasyo-scroll" id="rtbl-wrap">
+      <div class="rasyo-scroll" id="rtbl-wrap" style="position:relative;overflow-x:auto">
       <table class="rtbl" id="rtbl-main"><thead id="rthead"></thead><tbody id="rtbody"></tbody></table>
       </div>
     </div>
@@ -1629,9 +1630,9 @@ function renderCharts(){
     });
 
     // Negatif değerler için daha koyu ton kullan
-    const prevFill =lastY.map(v=>v===null?'transparent':v<0?'rgba(122,21,21,.75)':def.colors[0]);
-    const currFill =thisY.map(v=>v===null?'transparent':v<0?'rgba(224,48,48,.75)':def.colors[1]);
-    const prevBord =lastY.map(v=>v===null?'transparent':v<0?'rgba(122,21,21,.9)' :def.colors[2]);
+    const prevFill =lastY.map(v=>v===null?'transparent':def.colors[0]);
+    const currFill =thisY.map(v=>v===null?'transparent':def.colors[1]);
+    const prevBord =lastY.map(v=>v===null?'transparent':def.colors[2]);
     const currBord =thisY.map(v=>v===null?'transparent':v<0?'rgba(224,48,48,.95)':def.colors[3]);
 
     // YoY değişim hesapla (4.Çeyrek = son dönem baz alınır)
@@ -1855,7 +1856,7 @@ function renderRasyo(){
        ${fiyatCells.replace(/class="fiyat-td/g,'class="fiyat-td fiyat-sep-cell')}
      </tr>`;
 
-  requestAnimationFrame(()=>drawYoyBoxes(ap,bc));
+  setTimeout(()=>drawYoyBoxes(ap,bc), 150);
   renderOnoTablo(ap);
 }
 
@@ -2047,22 +2048,22 @@ function drawYoyBoxes(ap,bc){
   const tbl=document.getElementById('rtbl-main');
   if(!wrap||!tbl)return;
   wrap.querySelectorAll('.yoy-box').forEach(el=>el.remove());
-  const ths=tbl.querySelectorAll('thead tr th');
+  const allThs=tbl.querySelectorAll('thead tr th');
+  // thead'deki sütun sırası: th[0]=simge, th[1]=Rasyo, th[2+]=dönemler
   const colOffset=2;
-  // th offsetLeft kullan — scroll bağımsız, tabloya göre
-  bc.forEach(period=>{
+  const tblRect=tbl.getBoundingClientRect();
+  bc.forEach((period,bi)=>{
     const idx=ap.indexOf(period);
     if(idx<0)return;
-    const th=ths[idx+colOffset];
+    const th=allThs[idx+colOffset];
     if(!th)return;
+    const thRect=th.getBoundingClientRect();
+    // Tablo sol kenarına göre hesapla (scroll dahil)
+    const left=thRect.left - tblRect.left;
     const box=document.createElement('div');
     box.className='yoy-box';
-    // th'nin tablodan offsetLeft'ini hesapla
-    let left=th.offsetLeft;
-    let node=th.offsetParent;
-    while(node && node!==wrap){left+=node.offsetLeft;node=node.offsetParent;}
     box.style.left=(left-1)+'px';
-    box.style.width=(th.offsetWidth+2)+'px';
+    box.style.width=(thRect.width+2)+'px';
     wrap.appendChild(box);
   });
 }
