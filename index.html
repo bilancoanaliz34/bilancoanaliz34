@@ -25,7 +25,7 @@
   --bg:#F5F0E8;--bg2:#EDE8DC;--bg3:#E4DED0;
   --gold:#9A6F1A;--gold2:#B8860B;
   --green:#2D7D4F;--red:#C0392B;
-  --muted:#8C7A5E;--text:#2C2C2A;--text2:#5C4E38;
+  --muted:#9A6F1A;--text:#2C2C2A;--text2:#9A6F1A;
   --border:#D4CCC0;
   --mono:'IBM Plex Mono',monospace;
   --serif:'Playfair Display',serif;
@@ -34,6 +34,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh}
+#rthead tr th{color:var(--gold);font-weight:700;font-size:.7rem}
 
 
 /* ── SEARCH EKRANI ── */
@@ -187,9 +188,9 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .ono-lbl.no{color:var(--gold)}
 .ono-lbl.ols{color:var(--red)}
 .ono-num{font-family:var(--mono);font-size:1.8rem;font-weight:700;line-height:1}
-.fiyat-box{border:1.5px solid var(--border);border-radius:var(--r);padding:.7rem 1.1rem;text-align:center;min-width:140px;transition:border-color .2s}
-.fiyat-box.pos{border-color:rgba(76,175,125,.45)}
-.fiyat-box.neg{border-color:rgba(224,82,82,.45)}
+.fiyat-box{border:1.5px solid var(--border);border-radius:var(--r);padding:.7rem 1.1rem;text-align:center;min-width:140px;transition:border-color .2s;background:rgba(255,255,255,.35)}
+.fiyat-box.pos{border-color:rgba(45,125,79,.5);background:rgba(45,125,79,.08)}
+.fiyat-box.neg{border-color:rgba(192,57,43,.5);background:rgba(192,57,43,.08)}
 .fiyat-box-lbl{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem}
 .fiyat-box-val{font-family:var(--mono);font-size:1.4rem;font-weight:700;line-height:1;margin-bottom:.2rem}
 .fiyat-box-val.pos{color:var(--green)}
@@ -222,7 +223,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .leg-dot{width:9px;height:9px;border-radius:2px}
 .chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.2rem;margin-bottom:2rem}
 .ch-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem}
-.ch-title{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;margin-bottom:1rem}
+.ch-title{font-family:var(--mono);font-size:.72rem;color:var(--gold);font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:1rem}
 .ch-title span{color:var(--text2);text-transform:none;letter-spacing:0}
 .ch-wrap{position:relative;height:170px}
 
@@ -260,7 +261,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .rtbl-fiyat{margin-top:0;margin-bottom:2rem}
 /* ONO tablosu */
 .ono-tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.7rem;table-layout:auto}
-.ono-tbl th{padding:.28rem .38rem;text-align:right;color:var(--muted);font-size:.58rem;font-weight:400;border-bottom:1px solid var(--border);white-space:nowrap}
+.ono-tbl th{padding:.28rem .38rem;text-align:right;color:var(--muted);font-size:.58rem;font-weight:400;border-bottom:1px solid var(--border);white-space:nowrap;color:var(--gold);font-weight:700}
 .ono-tbl th:first-child{text-align:left;min-width:60px}
 .ono-tbl td{padding:.3rem .38rem;text-align:right;font-weight:600;white-space:nowrap;border-bottom:1px solid rgba(37,40,37,.3)}
 .ono-tbl td:first-child{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-align:left;color:var(--muted)}
@@ -299,7 +300,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 /* Boş reklam alanları görünmesini engelle */
 .ad-wrap:empty,.ad-wrap div:empty{display:none}
 .analiz-madde-wrap{display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem}
-.analiz-madde{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:1rem}
+.analiz-madde{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem}
 .analiz-madde-num{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--gold);background:rgba(154,111,26,.08);border:1px solid rgba(201,168,76,.25);border-radius:4px;padding:2px 7px;flex-shrink:0;margin-top:2px}
 .hisse-puan-box{display:inline-flex;flex-direction:column;gap:.3rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1.2rem}
 .hisse-puan-lbl{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
@@ -1598,17 +1599,17 @@ function renderCharts(){
   // colors: [prevFill, currFill, prevBorder, currBorder]
   const defs=[
     {title:'Firma Değeri',     key:'fd',
-     colors:['rgba(26,74,107,.45)','rgba(59,159,212,.45)','rgba(26,74,107,.9)','rgba(59,159,212,.95)']},
+     colors:['rgba(26,74,107,.75)','rgba(59,159,212,.75)','rgba(26,74,107,.9)','rgba(59,159,212,.95)']},
     {title:'Yıllık Net Kar',   key:'netKar',
-     colors:['rgba(139,32,32,.45)','rgba(224,82,82,.45)','rgba(139,32,32,.9)','rgba(224,82,82,.95)']},
+     colors:['rgba(139,32,32,.75)','rgba(224,82,82,.75)','rgba(139,32,32,.9)','rgba(224,82,82,.95)']},
     {title:'Toplam Varlıklar', key:'tv',
-     colors:['rgba(122,64,16,.45)','rgba(232,137,46,.45)','rgba(122,64,16,.9)','rgba(232,137,46,.95)']},
+     colors:['rgba(122,64,16,.75)','rgba(232,137,46,.75)','rgba(122,64,16,.9)','rgba(232,137,46,.95)']},
     {title:'Net Satışlar',     key:'satislar',
-     colors:['rgba(26,74,32,.45)','rgba(76,175,125,.45)','rgba(26,74,32,.9)','rgba(76,175,125,.95)']},
+     colors:['rgba(26,74,32,.75)','rgba(76,175,125,.75)','rgba(26,74,32,.9)','rgba(76,175,125,.95)']},
     {title:'Özkaynaklar',      key:'oz',
-     colors:['rgba(61,26,107,.45)','rgba(155,89,212,.45)','rgba(61,26,107,.9)','rgba(155,89,212,.95)']},
+     colors:['rgba(61,26,107,.75)','rgba(155,89,212,.75)','rgba(61,26,107,.9)','rgba(155,89,212,.95)']},
     {title:'FAVÖK',            key:'favok',
-     colors:['rgba(122,96,16,.45)','rgba(232,201,48,.45)','rgba(122,96,16,.9)','rgba(232,201,48,.95)']},
+     colors:['rgba(122,96,16,.75)','rgba(232,201,48,.75)','rgba(122,96,16,.9)','rgba(232,201,48,.95)']},
   ];
 
   const grid=document.getElementById('cgrid');
@@ -1628,8 +1629,8 @@ function renderCharts(){
     });
 
     // Negatif değerler için daha koyu ton kullan
-    const prevFill =lastY.map(v=>v===null?'transparent':v<0?'rgba(122,21,21,.45)':def.colors[0]);
-    const currFill =thisY.map(v=>v===null?'transparent':v<0?'rgba(224,48,48,.45)':def.colors[1]);
+    const prevFill =lastY.map(v=>v===null?'transparent':v<0?'rgba(122,21,21,.75)':def.colors[0]);
+    const currFill =thisY.map(v=>v===null?'transparent':v<0?'rgba(224,48,48,.75)':def.colors[1]);
     const prevBord =lastY.map(v=>v===null?'transparent':v<0?'rgba(122,21,21,.9)' :def.colors[2]);
     const currBord =thisY.map(v=>v===null?'transparent':v<0?'rgba(224,48,48,.95)':def.colors[3]);
 
