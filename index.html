@@ -1696,6 +1696,29 @@ function renderCharts(){
       </div>`;
     grid.appendChild(card);
 
+    const zeroLinePlugin = {
+      id:'zeroLine',
+      afterDraw(chart){
+        const yScale = chart.scales.y;
+        if(!yScale) return;
+        const y0 = yScale.getPixelForValue(0);
+        // chartArea kullan — daha güvenilir
+        const {left, right, top, bottom} = chart.chartArea;
+        if(y0 < top || y0 > bottom) return;
+        const ctx2 = chart.ctx;
+        ctx2.save();
+        ctx2.beginPath();
+        ctx2.moveTo(left, y0);
+        ctx2.lineTo(right, y0);
+        ctx2.strokeStyle = 'rgba(80,60,40,.6)';
+        ctx2.lineWidth = 1.2;
+        ctx2.setLineDash([]);
+        ctx2.stroke();
+        ctx2.restore();
+      }
+    };
+
+    Chart.register(zeroLinePlugin);
     const ch=new Chart(card.querySelector('canvas'),{
       type:'bar',
       data:{
@@ -1739,14 +1762,8 @@ function renderCharts(){
           y:{
             ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},
               callback:v=>Math.abs(v)>=1000?(v/1000).toFixed(0)+'Mr':v.toFixed(0)},
-            grid:{
-              color:(ctx)=>ctx.tick&&ctx.tick.value===0?'rgba(80,60,40,.6)':'rgba(140,122,94,.12)',
-              lineWidth:(ctx)=>ctx.tick&&ctx.tick.value===0?1.5:0.8,
-              drawBorder:false
-            },
-            border:{
-              display:false
-            }
+            grid:{color:'rgba(140,122,94,.12)',lineWidth:0.8,drawBorder:false},
+            border:{display:false}
           }
         }
       }
@@ -2183,8 +2200,8 @@ async function xPaylas(){
     const pageEl = document.querySelector('#dash .page') || document.getElementById('dash');
     const pageRect = pageEl.getBoundingClientRect();
     const pageOffsetTop = pageRect.top + window.scrollY;
-    const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop;
-    const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 20;
+    const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
+    const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
 
     const canvas = await html2canvas(pageEl, {
       scale: 1.5,
