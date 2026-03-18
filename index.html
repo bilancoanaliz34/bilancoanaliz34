@@ -394,11 +394,11 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 <div id="upload-screen">
   <!-- Üst kısım: logo + arama -->
   <div class="home-top">
-    <div class="logo-text">BilancoAnaliz34</div>
+    <div class="logo-text"><h1 style="display:inline;font:inherit;margin:0;padding:0">BilancoAnaliz34</h1></div>
     <div class="logo-sub">BIST Finansal Analiz</div>
     <div class="search-wrap">
       <div class="search-box">
-        <input type="text" id="search-input" placeholder="Hisse kodu veya şirket adı..." autocomplete="off" spellcheck="false">
+        <input type="search" id="search-input" placeholder="Hisse kodu veya şirket adı..." autocomplete="off" spellcheck="false" role="searchbox" aria-label="Hisse ara">
         <div class="search-results" id="search-results"></div>
       </div>
       <div class="home-tags-row">
@@ -564,14 +564,18 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 <div class="site-footer" id="site-footer">
   <div style="text-align:center;padding:.5rem 0 .5rem;font-family:var(--mono);font-size:.7rem;color:var(--muted)" id="view-count"></div>
   <div class="footer-disclaimer">
-    BilancoAnaliz34, Borsa İstanbul'da (BIST) işlem gören 442 hisse senedinin finansal tablolarını analiz eden bir platformdur. 
-    Her hisse için bilanço verileri, gelir tablosu, FAVÖK, net borç, özkaynak karlılığı ve PD/DD, F/K, FD/FAVÖK gibi finansal rasyolar sunulmaktadır. 
-    ONO (Olumlu-Nötr-Olumsuz) analiz sistemi ile hisselerin yatırım puanı hesaplanmaktadır.
+    BilancoAnaliz34, Borsa İstanbul'da (BIST) işlem gören 442 hisse senedinin finansal tablolarını analiz eden bağımsız bir yatırım analiz platformudur.
+    Her hisse için bilanço verileri, gelir tablosu, FAVÖK, net borç, özkaynak karlılığı ve PD/DD, F/K, FD/FAVÖK gibi temel finansal rasyolar sunulmaktadır.
+    ONO (Olumlu-Nötr-Olumsuz) analiz sistemi ile her hissenin dönemsel performansı değerlendirilerek 0-100 arasında bir yatırım puanı hesaplanmaktadır.
+    Platformumuz; bireysel yatırımcıların temel analiz yapmasına, hisse senetlerini karşılaştırmasına ve bilanço verilerini kolayca yorumlamasına yardımcı olmaktadır.
+    Tüm veriler Kamuyu Aydınlatma Platformu (KAP) ve diğer kamuya açık kaynaklardan derlenmektedir.
+    Yatırım kararlarınızda profesyonel finansal danışmanlık almayı unutmayınız.
     <br><br>⚠ Bu sitedeki içerikler yalnızca bilgilendirme amaçlıdır ve yatırım tavsiyesi niteliği taşımaz.
     Sunulan veriler ve analizler hiçbir şekilde alım-satım kararı için temel alınamaz.
     Tüm yatırım kararları tamamen yatırımcının kendi sorumluluğundadır.
   </div>
   <div class="footer-links">
+    <a href="mailto:sametcan012@gmail.com" style="color:var(--muted)">📧 İletişim</a> ·
     <a href="/cdn-cgi/l/email-protection#582b39353d2c3b393668696a183f35393134763b3735">İletişim</a> ·
     <span>© 2025 BilancoAnaliz34</span>
     <span>·</span>
