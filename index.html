@@ -1731,13 +1731,13 @@ function renderCharts(){
         },
         scales:{
           x:{
-            ticks:{color:'#a8a69f',font:{family:"'IBM Plex Mono'",size:11},maxRotation:0},
-            grid:{color:'#1a1e1a'}
+            ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:11,weight:'600'},maxRotation:0},
+            grid:{color:'rgba(140,122,94,.12)',lineWidth:1}
           },
           y:{
-            ticks:{color:'#6b7068',font:{family:"'IBM Plex Mono'",size:10},
+            ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},
               callback:v=>Math.abs(v)>=1000?(v/1000).toFixed(0)+'Mr':v.toFixed(0)},
-            grid:{color:'#1e211e'}
+            grid:{color:'rgba(140,122,94,.12)',lineWidth:1}
           }
         }
       }
@@ -2049,17 +2049,20 @@ function drawYoyBoxes(ap,bc){
   wrap.querySelectorAll('.yoy-box').forEach(el=>el.remove());
   const ths=tbl.querySelectorAll('thead tr th');
   const colOffset=2;
+  // th offsetLeft kullan — scroll bağımsız, tabloya göre
   bc.forEach(period=>{
     const idx=ap.indexOf(period);
     if(idx<0)return;
     const th=ths[idx+colOffset];
     if(!th)return;
-    const wrapRect=wrap.getBoundingClientRect();
-    const thRect=th.getBoundingClientRect();
     const box=document.createElement('div');
     box.className='yoy-box';
-    box.style.left=(thRect.left-wrapRect.left+wrap.scrollLeft-1)+'px';
-    box.style.width=(thRect.width+2)+'px';
+    // th'nin tablodan offsetLeft'ini hesapla
+    let left=th.offsetLeft;
+    let node=th.offsetParent;
+    while(node && node!==wrap){left+=node.offsetLeft;node=node.offsetParent;}
+    box.style.left=(left-1)+'px';
+    box.style.width=(th.offsetWidth+2)+'px';
     wrap.appendChild(box);
   });
 }
