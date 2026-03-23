@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Borsa Yatırımcısı İçin Temel Finansal Oranlar Rehberi | BilancoAnaliz34</title>
+  <meta name="description" content="F/K, PD/DD, FD/FAVÖK, ROE, Net Borç/FAVÖK gibi temel finansal oranlar ne anlama gelir? BIST hisselerinde nasıl kullanılır? Kapsamlı rehber.">
+  <link rel="canonical" href="https://bilancoanaliz34.com.tr/finansal-oranlar-rehberi.html">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5073510636579335" crossorigin="anonymous"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-342MVM9HWR"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-342MVM9HWR');</script>
+
+  <style>
+:root{
+  --bg:#F5F0E8;--bg2:#EDE8DC;--bg3:#E4DED0;
+  --gold:#9A6F1A;--gold2:#B8860B;
+  --green:#2D7D4F;--red:#C0392B;
+  --muted:#9A6F1A;--text:#2C2C2A;--text2:#5C4E38;
+  --border:#D4CCC0;
+  --mono:'IBM Plex Mono',monospace;
+  --serif:'Playfair Display',serif;
+  --body:'Source Serif 4',serif;
+  --r:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;line-height:1.75}
+.topbar{background:var(--bg);border-bottom:1px solid var(--border);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.brand{font-family:var(--serif);font-size:1.3rem;font-weight:900;color:var(--gold);text-decoration:none}
+.topbar-nav{display:flex;gap:1rem;align-items:center}
+.topbar-nav a{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-decoration:none;padding:.3rem .7rem;border-radius:4px;border:1px solid transparent;transition:all .2s}
+.topbar-nav a:hover{border-color:var(--border);color:var(--text)}
+.btn-site{border-color:var(--gold)!important;color:var(--gold)!important}
+.blog-wrap{max-width:780px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.blog-hero{padding:2.5rem 0 2rem;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.blog-category{font-family:var(--mono);font-size:.62rem;color:var(--gold);font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.8rem}
+.blog-title{font-family:var(--serif);font-size:2rem;font-weight:900;color:var(--text);line-height:1.25;margin-bottom:1rem}
+.blog-meta{font-family:var(--mono);font-size:.65rem;color:var(--muted);display:flex;gap:1.5rem;flex-wrap:wrap}
+.blog-intro{font-size:1.05rem;color:var(--text);line-height:1.8;margin-bottom:2rem;padding:1.2rem 1.5rem;background:var(--bg2);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0}
+h2{font-family:var(--mono);font-size:.85rem;font-weight:800;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+h3{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--text);margin:1.8rem 0 .6rem}
+p{color:var(--text2);margin-bottom:1rem;font-size:.95rem}
+.ratio-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1.5rem;margin:1.2rem 0;transition:border-color .2s}
+.ratio-card:hover{border-color:var(--gold)}
+.ratio-name{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.ratio-formula{font-family:var(--mono);font-size:.75rem;background:var(--bg3);padding:.4rem .8rem;border-radius:4px;color:var(--gold);display:inline-block;margin:.4rem 0}
+.ratio-desc{font-size:.88rem;color:var(--text2);line-height:1.65;margin:.5rem 0}
+.ratio-bench{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+.bench{font-family:var(--mono);font-size:.6rem;padding:.2rem .6rem;border-radius:3px;font-weight:600}
+.bench-green{background:rgba(45,125,79,.1);color:var(--green);border:1px solid rgba(45,125,79,.2)}
+.bench-red{background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.2)}
+.bench-gold{background:rgba(154,111,26,.1);color:var(--gold);border:1px solid rgba(154,111,26,.2)}
+.info-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem 1.5rem;margin:1.5rem 0}
+.info-box.gold{border-left:3px solid var(--gold)}
+.info-box.green{border-left:3px solid var(--green)}
+.info-box.red{border-left:3px solid var(--red)}
+.info-box-title{font-family:var(--mono);font-size:.68rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+ul.blog-list{margin:.5rem 0 1rem 1rem}
+ul.blog-list li{color:var(--text2);font-size:.9rem;margin-bottom:.45rem;padding-left:.2rem}
+.ratio-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.72rem;margin:1rem 0}
+.ratio-table th{background:var(--bg3);color:var(--gold);font-weight:700;padding:.5rem .7rem;text-align:left;border-bottom:2px solid var(--border)}
+.ratio-table td{padding:.5rem .7rem;border-bottom:1px solid var(--border);color:var(--text2)}
+.ratio-table tr:hover td{background:var(--bg2)}
+.ad-wrap{width:100%;text-align:center;margin:2rem 0;min-height:90px}
+.cta-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);border-radius:var(--r);padding:2rem;text-align:center;margin:2.5rem 0}
+.cta-title{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:.7rem}
+.cta-desc{font-size:.9rem;color:var(--text2);margin-bottom:1.2rem}
+.cta-btn{display:inline-block;font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--bg);background:var(--gold);padding:.7rem 1.8rem;border-radius:var(--r);text-decoration:none;transition:background .2s}
+.cta-btn:hover{background:var(--gold2)}
+.blog-footer{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:3rem}
+.blog-footer a{color:var(--muted);text-decoration:none}
+.blog-footer a:hover{color:var(--gold)}
+.disclaimer{font-size:.7rem;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;margin:1.5rem 0;line-height:1.6}
+.related-posts{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+@media(max-width:600px){.related-posts{grid-template-columns:1fr}}
+.related-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;text-decoration:none;transition:border-color .2s;display:block}
+.related-card:hover{border-color:var(--gold)}
+.related-cat{font-family:var(--mono);font-size:.58rem;color:var(--gold);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.related-title{font-family:var(--serif);font-size:.95rem;font-weight:700;color:var(--text);line-height:1.3}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="/">BilancoAnaliz34</a>
+  <div class="topbar-nav">
+    <a href="/blog.html">Blog</a>
+    <a href="/" class="btn-site">📊 Hisse Analizi</a>
+  </div>
+</div>
+
+<div class="blog-wrap">
+
+  <div class="blog-hero">
+    <div class="blog-category">📐 Temel Analiz Rehberi</div>
+    <h1 class="blog-title">Borsa Yatırımcısı İçin Temel Finansal Oranlar Rehberi</h1>
+    <div class="blog-meta">
+      <span>✍️ BilancoAnaliz34</span>
+      <span>📅 Mart 2026</span>
+      <span>⏱️ 10 dakika okuma</span>
+      <span>🏷️ F/K · PD/DD · FD/FAVÖK · ROE</span>
+    </div>
+  </div>
+
+  
+<div class="ad-wrap">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5073510636579335" data-ad-slot="8642395705" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+
+  <div class="blog-intro">
+    Bir hissenin "ucuz" mu "pahalı" mı olduğunu anlamak için fiyata bakmak yetmez. Asıl soru şudur: Bu fiyat, şirketin değerine göre mantıklı mı? İşte bu soruyu cevaplamak için finansal oranlar kullanılır. Bu rehberde BIST yatırımcılarının en çok başvurduğu oranları, hesaplama yöntemlerini ve yorumlama kriterlerini detaylı şekilde ele alıyoruz.
+  </div>
+
+  <h2>Değerleme Oranları</h2>
+  <p>Değerleme oranları, bir hissenin piyasada işlem gördüğü fiyatın şirketin temel finansal büyüklükleriyle ilişkisini ölçer. Bu oranlar, hissenin ucuz mu pahalı mı olduğunu anlamaya yardımcı olur.</p>
+
+  <div class="ratio-card">
+    <div class="ratio-name">F/K — Fiyat / Kazanç Oranı (P/E)</div>
+    <div class="ratio-formula">F/K = Hisse Fiyatı ÷ Hisse Başına Kar</div>
+    <div class="ratio-desc">
+      Yatırımcının şirketin 1 birim kazancı için kaç birim ödediğini gösterir. En yaygın kullanılan değerleme oranıdır. <strong>Önemli not:</strong> F/K, sektörler arasında büyük farklılık gösterir; bir bankacılık hissesi için 8 düşükken, bir teknoloji şirketi için 30 makul olabilir. Bu nedenle F/K'yı her zaman sektör ortalamasıyla kıyaslayın.
+    </div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">5-10 arası = Ucuz bölge (sektöre göre)</span>
+      <span class="bench bench-gold">10-20 = Makul bölge</span>
+      <span class="bench bench-red">Negatif F/K = Zarar eden şirket</span>
+    </div>
+  </div>
+
+  <div class="ratio-card">
+    <div class="ratio-name">PD/DD — Piyasa Değeri / Defter Değeri (P/B)</div>
+    <div class="ratio-formula">PD/DD = Piyasa Değeri ÷ Özkaynak (Defter Değeri)</div>
+    <div class="ratio-desc">
+      Hissenin, şirketin muhasebe kayıtlarındaki net varlık değerine (özkaynak) oranını gösterir. 1'in altındaki PD/DD, hissenin teorik olarak şirketin dağıtılma değerinden daha ucuza işlem gördüğünü ifade eder. Bankacılık sektörü için özellikle kritik bir oran olan PD/DD, sanayi şirketlerinde farklı yorumlanmalıdır.
+    </div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">0.5-1.0 = Defter değerinin altında</span>
+      <span class="bench bench-gold">1.0-2.0 = Makul bölge</span>
+      <span class="bench bench-red">5+ = Yüksek prim</span>
+    </div>
+  </div>
+
+  <div class="ratio-card">
+    <div class="ratio-name">FD/FAVÖK — Firma Değeri / FAVÖK (EV/EBITDA)</div>
+    <div class="ratio-formula">FD/FAVÖK = (Piyasa Değeri + Net Borç) ÷ FAVÖK</div>
+    <div class="ratio-desc">
+      Şirketi satın almak için ödenen toplam bedelin (firma değeri), şirketin yıllık operasyonel nakit üretimine (FAVÖK) oranıdır. F/K'nın borç yapısından bağımsız versiyonu olarak düşünülebilir; bu nedenle farklı borç yapılarına sahip şirketleri karşılaştırmak için idealdir. Özel sermaye fonlarının satın alma kararlarında en sık başvurdukları oran budur.
+    </div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">4-7 = Ucuz bölge</span>
+      <span class="bench bench-gold">7-12 = Makul</span>
+      <span class="bench bench-red">15+ = Pahalı bölge</span>
+    </div>
+  </div>
+
+  <div class="ratio-card">
+    <div class="ratio-name">FD/NS — Firma Değeri / Net Satışlar (EV/Sales)</div>
+    <div class="ratio-formula">FD/NS = Firma Değeri ÷ Yıllık Net Satışlar</div>
+    <div class="ratio-desc">
+      Şirketin satışlarına göre ne kadar değerlendirildiğini ölçer. Henüz kâr etmeyen ama hızlı büyüyen şirketleri değerlemek için kullanılır. Düşük kar marjlı sektörlerde (perakende, enerji) daha anlamlıdır.
+    </div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">0.5-1.5 = Makul</span>
+      <span class="bench bench-red">5+ = Pahalı</span>
+    </div>
+  </div>
+
+  
+<div class="ad-wrap">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5073510636579335" data-ad-slot="8642395705" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+
+  <h2>Karlılık Oranları</h2>
+  <p>Karlılık oranları, şirketin kaynakları ne kadar verimli kullandığını ve uzun vadede sürdürülebilir büyüme üretip üretemeyeceğini gösterir.</p>
+
+  <div class="ratio-card">
+    <div class="ratio-name">ROE — Özkaynak Karlılığı</div>
+    <div class="ratio-formula">ROE = Net Kar ÷ Özkaynak × 100 (%)</div>
+    <div class="ratio-desc">
+      Şirketin hissedarlarına ait sermayeyi ne kadar verimli kullandığını gösterir. Warren Buffett'ın en sık kullandığı ölçütlerden biri olan ROE, yüksek ve istikrarlı olduğunda güçlü bir rekabet avantajına işaret eder. Ancak aşırı yüksek borçla şişirilmiş ROE'ye dikkat edin — bu durumda ROE'nin yanında borç oranlarını da inceleyin.
+    </div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">%15+ = İyi</span>
+      <span class="bench bench-gold">%25+ = Güçlü</span>
+      <span class="bench bench-red">Negatif = Zarar</span>
+    </div>
+  </div>
+
+  <div class="ratio-card">
+    <div class="ratio-name">Net Kar Marjı</div>
+    <div class="ratio-formula">Net Kar Marjı = Net Kar ÷ Net Satışlar × 100 (%)</div>
+    <div class="ratio-desc">
+      Her 100 TL satıştan kaç TL net kar elde edildiğini gösterir. Sektöre göre çok farklılık gösterir: perakende için %3 yüksekken, yazılım sektöründe %30 bile düşük kalabilir. Trend analizi yapmak, mutlak değere bakmaktan daha değerlidir.
+    </div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">Yükselen trend = Olumlu</span>
+      <span class="bench bench-red">Düşen trend = İncelenebilir</span>
+    </div>
+  </div>
+
+  <div class="ratio-card">
+    <div class="ratio-name">HBK — Hisse Başına Kar (EPS)</div>
+    <div class="ratio-formula">HBK = Net Kar ÷ Toplam Hisse Sayısı</div>
+    <div class="ratio-desc">
+      Bir hisseye düşen net kâr miktarıdır. F/K oranının paydasını oluşturur. Temettü politikası ve hisse geri alım programlarını değerlendirmek için kritiktir. Yıldan yıla artan HBK, hissedar değerinin büyüdüğünün sinyalidir.
+    </div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">Artış trendi = Olumlu</span>
+      <span class="bench bench-gold">Seyreltilmiş EPS'e dikkat</span>
+    </div>
+  </div>
+
+  <h2>Borç ve Likidite Oranları</h2>
+  <p>Bir şirketin karlı görünmesi, finansal açıdan sağlıklı olduğu anlamına gelmez. Borç yönetimi, özellikle yüksek faiz dönemlerinde şirketin hayatta kalıp kalamayacağını belirler.</p>
+
+  <div class="ratio-card">
+    <div class="ratio-name">Net Borç / FAVÖK</div>
+    <div class="ratio-formula">Net Borç / FAVÖK = (Finansal Borçlar − Nakit) ÷ FAVÖK</div>
+    <div class="ratio-desc">
+      Şirketin net borcunu mevcut operasyonel nakit üretimiyle kaç yılda ödeyebileceğini gösterir. Kredi derecelendirme kuruluşları, bankalar ve özel sermaye fonlarının en çok kullandığı borç ölçütüdür. 2x altı genellikle sağlıklı kabul edilirken, 5x üzeri ciddi borç yükü sinyali verir.
+    </div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">&lt; 2x = Düşük borç</span>
+      <span class="bench bench-gold">2x-4x = Orta</span>
+      <span class="bench bench-red">5x+ = Yüksek risk</span>
+    </div>
+  </div>
+
+  <div class="ratio-card">
+    <div class="ratio-name">PD/NFK — Piyasa Değeri / Net Faaliyet Karı</div>
+    <div class="ratio-formula">PD/NFK = Piyasa Değeri ÷ Esas Faaliyet Karı</div>
+    <div class="ratio-desc">
+      F/K'ya benzer ancak net kar yerine faaliyet karını kullanır. Faiz geliri ve giderleri ile olağandışı kalemleri dışarıda bıraktığı için şirketin gerçek operasyonel değerlemesini daha temiz gösterir.
+    </div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">Düşük = Ana faaliyetler ucuz değerleniyor</span>
+    </div>
+  </div>
+
+  <h2>Özet Karşılaştırma Tablosu</h2>
+  <table class="ratio-table">
+    <thead>
+      <tr><th>Oran</th><th>Neyi Ölçer</th><th>Avantaj</th><th>Dezavantaj</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>F/K</td><td>Fiyat / Kazanç</td><td>Basit, yaygın</td><td>Borç yapısını dikkate almaz</td></tr>
+      <tr><td>PD/DD</td><td>Fiyat / Defter</td><td>Varlık bazlı</td><td>Maddi olmayan varlıkları eksik yansıtır</td></tr>
+      <tr><td>FD/FAVÖK</td><td>Toplam değer / Operasyon</td><td>Borç nötr karşılaştırma</td><td>Amortisman yoğun sektörlerde yanıltıcı</td></tr>
+      <tr><td>ROE</td><td>Sermaye verimliliği</td><td>Kalite ölçütü</td><td>Borçla şişirilebilir</td></tr>
+      <tr><td>Net Borç/FAVÖK</td><td>Borç ödeme kapasitesi</td><td>Kredi riski</td><td>Cyclical şirketlerde dalgalı</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box gold">
+    <div class="info-box-title">💡 Altın Kural: Tek Oranda Kalma</div>
+    <p style="margin:0;font-size:.88rem">Hiçbir finansal oran tek başına yeterli değildir. Düşük F/K ile yüksek borç bir arada görüyorsanız, bu bir değer tuzağı (value trap) olabilir. En güvenilir yaklaşım, karlılık + değerleme + borç oranlarını birlikte değerlendirmektir. BilancoAnaliz34, bu analizi ONO sistemiyle otomatik olarak yapar.</p>
+  </div>
+
+  <div class="cta-box">
+    <div class="cta-title">442 Hissede Bu Oranları Görün</div>
+    <div class="cta-desc">BilancoAnaliz34'te tüm finansal oranları dönemsel karşılaştırma ve renkli skalalarla takip edin.</div>
+    <a href="/" class="cta-btn">📊 Hisse Analizine Git →</a>
+  </div>
+
+  <p style="margin:1.5rem 0 .5rem"><strong style="color:var(--text)">İlgili Makaleler:</strong></p>
+  <div class="related-posts">
+    <a href="/bilanco-analiz-skoru-nedir.html" class="related-card">
+      <div class="related-cat">📊 Analiz Rehberi</div>
+      <div class="related-title">Bilanço Analiz Skoru Nedir? 16 Kriter ve Hesaplama</div>
+    </a>
+    <a href="/bilanco-nasil-okunur.html" class="related-card">
+      <div class="related-cat">📋 Temel Analiz</div>
+      <div class="related-title">Bilanço Nasıl Okunur? Yatırımcı Rehberi</div>
+    </a>
+  </div>
+
+  <div class="disclaimer">⚠️ Bu içerik yalnızca genel bilgilendirme amaçlıdır ve yatırım tavsiyesi niteliği taşımaz. Yatırım kararlarınızı almadan önce lisanslı bir finansal danışmana başvurmanız tavsiye edilir.</div>
+</div>
+
+<div class="blog-footer">
+  <div style="margin-bottom:.5rem">
+    <a href="/">BilancoAnaliz34</a> ·
+    <a href="/blog.html">Blog</a> ·
+    <a href="/gizlilik.html">Gizlilik Politikası</a> ·
+    <a href="https://x.com/BilancoAnaliz34" target="_blank">@bilancoanaliz34</a>
+  </div>
+  <div>© 2026 BilancoAnaliz34 · BIST Finansal Analiz Platformu</div>
+</div>
+
+</body>
+</html>

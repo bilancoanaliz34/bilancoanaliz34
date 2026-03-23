@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bilanço Nasıl Okunur? Yatırımcı için Adım Adım Rehber | BilancoAnaliz34</title>
+  <meta name="description" content="Bilanço okuma rehberi: Aktif-pasif yapısı, dönen-duran varlıklar, kısa-uzun vadeli borçlar ve özkaynaklar nasıl yorumlanır? KAP'tan bilanço nasıl bulunur?">
+  <link rel="canonical" href="https://bilancoanaliz34.com.tr/bilanco-nasil-okunur.html">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5073510636579335" crossorigin="anonymous"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-342MVM9HWR"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-342MVM9HWR');</script>
+
+  <style>
+:root{
+  --bg:#F5F0E8;--bg2:#EDE8DC;--bg3:#E4DED0;
+  --gold:#9A6F1A;--gold2:#B8860B;
+  --green:#2D7D4F;--red:#C0392B;
+  --muted:#9A6F1A;--text:#2C2C2A;--text2:#5C4E38;
+  --border:#D4CCC0;
+  --mono:'IBM Plex Mono',monospace;
+  --serif:'Playfair Display',serif;
+  --body:'Source Serif 4',serif;
+  --r:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;line-height:1.75}
+.topbar{background:var(--bg);border-bottom:1px solid var(--border);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.brand{font-family:var(--serif);font-size:1.3rem;font-weight:900;color:var(--gold);text-decoration:none}
+.topbar-nav{display:flex;gap:1rem;align-items:center}
+.topbar-nav a{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-decoration:none;padding:.3rem .7rem;border-radius:4px;border:1px solid transparent;transition:all .2s}
+.topbar-nav a:hover{border-color:var(--border);color:var(--text)}
+.btn-site{border-color:var(--gold)!important;color:var(--gold)!important}
+.blog-wrap{max-width:780px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.blog-hero{padding:2.5rem 0 2rem;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.blog-category{font-family:var(--mono);font-size:.62rem;color:var(--gold);font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.8rem}
+.blog-title{font-family:var(--serif);font-size:2rem;font-weight:900;color:var(--text);line-height:1.25;margin-bottom:1rem}
+.blog-meta{font-family:var(--mono);font-size:.65rem;color:var(--muted);display:flex;gap:1.5rem;flex-wrap:wrap}
+.blog-intro{font-size:1.05rem;color:var(--text);line-height:1.8;margin-bottom:2rem;padding:1.2rem 1.5rem;background:var(--bg2);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0}
+h2{font-family:var(--mono);font-size:.85rem;font-weight:800;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+h3{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--text);margin:1.8rem 0 .6rem}
+p{color:var(--text2);margin-bottom:1rem;font-size:.95rem}
+.ratio-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1.5rem;margin:1.2rem 0;transition:border-color .2s}
+.ratio-card:hover{border-color:var(--gold)}
+.ratio-name{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.ratio-formula{font-family:var(--mono);font-size:.75rem;background:var(--bg3);padding:.4rem .8rem;border-radius:4px;color:var(--gold);display:inline-block;margin:.4rem 0}
+.ratio-desc{font-size:.88rem;color:var(--text2);line-height:1.65;margin:.5rem 0}
+.ratio-bench{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+.bench{font-family:var(--mono);font-size:.6rem;padding:.2rem .6rem;border-radius:3px;font-weight:600}
+.bench-green{background:rgba(45,125,79,.1);color:var(--green);border:1px solid rgba(45,125,79,.2)}
+.bench-red{background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.2)}
+.bench-gold{background:rgba(154,111,26,.1);color:var(--gold);border:1px solid rgba(154,111,26,.2)}
+.info-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem 1.5rem;margin:1.5rem 0}
+.info-box.gold{border-left:3px solid var(--gold)}
+.info-box.green{border-left:3px solid var(--green)}
+.info-box.red{border-left:3px solid var(--red)}
+.info-box-title{font-family:var(--mono);font-size:.68rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+ul.blog-list{margin:.5rem 0 1rem 1rem}
+ul.blog-list li{color:var(--text2);font-size:.9rem;margin-bottom:.45rem;padding-left:.2rem}
+.ratio-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.72rem;margin:1rem 0}
+.ratio-table th{background:var(--bg3);color:var(--gold);font-weight:700;padding:.5rem .7rem;text-align:left;border-bottom:2px solid var(--border)}
+.ratio-table td{padding:.5rem .7rem;border-bottom:1px solid var(--border);color:var(--text2)}
+.ratio-table tr:hover td{background:var(--bg2)}
+.ad-wrap{width:100%;text-align:center;margin:2rem 0;min-height:90px}
+.cta-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);border-radius:var(--r);padding:2rem;text-align:center;margin:2.5rem 0}
+.cta-title{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:.7rem}
+.cta-desc{font-size:.9rem;color:var(--text2);margin-bottom:1.2rem}
+.cta-btn{display:inline-block;font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--bg);background:var(--gold);padding:.7rem 1.8rem;border-radius:var(--r);text-decoration:none;transition:background .2s}
+.cta-btn:hover{background:var(--gold2)}
+.blog-footer{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:3rem}
+.blog-footer a{color:var(--muted);text-decoration:none}
+.blog-footer a:hover{color:var(--gold)}
+.disclaimer{font-size:.7rem;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;margin:1.5rem 0;line-height:1.6}
+.related-posts{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+@media(max-width:600px){.related-posts{grid-template-columns:1fr}}
+.related-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;text-decoration:none;transition:border-color .2s;display:block}
+.related-card:hover{border-color:var(--gold)}
+.related-cat{font-family:var(--mono);font-size:.58rem;color:var(--gold);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.related-title{font-family:var(--serif);font-size:.95rem;font-weight:700;color:var(--text);line-height:1.3}
+
+  .bilanco-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.72rem;margin:1rem 0;border-radius:var(--r);overflow:hidden}
+  .bilanco-table th{padding:.6rem 1rem;text-align:left;font-weight:700;font-size:.65rem;letter-spacing:.06em}
+  .bilanco-table td{padding:.5rem 1rem;border-bottom:1px solid var(--border);color:var(--text2)}
+  .th-aktif{background:rgba(45,125,79,.15);color:var(--green)}
+  .th-pasif{background:rgba(192,57,43,.12);color:var(--red)}
+  .th-oz{background:rgba(154,111,26,.12);color:var(--gold)}
+  .step-row{display:flex;gap:1rem;margin:1.2rem 0;align-items:flex-start}
+  .step-num{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--bg);background:var(--gold);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.15rem}
+  .step-content p{margin:.2rem 0 0}
+  .step-content strong{color:var(--text);font-family:var(--mono);font-size:.8rem}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="/">BilancoAnaliz34</a>
+  <div class="topbar-nav">
+    <a href="/blog.html">Blog</a>
+    <a href="/" class="btn-site">📊 Hisse Analizi</a>
+  </div>
+</div>
+
+<div class="blog-wrap">
+
+  <div class="blog-hero">
+    <div class="blog-category">📋 Temel Analiz Rehberi</div>
+    <h1 class="blog-title">Bilanço Nasıl Okunur?<br>Yatırımcı İçin Adım Adım Rehber</h1>
+    <div class="blog-meta">
+      <span>✍️ BilancoAnaliz34</span>
+      <span>📅 Mart 2026</span>
+      <span>⏱️ 9 dakika okuma</span>
+      <span>🏷️ Bilanço · KAP · Temel Analiz</span>
+    </div>
+  </div>
+
+  
+<div class="ad-wrap">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5073510636579335" data-ad-slot="8642395705" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+
+  <div class="blog-intro">
+    Bilanço, bir şirketin belirli bir tarihte sahip olduğu varlıkları, taşıdığı borçları ve hissedarlara ait net serveti gösteren finansal tablodur. Türkiye'de tüm halka açık şirketler bilançolarını KAP üzerinden kamuya açıklamak zorundadır. Bu rehberde, bir yatırımcı olarak bilançoyu nasıl okuyacağınızı ve hangi kalemlerin kritik olduğunu anlatıyoruz.
+  </div>
+
+  <h2>Bilanço Yapısı: Aktif = Pasif + Özkaynak</h2>
+  <p>Bilanço iki ana bölümden oluşur: <strong>Aktif</strong> (varlıklar) ve <strong>Pasif + Özkaynak</strong> (kaynaklar). Bu iki taraf her zaman birbirine eşittir — bu muhasebede temel denklemdir.</p>
+
+  <table class="bilanco-table">
+    <thead>
+      <tr>
+        <th class="th-aktif">AKTİF (Varlıklar)</th>
+        <th class="th-pasif">PASİF (Borçlar)</th>
+        <th class="th-oz">ÖZKAYNAK</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Dönen Varlıklar</td><td>Kısa Vadeli Borçlar</td><td>Ödenmiş Sermaye</td></tr>
+      <tr><td>• Nakit ve Nakit Benzerleri</td><td>• Ticari Borçlar</td><td>Sermaye Yedekleri</td></tr>
+      <tr><td>• Ticari Alacaklar</td><td>• Finansal Borçlar (KV)</td><td>Kar Yedekleri</td></tr>
+      <tr><td>• Stoklar</td><td>• Diğer KV Borçlar</td><td>Geçmiş Yıl Karları</td></tr>
+      <tr><td>Duran Varlıklar</td><td>Uzun Vadeli Borçlar</td><td>Dönem Net Karı</td></tr>
+      <tr><td>• Maddi Duran Varlıklar</td><td>• Finansal Borçlar (UV)</td><td></td></tr>
+      <tr><td>• Maddi Olmayan Varlıklar</td><td>• Uzun Vadeli Karşılıklar</td><td></td></tr>
+      <tr><td>• İştiraklerdeki Yatırımlar</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h2>KAP'tan Bilanço Nasıl Bulunur?</h2>
+  <div class="step-row"><div class="step-num">1</div><div class="step-content"><strong>kap.gov.tr adresine gidin</strong><p style="font-size:.85rem;color:var(--text2)">Ana sayfada "Finansal Tablolar" bölümüne tıklayın.</p></div></div>
+  <div class="step-row"><div class="step-num">2</div><div class="step-content"><strong>Şirket kodunu girin</strong><p style="font-size:.85rem;color:var(--text2)">Örneğin "THYAO" yazarak Türk Hava Yolları'nı bulun.</p></div></div>
+  <div class="step-row"><div class="step-num">3</div><div class="step-content"><strong>Dönem seçin</strong><p style="font-size:.85rem;color:var(--text2)">Çeyreklik raporlar için ilgili dönem açıklamasına tıklayın.</p></div></div>
+  <div class="step-row"><div class="step-num">4</div><div class="step-content"><strong>Finansal Durum Tablosu'nu açın</strong><p style="font-size:.85rem;color:var(--text2)">Bu tablo bilançodur. Bağımsız veya konsolide versiyonu tercih edin (konsolide daha kapsamlıdır).</p></div></div>
+
+  <h2>Dönen Varlıklar — Ne Anlama Gelir?</h2>
+  <p>Dönen varlıklar, 12 ay içinde nakde çevrilebilecek veya tüketilecek varlıklardır. Şirketin kısa vadeli operasyonel gücünü gösterir.</p>
+
+  <div class="ratio-card">
+    <div class="ratio-name">Nakit ve Nakit Benzerleri</div>
+    <div class="ratio-desc">Şirketin kasasındaki para, banka hesapları ve kısa vadeli mevduatlardır. Yüksek nakit pozisyonu finansal esneklik sağlar; ancak aşırı nakit tutmak da sermayenin verimsiz kullanıldığına işaret edebilir.</div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">Yüksek nakit = Finansal güç</span>
+      <span class="bench bench-gold">Borç/Nakit oranına dikkat</span>
+    </div>
+  </div>
+
+  <div class="ratio-card">
+    <div class="ratio-name">Ticari Alacaklar</div>
+    <div class="ratio-desc">Mal veya hizmet satışından doğan ancak henüz tahsil edilmemiş alacaklardır. Çok yüksek alacaklar, müşterilerden tahsilat sorunu yaşandığına işaret edebilir. Alacak devir hızı (Net Satışlar / Ort. Alacaklar) ile takip edilmelidir.</div>
+    <div class="ratio-bench">
+      <span class="bench bench-gold">Satışlara oranla makul olmalı</span>
+      <span class="bench bench-red">Hızla büyüyen alacaklar = Risk sinyali</span>
+    </div>
+  </div>
+
+  <div class="ratio-card">
+    <div class="ratio-name">Stoklar</div>
+    <div class="ratio-desc">Hammadde, yarı mamul ve bitmiş ürünlerden oluşan stok varlıklarıdır. Stok birikmesi, satışların yavaşladığına veya üretimde sorun yaşandığına işaret edebilir. Stok devir hızı ile izlenmelidir.</div>
+    <div class="ratio-bench">
+      <span class="bench bench-green">Düşük stok devir süresi = Verimli</span>
+      <span class="bench bench-red">Birikmeye devam eden stoklar = Dikkat</span>
+    </div>
+  </div>
+
+  
+<div class="ad-wrap">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5073510636579335" data-ad-slot="8642395705" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+
+
+  <h2>Duran Varlıklar — Uzun Vadeli Yatırımlar</h2>
+  <p>Duran varlıklar, 12 aydan uzun süre işletmede kullanılacak varlıklardır. Şirketin üretim altyapısını ve uzun vadeli yatırım stratejisini yansıtır.</p>
+
+  <div class="ratio-card">
+    <div class="ratio-name">Maddi Duran Varlıklar (MDV)</div>
+    <div class="ratio-desc">Fabrika, makine, ekipman, arazi ve binalardır. Sanayi şirketlerinin en büyük aktif kalemi genellikle bu gruptur. MDV'nin düzenli yenilenmesi, şirketin rekabet gücünü korumak için zorunludur. Yatırım harcamaları (capex) ile izlenir.</div>
+  </div>
+
+  <div class="ratio-card">
+    <div class="ratio-name">Maddi Olmayan Duran Varlıklar</div>
+    <div class="ratio-desc">Marka değeri, patentler, yazılımlar, lisanslar ve şerefiye (goodwill) bu kategoriye girer. Şerefiye, satın alma işlemlerinde ödenen prim nedeniyle oluşur ve değer düşüklüğü testine tabi tutulur.</div>
+    <div class="ratio-bench">
+      <span class="bench bench-gold">Yüksek şerefiye = Satın alma geçmişi</span>
+      <span class="bench bench-red">Değer düşüklüğü riski taşır</span>
+    </div>
+  </div>
+
+  <h2>Borç Yapısını Nasıl Okuruz?</h2>
+  <p>Pasif taraf, şirketin varlıklarını hangi kaynaklarla finanse ettiğini gösterir. Borçların vadesi ve maliyeti, finansal riski belirler.</p>
+
+  <div class="info-box green">
+    <div class="info-box-title">✅ Sağlıklı Borç Yapısı</div>
+    <p style="margin:0;font-size:.88rem">Kısa vadeli borçların uzun vadeli varlıklarla finanse edilmemesi, net çalışma sermayesinin pozitif olması ve finansal borçların FAVÖK'ün 3 katını geçmemesi sağlıklı bir borç yapısının temel göstergeleridir.</p>
+  </div>
+
+  <div class="info-box red" style="margin-top:1rem">
+    <div class="info-box-title">⚠️ Dikkat Gerektiren Sinyaller</div>
+    <ul class="blog-list" style="margin:0">
+      <li>Kısa vadeli borçlar toplamın %70'ini aşıyorsa likidite riski var</li>
+      <li>Özkaynaklar negatife düşmüşse teknik iflas sınırında</li>
+      <li>Finansal borçlar/FAVÖK oranı 5'i aşıyorsa ağır borç yükü</li>
+      <li>Ticari borçlar ticari alacakları çok aşıyorsa tedarikçi baskısı</li>
+    </ul>
+  </div>
+
+  <h2>Özkaynaklar — Hissedarların Payı</h2>
+  <p>Özkaynaklar, toplam varlıklardan tüm borçlar çıkarıldıktan sonra hissedarlara kalan net değerdir. Şirketin finansal bağımsızlığının en net göstergesidir.</p>
+
+  <table class="ratio-table">
+    <thead><tr><th>Kalem</th><th>Açıklama</th><th>Önemi</th></tr></thead>
+    <tbody>
+      <tr><td>Ödenmiş Sermaye</td><td>Hissedarların koyduğu başlangıç sermaye</td><td>Temel</td></tr>
+      <tr><td>Sermaye Yedekleri</td><td>Prim, yeniden değerleme farkları</td><td>Orta</td></tr>
+      <tr><td>Kar Yedekleri</td><td>Geçmişte dağıtılmayan karlar</td><td>Yüksek</td></tr>
+      <tr><td>Dönem Net Karı</td><td>Son dönem net karı</td><td>Kritik</td></tr>
+      <tr><td>Azınlık Payları</td><td>Konsolide şirketteki azınlık hissesi</td><td>Dikkat</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cta-box">
+    <div class="cta-title">Hisselerin Bilanço Verilerini Karşılaştırın</div>
+    <div class="cta-desc">BilancoAnaliz34'te 442 BIST hissesinin dönemsel bilanço verilerini, grafik ve tablolarla kolayca karşılaştırın.</div>
+    <a href="/" class="cta-btn">📊 Hisse Analizine Git →</a>
+  </div>
+
+  <p style="margin:1.5rem 0 .5rem"><strong style="color:var(--text)">İlgili Makaleler:</strong></p>
+  <div class="related-posts">
+    <a href="/finansal-oranlar-rehberi.html" class="related-card">
+      <div class="related-cat">📐 Değerleme</div>
+      <div class="related-title">Temel Finansal Oranlar Rehberi: F/K, PD/DD, FD/FAVÖK</div>
+    </a>
+    <a href="/bilanco-analiz-skoru-nedir.html" class="related-card">
+      <div class="related-cat">📊 Analiz Skoru</div>
+      <div class="related-title">Bilanço Analiz Skoru Nedir? 16 Kriter ve Hesaplama</div>
+    </a>
+  </div>
+
+  <div class="disclaimer">⚠️ Bu içerik yalnızca genel bilgilendirme amaçlıdır ve yatırım tavsiyesi niteliği taşımaz. Yatırım kararlarınızı almadan önce lisanslı bir finansal danışmana başvurmanız tavsiye edilir.</div>
+</div>
+
+<div class="blog-footer">
+  <div style="margin-bottom:.5rem">
+    <a href="/">BilancoAnaliz34</a> ·
+    <a href="/blog.html">Blog</a> ·
+    <a href="/gizlilik.html">Gizlilik Politikası</a> ·
+    <a href="https://x.com/BilancoAnaliz34" target="_blank">@bilancoanaliz34</a>
+  </div>
+  <div>© 2026 BilancoAnaliz34 · BIST Finansal Analiz Platformu</div>
+</div>
+
+</body>
+</html>
