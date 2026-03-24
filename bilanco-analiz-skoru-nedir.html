@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bilanço Analiz Skoru Nedir? Tüm Kriterler ve Hesaplama Yöntemi | BilancoAnaliz34</title>
+  <meta name="description" content="BIST hisselerinde bilanço analiz skoru nasıl hesaplanır? F/K, PD/DD, FD/FAVÖK, ROE gibi 16 finansal kriter detaylı anlatım. KAP verileriyle adım adım hesaplama.">
+  <meta name="keywords" content="bilanço analizi, borsa analiz skoru, F/K oranı, PD/DD, FD/FAVÖK, ROE, BIST analiz, KAP verileri, hisse analizi">
+  <meta name="author" content="BilancoAnaliz34">
+  <meta property="og:title" content="Bilanço Analiz Skoru Nedir?">
+  <meta property="og:description" content="BIST hisselerinde 16 finansal kriterin detaylı analizi ve hesaplama yöntemi.">
+  <meta property="og:url" content="https://bilancoanaliz34.com.tr/bilanco-analiz-skoru-nedir">
+  <link rel="canonical" href="https://bilancoanaliz34.com.tr/bilanco-analiz-skoru-nedir.html">
+
+  <!-- Ezoic Gizlilik Komut Dosyaları -->
+<script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
+<script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
+
+<!-- Ezoic Başlık Komut Dosyası -->
+<script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
+<script>
+  window.ezstandalone = window.ezstandalone || {};
+  ezstandalone.cmd = ezstandalone.cmd || [];
+</script>
+<script src="//ezoicanalytics.com/analytics.js"></script>
+
+<!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5073510636579335" crossorigin="anonymous"></script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-342MVM9HWR"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-342MVM9HWR');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Bilanço Analiz Skoru Nedir? Tüm Kriterler ve Hesaplama Yöntemi",
+    "author": { "@type": "Person", "name": "BilancoAnaliz34" },
+    "publisher": { "@type": "Organization", "name": "BilancoAnaliz34", "url": "https://bilancoanaliz34.com.tr" },
+    "datePublished": "2026-03-01",
+    "description": "BIST hisselerinde bilanço analiz skoru nasıl hesaplanır? 16 finansal kriter detaylı anlatım."
+  }
+  </script>
+
+<style>
+:root{
+  --bg:#F5F0E8;--bg2:#EDE8DC;--bg3:#E4DED0;
+  --gold:#9A6F1A;--gold2:#B8860B;
+  --green:#2D7D4F;--red:#C0392B;
+  --muted:#9A6F1A;--text:#2C2C2A;--text2:#5C4E38;
+  --border:#D4CCC0;
+  --mono:'IBM Plex Mono',monospace;
+  --serif:'Playfair Display',serif;
+  --body:'Source Serif 4',serif;
+  --r:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;line-height:1.75}
+
+/* TOPBAR */
+.topbar{background:var(--bg);border-bottom:1px solid var(--border);padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.brand{font-family:var(--serif);font-size:1.3rem;font-weight:900;color:var(--gold);text-decoration:none}
+.topbar-nav{display:flex;gap:1rem;align-items:center}
+.topbar-nav a{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-decoration:none;padding:.3rem .7rem;border-radius:4px;border:1px solid transparent;transition:all .2s}
+.topbar-nav a:hover{border-color:var(--border);color:var(--text)}
+.btn-site{border-color:var(--gold)!important;color:var(--gold)!important}
+
+/* LAYOUT */
+.blog-wrap{max-width:780px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+/* HERO */
+.blog-hero{padding:2.5rem 0 2rem;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.blog-category{font-family:var(--mono);font-size:.62rem;color:var(--gold);font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.8rem}
+.blog-title{font-family:var(--serif);font-size:2rem;font-weight:900;color:var(--text);line-height:1.25;margin-bottom:1rem}
+.blog-meta{font-family:var(--mono);font-size:.65rem;color:var(--muted);display:flex;gap:1.5rem;flex-wrap:wrap}
+.blog-meta span{display:flex;align-items:center;gap:.3rem}
+
+/* İÇERİK */
+.blog-intro{font-size:1.05rem;color:var(--text);line-height:1.8;margin-bottom:2rem;padding:1.2rem 1.5rem;background:var(--bg2);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0}
+
+h2{font-family:var(--mono);font-size:.85rem;font-weight:800;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+h3{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--text);margin:1.8rem 0 .6rem}
+
+p{color:var(--text2);margin-bottom:1rem;font-size:.95rem}
+
+/* KRİTER KARTLARI */
+.kriter-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+@media(max-width:600px){.kriter-grid{grid-template-columns:1fr}}
+
+.kriter-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;transition:border-color .2s}
+.kriter-card:hover{border-color:var(--gold)}
+.kriter-no{font-family:var(--mono);font-size:.6rem;color:var(--muted);font-weight:600;letter-spacing:.1em;margin-bottom:.3rem}
+.kriter-name{font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.5rem}
+.kriter-def{font-size:.82rem;color:var(--text2);line-height:1.6;margin-bottom:.6rem}
+.kriter-formula{font-family:var(--mono);font-size:.72rem;background:var(--bg3);padding:.4rem .7rem;border-radius:4px;color:var(--gold);margin-bottom:.6rem;display:inline-block}
+.kriter-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+.tag{font-family:var(--mono);font-size:.58rem;padding:.2rem .5rem;border-radius:3px;font-weight:500}
+.tag-green{background:rgba(45,125,79,.12);color:var(--green);border:1px solid rgba(45,125,79,.25)}
+.tag-red{background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.2)}
+.tag-gold{background:rgba(154,111,26,.1);color:var(--gold);border:1px solid rgba(154,111,26,.2)}
+.tag-muted{background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
+
+/* KAP KAYNAKLAR */
+.kap-row{font-family:var(--mono);font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:.4rem;margin-top:.5rem}
+.kap-badge{background:rgba(154,111,26,.1);color:var(--gold);border:1px solid rgba(154,111,26,.2);padding:.15rem .5rem;border-radius:3px;font-weight:600}
+
+/* LISTE */
+ul.blog-list{margin:.5rem 0 1rem 1rem}
+ul.blog-list li{color:var(--text2);font-size:.9rem;margin-bottom:.4rem;padding-left:.3rem}
+
+/* TABLO */
+.ratio-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.72rem;margin:1rem 0}
+.ratio-table th{background:var(--bg3);color:var(--gold);font-weight:700;padding:.5rem .7rem;text-align:left;border-bottom:2px solid var(--border)}
+.ratio-table td{padding:.5rem .7rem;border-bottom:1px solid var(--border);color:var(--text2)}
+.ratio-table tr:hover td{background:var(--bg2)}
+
+/* INFO BOX */
+.info-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem 1.5rem;margin:1.5rem 0}
+.info-box.gold{border-left:3px solid var(--gold)}
+.info-box.green{border-left:3px solid var(--green)}
+.info-box-title{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
+
+/* REKLAM ALANI */
+.ad-wrap{width:100%;text-align:center;margin:2rem 0;min-height:90px;background:var(--bg2);border-radius:var(--r);border:1px dashed var(--border)}
+
+/* CTA */
+.cta-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);border-radius:var(--r);padding:2rem;text-align:center;margin:2.5rem 0}
+.cta-title{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:.7rem}
+.cta-desc{font-size:.9rem;color:var(--text2);margin-bottom:1.2rem}
+.cta-btn{display:inline-block;font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--bg);background:var(--gold);padding:.7rem 1.8rem;border-radius:var(--r);text-decoration:none;transition:background .2s}
+.cta-btn:hover{background:var(--gold2)}
+
+/* FOOTER */
+.blog-footer{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:3rem}
+.blog-footer a{color:var(--muted);text-decoration:none}
+.blog-footer a:hover{color:var(--gold)}
+.disclaimer{font-size:.7rem;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;margin:1.5rem 0;line-height:1.6}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a class="brand" href="/">BilancoAnaliz34</a>
+  <div class="topbar-nav">
+    <a href="/blog.html">Blog</a>
+    <a href="/" class="btn-site">📊 Hisse Analizi</a>
+  </div>
+</div>
+
+<!-- İÇERİK -->
+<div class="blog-wrap">
+
+  <!-- HERO -->
+  <div class="blog-hero">
+    <div class="blog-category">📊 Finansal Analiz Rehberi</div>
+    <h1 class="blog-title">Bilanço Analiz Skoru Nedir?<br>Tüm Kriterler, KAP Verileri ve Hesaplama Yöntemi</h1>
+    <div class="blog-meta">
+      <span>✍️ BilancoAnaliz34</span>
+      <span>📅 Mart 2026</span>
+      <span>⏱️ 8 dakika okuma</span>
+      <span>🏷️ BIST · Temel Analiz · KAP</span>
+    </div>
+  </div>
+
+  <!-- REKLAM -->
+  <div class="ad-wrap">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5073510636579335" data-ad-slot="8642395705" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <!-- GİRİŞ -->
+  <div class="blog-intro">
+    Borsa İstanbul'da yatırım yaparken en büyük hatalardan biri yalnızca hisse fiyatına bakarak karar vermektir. Oysa profesyonel yatırımcılar bir şirketin gerçek değerini anlamak için mutlaka <strong>bilanço analizi</strong> yapar. Bu rehberde BilancoAnaliz34'ün kullandığı 16 finansal kriteri, her birinin KAP kaynağını ve nasıl yorumlanacağını adım adım açıklıyoruz.
+  </div>
+
+  <!-- NEDEN ÖNEMLİ -->
+  <h2>Bilanço Analizi Neden Önemlidir?</h2>
+  <p>Bilanço analizi olmadan yatırım yapmak, haritasız araba kullanmak gibidir. Fiyat tek başına bir anlam ifade etmez; asıl önemli olan şirketin gerçek değeriyle kıyaslandığında ucuz mu pahalı mı olduğudur.</p>
+
+  <div class="kriter-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:.8rem">
+    <div class="info-box" style="margin:0;padding:1rem;text-align:center">
+      <div style="font-size:1.4rem;margin-bottom:.4rem">🏢</div>
+      <div style="font-family:var(--mono);font-size:.65rem;font-weight:700;color:var(--gold)">Gerçek Değer</div>
+      <div style="font-size:.75rem;color:var(--text2);margin-top:.3rem">Şirketin içsel değeri ortaya çıkar</div>
+    </div>
+    <div class="info-box" style="margin:0;padding:1rem;text-align:center">
+      <div style="font-size:1.4rem;margin-bottom:.4rem">💰</div>
+      <div style="font-family:var(--mono);font-size:.65rem;font-weight:700;color:var(--gold)">Karlılık</div>
+      <div style="font-size:.75rem;color:var(--text2);margin-top:.3rem">Kazanç sürdürülebilirliği görülür</div>
+    </div>
+    <div class="info-box" style="margin:0;padding:1rem;text-align:center">
+      <div style="font-size:1.4rem;margin-bottom:.4rem">⚖️</div>
+      <div style="font-family:var(--mono);font-size:.65rem;font-weight:700;color:var(--gold)">Borç Durumu</div>
+      <div style="font-size:.75rem;color:var(--text2);margin-top:.3rem">Risk seviyesi ölçülür</div>
+    </div>
+    <div class="info-box" style="margin:0;padding:1rem;text-align:center">
+      <div style="font-size:1.4rem;margin-bottom:.4rem">📈</div>
+      <div style="font-family:var(--mono);font-size:.65rem;font-weight:700;color:var(--gold)">Büyüme</div>
+      <div style="font-size:.75rem;color:var(--text2);margin-top:.3rem">Uzun vadeli potansiyel görülür</div>
+    </div>
+  </div>
+
+  <!-- KAP -->
+  <h2>Finansal Veriler KAP'tan Nasıl Alınır?</h2>
+  <p>Türkiye'de halka açık tüm şirketlerin finansal tabloları <strong>KAP (Kamuyu Aydınlatma Platformu)</strong> üzerinden kamuya açıklanmaktadır. BilancoAnaliz34, bu verileri düzenli olarak işleyerek kullanıcıların kolayca karşılaştırma yapabilmesini sağlar.</p>
+
+  <table class="ratio-table">
+    <thead>
+      <tr><th>KAP Tablosu</th><th>İçerik</th><th>Kullanılan Kriterler</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>📋 Bilanço</td><td>Varlıklar ve yükümlülükler</td><td>Dönen/Duran Varlıklar, Özkaynaklar, Net Borç</td></tr>
+      <tr><td>📊 Gelir Tablosu</td><td>Gelir ve giderler</td><td>Net Satışlar, Brüt Kar, FAVÖK, Net Kar, HBK</td></tr>
+      <tr><td>💵 Nakit Akış</td><td>Nakit hareketleri</td><td>Faaliyet, Yatırım, Finansman Nakit Akışları</td></tr>
+    </tbody>
+  </table>
+
+  <!-- REKLAM -->
+  <div class="ad-wrap">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5073510636579335" data-ad-slot="8642395705" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <!-- ANA KRİTERLER -->
+  <h2>16 Analiz Kriteri — Detaylı Açıklama</h2>
+  <p>BilancoAnaliz34'te her hisse için aşağıdaki 16 finansal kriter hesaplanmakta ve dönemsel olarak karşılaştırılmaktadır.</p>
+
+  <!-- TEMEL FİNANSAL VERİLER -->
+  <h3>📦 Temel Finansal Veriler</h3>
+  <div class="kriter-grid">
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 01</div>
+      <div class="kriter-name">Firma Değeri (FD)</div>
+      <div class="kriter-def">Şirketin borsadaki piyasa değerine net borç eklenerek bulunan toplam değerdir. Şirketi satın almak için gerçekte ödenecek bedeli temsil eder.</div>
+      <div class="kriter-formula">FD = Piyasa Değeri + Net Borç</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">Düşük = Potansiyel ucuz</span>
+        <span class="tag tag-muted">Bilanço + Piyasa Verisi</span>
+      </div>
+      <div class="kap-row"><span class="kap-badge">KAP</span> Bilanço → Finansal Borçlar, Nakit</div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 02</div>
+      <div class="kriter-name">Yıllık Net Kar</div>
+      <div class="kriter-def">Şirketin tüm gelirlerinden giderler, vergiler ve faizler düşüldükten sonra elde ettiği dönem karıdır. Temettü kapasitesinin de temel göstergesidir.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">Artış trendi = Olumlu</span>
+        <span class="tag tag-red">Sürekli zarar = Risk</span>
+      </div>
+      <div class="kap-row"><span class="kap-badge">KAP</span> Gelir Tablosu → Net Dönem Karı</div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 03</div>
+      <div class="kriter-name">Toplam Varlıklar</div>
+      <div class="kriter-def">Şirketin sahip olduğu dönen ve duran varlıkların toplamıdır. Şirketin büyüklüğünü ve kaynak tabanını gösterir; ancak tek başına yeterli değildir, karlılıkla birlikte değerlendirilmelidir.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-gold">Büyüme trendi önemli</span>
+        <span class="tag tag-muted">Bilanço</span>
+      </div>
+      <div class="kap-row"><span class="kap-badge">KAP</span> Bilanço → Toplam Varlıklar</div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 04</div>
+      <div class="kriter-name">Yıllık Net Satışlar</div>
+      <div class="kriter-def">Şirketin bir yıl içinde gerçekleştirdiği toplam satış geliridir. İade ve indirimler düşülmüş net tutardır. Sektör büyümesi ve pazar payı analizi için kritiktir.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">Enflasyonun üzerinde artış = Gerçek büyüme</span>
+      </div>
+      <div class="kap-row"><span class="kap-badge">KAP</span> Gelir Tablosu → Hasılat</div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 05</div>
+      <div class="kriter-name">Özkaynaklar</div>
+      <div class="kriter-def">Şirketin ödenmiş sermayesi, yedek akçeleri ve geçmiş yıl karlarından oluşan öz varlığıdır. Şirketin finansal sağlamlığının ve bağımsızlığının temel göstergesidir.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">Yüksek özkaynak = Finansal güç</span>
+        <span class="tag tag-red">Negatif özkaynak = Kritik risk</span>
+      </div>
+      <div class="kap-row"><span class="kap-badge">KAP</span> Bilanço → Ana Ortaklığa Ait Özkaynaklar</div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 06</div>
+      <div class="kriter-name">FAVÖK (EBITDA)</div>
+      <div class="kriter-def">Faiz, Amortisman, Vergi ve Karşılıklar Öncesi Kar. Şirketin operasyonel nakit üretme gücünü gösterir. Farklı ülke ve sektörlerdeki şirketleri karşılaştırmak için en sık kullanılan ölçüttür.</div>
+      <div class="kriter-formula">FAVÖK = Faaliyet Karı + Amortisman</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">Yüksek ve stabil = Güçlü operasyon</span>
+      </div>
+      <div class="kap-row"><span class="kap-badge">KAP</span> Gelir Tablosu → Faaliyet Karı + Amortisman</div>
+    </div>
+
+  </div>
+
+  <!-- DEĞERLEMEORANLAri -->
+  <h3>📐 Değerleme Oranları</h3>
+  <div class="kriter-grid">
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 07</div>
+      <div class="kriter-name">PD/DD — Piyasa/Defter Değeri</div>
+      <div class="kriter-def">Hissenin borsadaki değerinin, şirketin defter değerine (özkaynak) oranıdır. Özellikle bankacılık ve gayrimenkul sektöründe kritik öneme sahiptir.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">PD/DD &lt; 1 = Defter değerinin altında</span>
+        <span class="tag tag-red">PD/DD &gt; 5 = Pahalı bölge</span>
+      </div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 08</div>
+      <div class="kriter-name">F/K — Fiyat/Kazanç</div>
+      <div class="kriter-def">Hisse fiyatının hisse başına kara bölünmesiyle hesaplanır. Yatırımcının 1 birim kazanç için kaç birim ödediğini gösterir. Sektör ortalamasıyla karşılaştırılmalıdır.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">Düşük F/K = Ucuz olabilir</span>
+        <span class="tag tag-gold">Yüksek F/K = Büyüme beklentisi</span>
+      </div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 09</div>
+      <div class="kriter-name">FD/FAVÖK</div>
+      <div class="kriter-def">Firma değerinin FAVÖK'e oranıdır. Şirketin operasyonel karına göre kaç yılda kendini amorte edeceğini gösterir. Farklı sektörlerdeki şirketleri karşılaştırmak için idealdir.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">5-8 arası = Makul</span>
+        <span class="tag tag-red">&gt; 15 = Pahalı bölge</span>
+      </div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 10</div>
+      <div class="kriter-name">PD/NFK — Piyasa/Net Faaliyet Karı</div>
+      <div class="kriter-def">Piyasa değerinin net faaliyet karına oranıdır. Şirketin ana faaliyetlerinden elde ettiği kara göre değerlemesini ortaya koyar.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-gold">Sektöre göre yorumlanır</span>
+        <span class="tag tag-muted">Faaliyet performansı</span>
+      </div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 11</div>
+      <div class="kriter-name">FD/NS — Firma Değeri/Net Satışlar</div>
+      <div class="kriter-def">Firma değerinin yıllık net satışlara oranıdır. Özellikle henüz kârlı olmayan büyüme şirketlerini değerlemek için kullanılır.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">&lt; 1 = Satışlarından ucuz</span>
+        <span class="tag tag-muted">Büyüme şirketleri için</span>
+      </div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 12</div>
+      <div class="kriter-name">NFK/PD — Faaliyet Karı Verimi</div>
+      <div class="kriter-def">Net faaliyet karının piyasa değerine oranıdır. Yüksek olması, piyasa değerine kıyasla yüksek faaliyet kârı üretildiğini ve şirketin değerinin altında işlem gördüğüne işaret edebilir.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">Yüksek = Olumlu sinyal</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- VERİMLİLİK VE BORÇ -->
+  <h3>⚙️ Verimlilik ve Borç Oranları</h3>
+  <div class="kriter-grid">
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 13</div>
+      <div class="kriter-name">Özkaynak Karlılığı (ROE)</div>
+      <div class="kriter-def">Şirketin özkaynaklarını ne kadar verimli kullandığını gösterir. Yüksek ve istikrarlı ROE, güçlü bir iş modelinin göstergesidir. Warren Buffett bu metriği en sık başvurduğu ölçütlerden biri olarak değerlendirir.</div>
+      <div class="kriter-formula">ROE = Net Kar ÷ Özkaynak × 100</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">%15+ = İyi</span>
+        <span class="tag tag-gold">%25+ = Mükemmel</span>
+        <span class="tag tag-red">Negatif = Dikkat</span>
+      </div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 14</div>
+      <div class="kriter-name">Net Borç / FAVÖK</div>
+      <div class="kriter-def">Şirketin net borcunun operasyonel kazancına oranıdır. Şirketin borcunu kaç yılda ödeyebileceğini gösterir. Bankalar ve kredi derecelendirme kuruluşları bu oranı yakından takip eder.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">&lt; 2 = Düşük borç yükü</span>
+        <span class="tag tag-gold">2-4 arası = Orta</span>
+        <span class="tag tag-red">&gt; 5 = Yüksek risk</span>
+      </div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 15</div>
+      <div class="kriter-name">EFK — Esas Faaliyet Karı</div>
+      <div class="kriter-def">Şirketin ana ticari faaliyetlerinden — faiz, vergi ve olağandışı gelir/giderler hariç — elde ettiği sürdürülebilir kârdır. İş modelinin gücünü en net şekilde ortaya koyan göstergedir.</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">Pozitif ve büyüyen = Güçlü iş modeli</span>
+      </div>
+      <div class="kap-row"><span class="kap-badge">KAP</span> Gelir Tablosu → Esas Faaliyet Karı</div>
+    </div>
+
+    <div class="kriter-card">
+      <div class="kriter-no">KRİTER 16</div>
+      <div class="kriter-name">HBK — Hisse Başına Kar</div>
+      <div class="kriter-def">Net karın toplam hisse sayısına bölünmesiyle hesaplanan, her bir hisseye düşen net kâr tutarıdır. Temettü politikasını ve hisse geri alım kararlarını doğrudan etkiler.</div>
+      <div class="kriter-formula">HBK = Net Kar ÷ Toplam Hisse Sayısı</div>
+      <div class="kriter-tags">
+        <span class="tag tag-green">Artış trendi = Hissedar değeri artışı</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- REKLAM -->
+  <div class="ad-wrap">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5073510636579335" data-ad-slot="8642395705" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <!-- ÖZET TABLO -->
+  <h2>Kriterlerin Özet Tablosu</h2>
+  <table class="ratio-table">
+    <thead>
+      <tr><th>#</th><th>Kriter</th><th>İdeal Bölge</th><th>Dikkat Eşiği</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Firma Değeri</td><td>Düşük ve azalan</td><td>Borçla şişirilmiş</td></tr>
+      <tr><td>2</td><td>Net Kar</td><td>Pozitif, artış trendinde</td><td>Sürekli zarar</td></tr>
+      <tr><td>3</td><td>Toplam Varlıklar</td><td>Büyüyen</td><td>Küçülen varlık tabanı</td></tr>
+      <tr><td>4</td><td>Net Satışlar</td><td>Enflasyon üzerinde büyüme</td><td>Azalan satışlar</td></tr>
+      <tr><td>5</td><td>Özkaynaklar</td><td>Yüksek ve büyüyen</td><td>Negatif özkaynak</td></tr>
+      <tr><td>6</td><td>FAVÖK</td><td>Pozitif ve stabil</td><td>Negatif FAVÖK</td></tr>
+      <tr><td>7</td><td>PD/DD</td><td>0.5 – 1.5</td><td>&gt; 5</td></tr>
+      <tr><td>8</td><td>F/K</td><td>Sektör ortalaması altı</td><td>Negatif veya &gt; 50</td></tr>
+      <tr><td>9</td><td>FD/FAVÖK</td><td>5 – 8</td><td>&gt; 15</td></tr>
+      <tr><td>13</td><td>ROE</td><td>%15+</td><td>Negatif</td></tr>
+      <tr><td>14</td><td>Net Borç/FAVÖK</td><td>&lt; 2</td><td>&gt; 5</td></tr>
+      <tr><td>16</td><td>HBK</td><td>Artış trendinde</td><td>Sürekli düşüş</td></tr>
+    </tbody>
+  </table>
+
+  <!-- BİRLİKTE KULLANIM -->
+  <h2>Kriterler Nasıl Birlikte Kullanılır?</h2>
+  <p>Tek bir orana bakarak yatırım kararı vermek yanıltıcı olabilir. Örneğin düşük F/K oranı cazip görünebilir; ancak şirket yüksek borçlu veya karlılığı azalıyorsa bu düşüklük bir tuzak olabilir.</p>
+
+  <div class="info-box gold">
+    <div class="info-box-title">✅ Doğru Analiz Yaklaşımı</div>
+    <p style="margin:0;font-size:.88rem">Karlılık (Net Kar, ROE, HBK) + Değerleme (F/K, PD/DD, FD/FAVÖK) + Borç (Net Borç/FAVÖK) + Büyüme (Net Satışlar, FAVÖK trendi) kriterlerini <strong>birlikte değerlendirin</strong>. BilancoAnaliz34, bu kriterlerin dönemsel değişimini ONO (Olumlu-Nötr-Olumsuz) sistemiyle otomatik olarak değerlendirir.</p>
+  </div>
+
+  <div class="info-box green" style="margin-top:1rem">
+    <div class="info-box-title">📌 Sektör Karşılaştırması Şart</div>
+    <p style="margin:0;font-size:.88rem">F/K 10 olan bir banka düşük, teknoloji şirketi için yüksek sayılabilir. Her kriteri mutlaka <strong>sektör ortalamasıyla karşılaştırın</strong>. BilancoAnaliz34'te sektör bazlı filtreleme özelliği yakında eklenecektir.</p>
+  </div>
+
+  <!-- SONUÇ -->
+  <h2>Sonuç</h2>
+  <p>Bilanço analizi, kısa vadeli fiyat hareketlerinin ötesine geçerek bir şirketin <strong>gerçek ekonomik değerini</strong> anlamayı sağlar. 16 finansal kriterin dönemsel takibi sayesinde:</p>
+  <ul class="blog-list">
+    <li>Şirketin büyüme trendini önceden görebilirsiniz</li>
+    <li>Borç yükü artmadan önce riski fark edebilirsiniz</li>
+    <li>Piyasanın fark etmediği değer fırsatlarını bulabilirsiniz</li>
+    <li>Daha bilinçli ve veriye dayalı yatırım kararları alabilirsiniz</li>
+  </ul>
+  <p>Unutmayın: Finansal analiz tek başına yeterli değildir. Makroekonomik koşullar, sektör dinamikleri ve şirkete özel gelişmeler de her zaman göz önünde bulundurulmalıdır.</p>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <div class="cta-title">442 BIST Hissesini Analiz Edin</div>
+    <div class="cta-desc">BilancoAnaliz34'te tüm hisselerin finansal rasyolarını, ONO analizini ve dönemsel karşılaştırmalarını ücretsiz görüntüleyin.</div>
+    <a href="/" class="cta-btn">📊 Hisse Analizine Git →</a>
+  </div>
+
+  <!-- YASAL UYARI -->
+  <div class="disclaimer">
+    <strong>⚠️ Yasal Uyarı:</strong> Bu içerik yalnızca genel bilgilendirme amaçlıdır ve yatırım tavsiyesi niteliği taşımaz. Burada yer alan bilgiler, herhangi bir menkul kıymetin alım veya satımı için tavsiye, teklif ya da davet olarak yorumlanamaz. Yatırım kararlarınızı almadan önce lisanslı bir finansal danışmana başvurmanız tavsiye edilir.
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="blog-footer">
+  <div style="margin-bottom:.5rem">
+    <a href="/">BilancoAnaliz34</a> ·
+    <a href="/blog.html">Blog</a> ·
+    <a href="/#gizlilik">Gizlilik Politikası</a> ·
+    <a href="https://x.com/BilancoAnaliz34" target="_blank">@bilancoanaliz34</a>
+  </div>
+  <div>© 2026 BilancoAnaliz34 · BIST Finansal Analiz Platformu</div>
+</div>
+
+</body>
+</html>
