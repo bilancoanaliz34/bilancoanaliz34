@@ -508,8 +508,8 @@ document.addEventListener('click',function(){{
 os.makedirs('hisse', exist_ok=True)
 count = 0
 for ticker, info in VERI.items():
-    with open(f'hisse/{ticker.lower()}.html', 'w', encoding='utf-8') as f:
-        f.write(make_hisse_page(ticker, info))
+    with open(f'hisse/{ticker.lower()}.html', 'w', encoding='utf-8', errors='replace') as f:
+        f.write(make_hisse_page(ticker, info).encode('utf-8', errors='replace').decode('utf-8'))
     count += 1
 
 print(f"✓ {count} hisse sayfası oluşturuldu → hisse/")
