@@ -8,8 +8,11 @@ import os, re, json, gzip, base64, sys
 
 # ── index.html'den bölümleri çıkar ───────────────────────────────────────────
 print("index.html okunuyor...")
-with open('index.html', 'r', encoding='utf-8') as f:
+import os as _os
+_html_file = 'index.html' if _os.path.exists('index.html') else 'bilanco-dashboard.html'
+with open(_html_file, 'r', encoding='utf-8') as f:
     c = f.read()
+print(f"✓ {_html_file} okundu")
 
 style_start = c.find('<style>') + 7
 style_end   = c.find('</style>')
@@ -24,11 +27,13 @@ idx_je = c.find('\nfunction resetApp()')
 core_js = c[idx_js:idx_je]
 # let tanımlarını sil - regex ile tüm varyantları yakala
 import re as _re
-core_js = _re.sub(r'let\s+D\s*=\s*\{\}\s*;', '', core_js)
-core_js = _re.sub(r'let\s+CHS\s*=\s*\[\]\s*;', '', core_js)
-core_js = _re.sub(r'let\s+VERI\s*=\s*\{\}\s*;', '', core_js)
-core_js = _re.sub(r'let\s+LOGOS\s*=\s*\{\}\s*;', '', core_js)
-core_js = _re.sub(r"let\s+activePeriod\s*=\s*''\s*;", '', core_js)
+# Tüm global değişken tanımlarını sil (let/var/const)
+core_js = _re.sub(r'(let|var|const)\s+D\s*=\s*\{[^}]*\}\s*;[^\n]*', '', core_js)
+core_js = _re.sub(r'(let|var|const)\s+CHS\s*=\s*\[[^\]]*\]\s*;[^\n]*', '', core_js)
+core_js = _re.sub(r'(let|var|const)\s+VERI\s*=\s*\{[^}]*\}[^;]*;[^\n]*', '', core_js)
+core_js = _re.sub(r'(let|var|const)\s+LOGOS\s*=\s*\{[^}]*\}\s*;[^\n]*', '', core_js)
+core_js = _re.sub(r"(let|var|const)\s+activePeriod\s*=\s*'[^']*'\s*;[^\n]*", '', core_js)
+print(f'✓ core_js globals temizlendi: {len(core_js)} kar')
 
 idx_pm = c.find('<!-- Policy Modal -->')
 idx_en = c.find('</body>')
