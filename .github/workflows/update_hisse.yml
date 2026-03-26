@@ -1,0 +1,41 @@
+name: Hisse Sayfaları Güncelle
+
+on:
+  # Her gün saat 06:00 UTC (09:00 Türkiye)
+  schedule:
+    - cron: '0 6 * * *'
+  # Manuel tetikleme
+  workflow_dispatch:
+  # index.html değişince de çalış
+  push:
+    paths:
+      - 'index.html'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Repo'yu çek
+        uses: actions/checkout@v4
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bağımlılıkları kur
+        run: pip install requests
+
+      - name: Hisse sayfalarını oluştur
+        run: python generate_hisse.py
+
+      - name: Değişiklikleri commit et ve push yap
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add hisse/
+          git diff --staged --quiet || git commit -m "Hisse sayfaları güncellendi [$(date '+%Y-%m-%d %H:%M')]"
+          git push
