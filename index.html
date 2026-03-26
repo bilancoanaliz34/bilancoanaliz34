@@ -275,14 +275,14 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .ch-val-num{font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--text);white-space:nowrap}
 
 /* rasyo tablo */
-.rtbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.65rem;margin-bottom:0;table-layout:fixed}
-.rtbl th{padding:.4rem .3rem;text-align:right;color:var(--muted);font-size:.62rem;font-weight:400;border-bottom:1px solid var(--border);white-space:nowrap}
+.rtbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.6rem;margin-bottom:0;table-layout:fixed}
+.rtbl th{padding:.35rem .2rem;text-align:right;color:var(--muted);font-size:.62rem;font-weight:400;border-bottom:1px solid var(--border);white-space:nowrap}
 .rtbl th:first-child,.rtbl th:nth-child(2){text-align:left}
-.rtbl td{padding:.4rem .3rem;border-bottom:1px solid rgba(37,40,37,.4);color:var(--text2);white-space:nowrap;text-align:right;font-weight:400;overflow:hidden;text-overflow:ellipsis}
+.rtbl td{padding:.35rem .2rem;border-bottom:1px solid rgba(37,40,37,.4);color:var(--text2);white-space:nowrap;text-align:right;font-weight:400;overflow:hidden;text-overflow:ellipsis}
 .rtbl tr:hover td{background:rgba(255,255,255,.015)}
 .rt-name-hd{text-align:left!important}
-.rt-simge{width:14px;text-align:center!important;padding:.45rem .1rem!important;overflow:visible}
-.rt-name{font-size:.65rem!important;color:var(--text)!important;white-space:nowrap;text-align:left!important;font-weight:400!important;min-width:70px;max-width:100px}
+.rt-simge{width:10px;text-align:center!important;padding:.4rem .05rem!important;overflow:visible}
+.rt-name{font-size:.6rem!important;color:var(--text)!important;white-space:nowrap;text-align:left!important;font-weight:400!important;min-width:55px;max-width:80px}
 .rt-dot{font-size:.72rem;font-weight:600}
 .rt-dot.up{color:var(--green)}.rt-dot.dn{color:var(--red)}.rt-dot.nt{color:var(--muted)}
 .rtbl-fiyat{margin-top:0;margin-bottom:2rem}
@@ -1706,6 +1706,30 @@ function renderCharts(){
   const prevLabels=qtrs.map(q=>prevY+'/'+q.ay);
   const currLabels=qtrs.map(q=>latY+'/'+q.ay);
 
+    const zeroLinePlugin = {
+      id:'zeroLine',
+      afterDraw(chart){
+        const yScale = chart.scales.y;
+        if(!yScale) return;
+        const y0 = yScale.getPixelForValue(0);
+        // chartArea kullan — daha güvenilir
+        const {left, right, top, bottom} = chart.chartArea;
+        if(y0 < top || y0 > bottom) return;
+        const ctx2 = chart.ctx;
+        ctx2.save();
+        ctx2.beginPath();
+        ctx2.moveTo(left, y0);
+        ctx2.lineTo(right, y0);
+        ctx2.strokeStyle = 'rgba(80,60,40,.6)';
+        ctx2.lineWidth = 1.2;
+        ctx2.setLineDash([]);
+        ctx2.stroke();
+        ctx2.restore();
+      }
+    };
+
+    Chart.register(zeroLinePlugin);
+
   defs.forEach(def=>{
     const lastY=qtrs.map(q=>{
       const r=D.rows[prevY+'/'+q.ay];
@@ -1782,29 +1806,6 @@ function renderCharts(){
       </div>`;
     grid.appendChild(card);
 
-    const zeroLinePlugin = {
-      id:'zeroLine',
-      afterDraw(chart){
-        const yScale = chart.scales.y;
-        if(!yScale) return;
-        const y0 = yScale.getPixelForValue(0);
-        // chartArea kullan — daha güvenilir
-        const {left, right, top, bottom} = chart.chartArea;
-        if(y0 < top || y0 > bottom) return;
-        const ctx2 = chart.ctx;
-        ctx2.save();
-        ctx2.beginPath();
-        ctx2.moveTo(left, y0);
-        ctx2.lineTo(right, y0);
-        ctx2.strokeStyle = 'rgba(80,60,40,.6)';
-        ctx2.lineWidth = 1.2;
-        ctx2.setLineDash([]);
-        ctx2.stroke();
-        ctx2.restore();
-      }
-    };
-
-    Chart.register(zeroLinePlugin);
     const ch=new Chart(card.querySelector('canvas'),{
       type:'bar',
       data:{
