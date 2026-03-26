@@ -192,27 +192,27 @@ var activePeriod = '';
 {dash_html}
 {modals}
 <script>
-function trimCanvas(canvas){
+function trimCanvas(canvas){{
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
   const data = ctx.getImageData(0, 0, w, h).data;
   const bg = [245, 240, 232]; // #F5F0E8
   const thresh = 15;
 
-  function isBg(r,g,b){ return Math.abs(r-bg[0])<thresh && Math.abs(g-bg[1])<thresh && Math.abs(b-bg[2])<thresh; }
+  function isBg(r,g,b){{ return Math.abs(r-bg[0])<thresh && Math.abs(g-bg[1])<thresh && Math.abs(b-bg[2])<thresh; }}
 
   let top=h, bottom=0, left=w, right=0;
-  for(let y=0; y<h; y++){
-    for(let x=0; x<w; x++){
+  for(let y=0; y<h; y++){{
+    for(let x=0; x<w; x++){{
       const i=(y*w+x)*4;
-      if(!isBg(data[i],data[i+1],data[i+2])){
+      if(!isBg(data[i],data[i+1],data[i+2])){{
         if(y<top) top=y;
         if(y>bottom) bottom=y;
         if(x<left) left=x;
         if(x>right) right=x;
-      }
-    }
-  }
+      }}
+    }}
+  }}
   const pad = 20;
   top    = Math.max(0, top-pad);
   bottom = Math.min(h, bottom+pad);
@@ -224,17 +224,17 @@ function trimCanvas(canvas){
   trimmed.height = bottom - top;
   trimmed.getContext('2d').drawImage(canvas, left, top, trimmed.width, trimmed.height, 0, 0, trimmed.width, trimmed.height);
   return trimmed;
-}
+}}
 
 // ── X PAYLAŞIM ──
-async function xPaylas(){
+async function xPaylas(){{
   const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
   btn.textContent = '⟳ Ekran alınıyor...';
   btn.disabled = true;
 
-  try {
+  try {{
     const p0   = D.periods[0];
-    const r0   = D.rows[p0] || {};
+    const r0   = D.rows[p0] || {{}};
     const ol   = r0.ol  ?? D.olumlu  ?? 0;
     const no   = r0.no  ?? D.notr    ?? 0;
     const ols  = r0.ols ?? D.olumsuz ?? 0;
@@ -276,7 +276,7 @@ async function xPaylas(){
     const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
     if(logoFromCDN) logoEl.style.visibility='hidden';
 
-    const canvas = await html2canvas(pageEl, {
+    const canvas = await html2canvas(pageEl, {{
       scale: 1.5,
       useCORS: true,
       allowTaint: true,
@@ -287,7 +287,7 @@ async function xPaylas(){
       width: pageEl.offsetWidth,
       height: captureH,
       windowWidth: pageEl.offsetWidth
-    });
+    }});
 
     // Logo'yu geri göster
     if(logoFromCDN && logoEl) logoEl.style.visibility='';
@@ -295,7 +295,7 @@ async function xPaylas(){
     // Siyah kenarları kırp
     const trimmed = trimCanvas(canvas);
 
-    trimmed.toBlob(async blob => {
+    trimmed.toBlob(async blob => {{
       // Görseli indir
       const url = URL.createObjectURL(blob);
       const a   = document.createElement('a');
@@ -305,39 +305,39 @@ async function xPaylas(){
       URL.revokeObjectURL(url);
 
       // Metni panoya kopyala
-      try { await navigator.clipboard.writeText(metin); } catch(e){}
+      try {{ await navigator.clipboard.writeText(metin); }} catch(e){{}}
 
       // X tweet sayfasını yeni sekmede aç — metin URL encode ile
       window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
 
       btn.textContent = '✓ Görsel indirildi!';
       btn.style.color = '#4caf7d';
-      setTimeout(() => {
+      setTimeout(() => {{
         btn.textContent = '𝕏 Paylaş';
         btn.style.color = '';
         btn.disabled = false;
-      }, 3000);
-    }, 'image/png');
+      }}, 3000);
+    }}, 'image/png');
 
-  } catch(e) {
+  }} catch(e) {{
     console.error(e);
     btn.textContent = '𝕏 Paylaş';
     btn.style.color = '';
     btn.disabled = false;
-  }
-}
+  }}
+}}
 
 
 // Blog dropdown menü
 
-async function xPaylas(){
+async function xPaylas(){{
   const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
   btn.textContent = '⟳ Ekran alınıyor...';
   btn.disabled = true;
 
-  try {
+  try {{
     const p0   = D.periods[0];
-    const r0   = D.rows[p0] || {};
+    const r0   = D.rows[p0] || {{}};
     const ol   = r0.ol  ?? D.olumlu  ?? 0;
     const no   = r0.no  ?? D.notr    ?? 0;
     const ols  = r0.ols ?? D.olumsuz ?? 0;
@@ -379,7 +379,7 @@ async function xPaylas(){
     const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
     if(logoFromCDN) logoEl.style.visibility='hidden';
 
-    const canvas = await html2canvas(pageEl, {
+    const canvas = await html2canvas(pageEl, {{
       scale: 1.5,
       useCORS: true,
       allowTaint: true,
@@ -390,7 +390,7 @@ async function xPaylas(){
       width: pageEl.offsetWidth,
       height: captureH,
       windowWidth: pageEl.offsetWidth
-    });
+    }});
 
     // Logo'yu geri göster
     if(logoFromCDN && logoEl) logoEl.style.visibility='';
@@ -398,7 +398,7 @@ async function xPaylas(){
     // Siyah kenarları kırp
     const trimmed = trimCanvas(canvas);
 
-    trimmed.toBlob(async blob => {
+    trimmed.toBlob(async blob => {{
       // Görseli indir
       const url = URL.createObjectURL(blob);
       const a   = document.createElement('a');
@@ -408,27 +408,27 @@ async function xPaylas(){
       URL.revokeObjectURL(url);
 
       // Metni panoya kopyala
-      try { await navigator.clipboard.writeText(metin); } catch(e){}
+      try {{ await navigator.clipboard.writeText(metin); }} catch(e){{}}
 
       // X tweet sayfasını yeni sekmede aç — metin URL encode ile
       window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
 
       btn.textContent = '✓ Görsel indirildi!';
       btn.style.color = '#4caf7d';
-      setTimeout(() => {
+      setTimeout(() => {{
         btn.textContent = '𝕏 Paylaş';
         btn.style.color = '';
         btn.disabled = false;
-      }, 3000);
-    }, 'image/png');
+      }}, 3000);
+    }}, 'image/png');
 
-  } catch(e) {
+  }} catch(e) {{
     console.error(e);
     btn.textContent = '𝕏 Paylaş';
     btn.style.color = '';
     btn.disabled = false;
-  }
-}
+  }}
+}}
 </script>
 <script>
 {{core_js}}
