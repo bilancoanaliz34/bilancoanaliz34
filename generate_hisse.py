@@ -431,7 +431,7 @@ async function xPaylas(){{
 }}
 </script>
 <script>
-{{core_js}}
+{core_js}
 window.addEventListener('load', function() {{
   var ticker = '{ticker}';
   var SHEET = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri';
