@@ -22,9 +22,13 @@ dash_html = c[idx_dh:idx_de].strip()
 idx_js = c.find('\n// GLOBALS\n')
 idx_je = c.find('\nfunction resetApp()')
 core_js = c[idx_js:idx_je]
-for var in ['let D={};','let CHS=[];','let VERI={};','let LOGOS={};',
-            "let activePeriod='';", 'let D = {};', 'let CHS = [];']:
-    core_js = core_js.replace(var, '')
+# let tanımlarını sil - regex ile tüm varyantları yakala
+import re as _re
+core_js = _re.sub(r'let\s+D\s*=\s*\{\}\s*;', '', core_js)
+core_js = _re.sub(r'let\s+CHS\s*=\s*\[\]\s*;', '', core_js)
+core_js = _re.sub(r'let\s+VERI\s*=\s*\{\}\s*;', '', core_js)
+core_js = _re.sub(r'let\s+LOGOS\s*=\s*\{\}\s*;', '', core_js)
+core_js = _re.sub(r"let\s+activePeriod\s*=\s*''\s*;", '', core_js)
 
 idx_pm = c.find('<!-- Policy Modal -->')
 idx_en = c.find('</body>')
