@@ -27,11 +27,21 @@ idx_je = c.find('\nfunction resetApp()')
 core_js = c[idx_js:idx_je]
 # let tanımlarını sil - regex ile tüm varyantları yakala
 import re as _re
+# Basit string replace ile global tanımları sil
+for _decl in ['let D={};','var D={};','let D = {};','var D = {};',
+              'let CHS=[];','var CHS=[];','let CHS = [];','var CHS = [];',
+              'let VERI={};','var VERI={};','let VERI = {};','var VERI = {};',
+              'let LOGOS={};','var LOGOS={};','let LOGOS = {};','var LOGOS = {};',
+              "let activePeriod='';","var activePeriod='';",
+              "let activePeriod = '';","var activePeriod = '';",
+              'let VERI={};  // tüm hisse verileri','var VERI={};  // tüm hisse verileri']:
+    core_js = core_js.replace(_decl, '')
+# Regex ile de temizle
 # Tüm global değişken tanımlarını sil (let/var/const)
 core_js = _re.sub(r'(let|var|const)\s+D\s*=\s*\{[^}]*\}\s*;[^\n]*', '', core_js)
 core_js = _re.sub(r'(let|var|const)\s+CHS\s*=\s*\[[^\]]*\]\s*;[^\n]*', '', core_js)
 core_js = _re.sub(r'(let|var|const)\s+VERI\s*=\s*\{[^}]*\}[^;]*;[^\n]*', '', core_js)
-core_js = _re.sub(r'(let|var|const)\s+LOGOS\s*=\s*\{[^}]*\}\s*;[^\n]*', '', core_js)
+core_js = core_js.replace('let LOGOS={};', '').replace('var LOGOS={};', '').replace('const LOGOS={};', '').replace('let LOGOS = {};', '').replace('var LOGOS = {};', '')
 core_js = _re.sub(r"(let|var|const)\s+activePeriod\s*=\s*'[^']*'\s*;[^\n]*", '', core_js)
 print(f'✓ core_js globals temizlendi: {len(core_js)} kar')
 
