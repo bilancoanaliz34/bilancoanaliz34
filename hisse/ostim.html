@@ -1388,8 +1388,8 @@ function selectTicker(ticker){
     puan:info.puan,
   };
   document.getElementById('upload-screen').style.display='none';
-  document.getElementById('btn-anasayfa').style.display='inline-flex';
-  document.getElementById('btn-paylas').style.display='inline-flex';
+  ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
+  ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   document.getElementById('dash').style.display='block';
   window.scrollTo(0,0);
   // URL'i güncelle — yenileme çalışsın
@@ -1465,17 +1465,24 @@ function buildDash(){
   if(logoSrc){
     logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`;
   } else {
-    // Fintables CDN'den logo çek
-    const fintablesUrl = `https://fintables.com/companies/${D.ticker}/logo`;
-    const img = new Image();
-    img.onload = function(){ logoWrap.innerHTML=`<img src="${fintablesUrl}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`; };
-    img.onerror = function(){
-      // Fintables yoksa placeholder
-      logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
-    };
-    img.src = fintablesUrl;
-    // Yüklenirken placeholder göster
+    // CDN'lerden logo çek — sırayla dene
+    const logoCdns = [
+      `https://fintables.com/companies/${D.ticker}/logo`,
+      `https://cdn.fintables.com/companies/${D.ticker.toLowerCase()}/logo.png`,
+    ];
     logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
+    let tried = 0;
+    function tryLogo(idx){
+      if(idx >= logoCdns.length) return;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function(){
+        logoWrap.innerHTML=`<img src="${logoCdns[idx]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      };
+      img.onerror = function(){ tryLogo(idx+1); };
+      img.src = logoCdns[idx];
+    }
+    tryLogo(0);
   }
 
   // Dönem butonları (son 8)
@@ -2049,8 +2056,8 @@ function resetApp(){
   CHS.forEach(c=>c.destroy());CHS=[];D={};
   document.getElementById('dash').style.display='none';
   document.getElementById('upload-screen').style.display='flex';
-  document.getElementById('btn-anasayfa').style.display='none';
-  document.getElementById('btn-paylas').style.display='none';
+  ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+  ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
   document.getElementById('home-lists').style.display='block';
   const adHome = document.getElementById('ad-home-bottom');
   if(adHome) adHome.style.display='block';
@@ -2111,7 +2118,7 @@ function trimCanvas(canvas){
 
 // ── X PAYLAŞIM ──
 async function xPaylas(){
-  const btn = document.getElementById('btn-paylas');
+  const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
   btn.textContent = '⟳ Ekran alınıyor...';
   btn.disabled = true;
 
@@ -3118,8 +3125,8 @@ function selectTicker(ticker){
     puan:info.puan,
   };
   document.getElementById('upload-screen').style.display='none';
-  document.getElementById('btn-anasayfa').style.display='inline-flex';
-  document.getElementById('btn-paylas').style.display='inline-flex';
+  ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
+  ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   document.getElementById('dash').style.display='block';
   window.scrollTo(0,0);
   // URL'i güncelle — yenileme çalışsın
@@ -3195,17 +3202,24 @@ function buildDash(){
   if(logoSrc){
     logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`;
   } else {
-    // Fintables CDN'den logo çek
-    const fintablesUrl = `https://fintables.com/companies/${D.ticker}/logo`;
-    const img = new Image();
-    img.onload = function(){ logoWrap.innerHTML=`<img src="${fintablesUrl}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`; };
-    img.onerror = function(){
-      // Fintables yoksa placeholder
-      logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
-    };
-    img.src = fintablesUrl;
-    // Yüklenirken placeholder göster
+    // CDN'lerden logo çek — sırayla dene
+    const logoCdns = [
+      `https://fintables.com/companies/${D.ticker}/logo`,
+      `https://cdn.fintables.com/companies/${D.ticker.toLowerCase()}/logo.png`,
+    ];
     logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
+    let tried = 0;
+    function tryLogo(idx){
+      if(idx >= logoCdns.length) return;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function(){
+        logoWrap.innerHTML=`<img src="${logoCdns[idx]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      };
+      img.onerror = function(){ tryLogo(idx+1); };
+      img.src = logoCdns[idx];
+    }
+    tryLogo(0);
   }
 
   // Dönem butonları (son 8)
