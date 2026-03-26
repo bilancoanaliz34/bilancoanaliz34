@@ -3818,27 +3818,48 @@ function drawYoyBoxes(ap,bc){
 
 window.addEventListener('load', function() {
   var ticker = 'MIATK';
-  var info = VERI[ticker];
-  if(!info) { console.error('Hisse bulunamadı: ' + ticker); return; }
-  var sp = [...info.periods].sort(function(a,b){
-    var a2=a.split('/'),b2=b.split('/');
-    return (parseInt(b2[0])*100+parseInt(b2[1]))-(parseInt(a2[0])*100+parseInt(a2[1]));
-  });
-  var p0 = sp[0];
-  var r0 = info.rows[p0] || {};
-  var olumlu  = (info.olumlu  != null) ? info.olumlu  : (r0.ol  != null ? r0.ol  : 0);
-  var notr    = (info.notr    != null) ? info.notr    : (r0.no  != null ? r0.no  : 0);
-  var olumsuz = (info.olumsuz != null) ? info.olumsuz : (r0.ols != null ? r0.ols : 0);
-  var puan    = (info.puan    != null) ? info.puan    : (r0.yo  != null ? r0.yo  : 0);
-  D = {ticker:ticker,periods:sp,rows:info.rows,sector:info.sector,
-        company:info.company,olumlu:olumlu,notr:notr,
-        olumsuz:olumsuz,puan:puan};
-  buildDash();
-  // Paylaş butonunu göster
-  ['btn-paylas','btn-paylas-home'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el) el.style.display='inline-flex';
-  });
+  var SHEET = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri';
+
+  function initDash(info) {
+    var sp = [...info.periods].sort(function(a,b){
+      var a2=a.split('/'),b2=b.split('/');
+      return (parseInt(b2[0])*100+parseInt(b2[1]))-(parseInt(a2[0])*100+parseInt(a2[1]));
+    });
+    var p0 = sp[0];
+    var r0 = info.rows[p0] || {};
+    var olumlu  = (info.olumlu  != null) ? info.olumlu  : (r0.ol  != null ? r0.ol  : 0);
+    var notr    = (info.notr    != null) ? info.notr    : (r0.no  != null ? r0.no  : 0);
+    var olumsuz = (info.olumsuz != null) ? info.olumsuz : (r0.ols != null ? r0.ols : 0);
+    var puan    = (info.puan    != null) ? info.puan    : (r0.yo  != null ? r0.yo  : 0);
+    D = {ticker:ticker,periods:sp,rows:info.rows,sector:info.sector,
+          company:info.company,olumlu:olumlu,notr:notr,
+          olumsuz:olumsuz,puan:puan};
+    buildDash();
+    ['btn-paylas','btn-paylas-home'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) el.style.display='inline-flex';
+    });
+  }
+
+  // Google Sheets'ten canlı veri çek, ol/no/ols/yo güncelle
+  fetch(SHEET)
+    .then(function(r){ return r.text(); })
+    .then(function(csv){
+      var fresh = parseCSV(csv);
+      if(fresh && fresh[ticker]) {
+        // VERI'yi güncelle
+        VERI[ticker] = fresh[ticker];
+      }
+      var info = VERI[ticker];
+      if(!info) { console.error('Hisse bulunamadı: ' + ticker); return; }
+      initDash(info);
+    })
+    .catch(function(){
+      // Google Sheets başarısız → statik VERI kullan
+      var info = VERI[ticker];
+      if(!info) { console.error('Hisse bulunamadı: ' + ticker); return; }
+      initDash(info);
+    });
 });
 function resetApp(){ window.location.href='/'; }
 function showErr(m){ console.error(m); }
