@@ -398,7 +398,7 @@ var activePeriod = '';
       </div>
       <a href="/hakkimizda.html" class="btn-sm" style="text-decoration:none">Hakkımızda</a>
       <button class="btn-sm" onclick="resetApp()" id="btn-anasayfa">← Ana Sayfa</button>
-      <button class="btn-sm btn-x" id="btn-paylas" onclick="xPaylas()">𝕏 Paylaş</button>
+      <button class="btn-sm btn-x" id="btn-paylas" onclick="xPaylas()" style="display:none">𝕏 Paylaş</button>
     </div>
   </div>
   <!-- Reklam: sayfa üstü banner -->
@@ -1389,6 +1389,7 @@ function selectTicker(ticker){
   };
   document.getElementById('upload-screen').style.display='none';
   document.getElementById('btn-anasayfa').style.display='inline-flex';
+  document.getElementById('btn-paylas').style.display='inline-flex';
   document.getElementById('dash').style.display='block';
   window.scrollTo(0,0);
   // URL'i güncelle — yenileme çalışsın
@@ -1462,8 +1463,18 @@ function buildDash(){
   const logoWrap=document.getElementById('d-logo');
   const logoSrc=LOGOS[D.ticker];
   if(logoSrc){
-    logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}">`;
+    logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`;
   } else {
+    // Fintables CDN'den logo çek
+    const fintablesUrl = `https://fintables.com/companies/${D.ticker}/logo`;
+    const img = new Image();
+    img.onload = function(){ logoWrap.innerHTML=`<img src="${fintablesUrl}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`; };
+    img.onerror = function(){
+      // Fintables yoksa placeholder
+      logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
+    };
+    img.src = fintablesUrl;
+    // Yüklenirken placeholder göster
     logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
   }
 
@@ -2039,6 +2050,7 @@ function resetApp(){
   document.getElementById('dash').style.display='none';
   document.getElementById('upload-screen').style.display='flex';
   document.getElementById('btn-anasayfa').style.display='none';
+  document.getElementById('btn-paylas').style.display='none';
   document.getElementById('home-lists').style.display='block';
   const adHome = document.getElementById('ad-home-bottom');
   if(adHome) adHome.style.display='block';
@@ -2111,7 +2123,7 @@ async function xPaylas(){
     const ols  = r0.ols ?? D.olumsuz ?? 0;
     const yo   = r0.yo  ?? D.puan    ?? 0;
     const sektor = (D.sector || '').replace(/[^a-zA-Z0-9À-ɏ]/g,'');
-    const siteLink = 'https://bilancoanaliz34.com.tr/?hisse=' + D.ticker;
+    const siteLink = 'https://bilancoanaliz34.com.tr/hisse/' + D.ticker.toLowerCase() + '.html';
 
     const metin = '\uD83C\uDF1F #'+D.ticker+' '+p0+' D\u00f6nemi Bilan\u00e7o \u00d6zeti\n\n'
       +'\uD83D\uDFE2 Olumlu : '+ol+'\n'
@@ -3107,6 +3119,7 @@ function selectTicker(ticker){
   };
   document.getElementById('upload-screen').style.display='none';
   document.getElementById('btn-anasayfa').style.display='inline-flex';
+  document.getElementById('btn-paylas').style.display='inline-flex';
   document.getElementById('dash').style.display='block';
   window.scrollTo(0,0);
   // URL'i güncelle — yenileme çalışsın
@@ -3180,8 +3193,18 @@ function buildDash(){
   const logoWrap=document.getElementById('d-logo');
   const logoSrc=LOGOS[D.ticker];
   if(logoSrc){
-    logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}">`;
+    logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`;
   } else {
+    // Fintables CDN'den logo çek
+    const fintablesUrl = `https://fintables.com/companies/${D.ticker}/logo`;
+    const img = new Image();
+    img.onload = function(){ logoWrap.innerHTML=`<img src="${fintablesUrl}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`; };
+    img.onerror = function(){
+      // Fintables yoksa placeholder
+      logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
+    };
+    img.src = fintablesUrl;
+    // Yüklenirken placeholder göster
     logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
   }
 
