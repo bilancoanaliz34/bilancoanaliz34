@@ -282,7 +282,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .rtbl tr:hover td{background:rgba(255,255,255,.015)}
 .rt-name-hd{text-align:left!important}
 .rt-simge{width:10px;text-align:center!important;padding:.4rem .05rem!important;overflow:visible}
-.rt-name{font-size:.6rem!important;color:var(--text)!important;white-space:nowrap;text-align:left!important;font-weight:400!important;min-width:55px;max-width:80px}
+.rt-name{font-size:.6rem!important;color:var(--text)!important;white-space:nowrap;text-align:left!important;font-weight:400!important;min-width:42px;max-width:58px}
 .rt-dot{font-size:.72rem;font-weight:600}
 .rt-dot.up{color:var(--green)}.rt-dot.dn{color:var(--red)}.rt-dot.nt{color:var(--muted)}
 .rtbl-fiyat{margin-top:0;margin-bottom:2rem}
@@ -1873,6 +1873,8 @@ function renderRasyo(){
   const bc = ap.includes(pLastYoy) ? [pLastYoy, pLast] : [pLast];
 
   document.getElementById('rthead').innerHTML =
+    '<colgroup><col style="width:12px"><col style="width:54px">' +
+    ap.map(()=>'<col style="width:52px">').join('') + '</colgroup>' +
     '<tr><th></th><th class="rt-name-hd">Rasyo</th>' +
     ap.map(p => {
       const boxCls = p===bc[0]?' box-prev':p===bc[1]?' box-curr':'';
