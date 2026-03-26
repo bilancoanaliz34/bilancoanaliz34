@@ -373,11 +373,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 </head>
 <body>
 <script data-cfasync="false">
-
-var CHS = [];
-var activePeriod = '';
 var VERI = {"THYAO": {"sector": "ULAŞTIRMA", "company": "Türk Hava Yolları A.O. (THYAO)", "rows": {"2022/12": {"fd": 465599000000.0, "pd": 203550000000.0, "fiyat": 147.5, "adet": 1380000000.0, "donenV": 135095000000.0, "duranV": 443476000000.0, "kvYuk": 154040000000.0, "uvYuk": 243104000000.0, "tv": 578571000000.0, "oz": 181427000000.0, "brutKar": 75641000000.0, "faalKar": 47731000000.0, "favok": 78684000000.0, "netBorc": 175086000000.0, "netKar": 47429000000.0, "satislar": 311169000000.0, "roe": 0.34864395005825555, "pddd": 1.1219388514388706, "fk": 4.2916780872462, "fdFavok": 5.917327538000102, "pdNfk": 4.264524103831891, "fdNs": 1.4962897975055356, "nfkPd": 0.23449275362318842, "nbFavok": 2.2251791978038735, "efk": 0.15339252946148235, "hbk": 34.368840579710145, "ol": null, "no": null, "ols": null, "yo": null}, "2023/3": {"fd": 449732000000.0, "pd": 178295999999.99997, "fiyat": 129.2, "adet": 1380000000.0, "donenV": 151513000000.0, "duranV": 462743000000.0, "kvYuk": 173346000000.0, "uvYuk": 249603000000.0, "tv": 614256000000.0, "oz": 191307000000.0, "brutKar": 12218000000.0, "faalKar": 2530000000.0, "favok": 82345000000.0, "netBorc": 173670000000.0, "netKar": 49627000000.0, "satislar": 350612000000.0, "roe": 0.3347295292054499, "pddd": 0.9319888974266491, "fk": 3.592721703911177, "fdFavok": 5.461558078814742, "pdNfk": 70.47272727272725, "fdNs": 1.2827056689445884, "nfkPd": 0.014189886480908156, "nbFavok": 2.1090533730038254, "efk": 0.007215953817895565, "hbk": 35.96159420289855, "ol": null, "no": null, "ols": null, "yo": null}, "2023/6": {"fd": 723040000000.0, "pd": 358800000000.0, "fiyat": 260.0, "adet": 1380000000.0, "donenV": 220567000000.0, "duranV": 633125000000.0, "kvYuk": 249120000000.0, "uvYuk": 335687000000.0, "tv": 853692000000.0, "oz": 268885000000.0, "brutKar": 39468000000.0, "faalKar": 17830000000.0, "favok": 92319000000.0, "netBorc": 210535000000.0, "netKar": 54230000000.0, "satislar": 386276000000.0, "roe": 0.26856373126789024, "pddd": 1.3343994644550645, "fk": 6.616264060483128, "fdFavok": 7.8319739165285585, "pdNfk": 20.123387549074593, "fdNs": 1.8718222203812818, "nfkPd": 0.04969342251950948, "nbFavok": 2.2805164700657503, "efk": 0.04615870517453841, "hbk": 39.29710144927536, "ol": null, "no": null, "ols": null, "yo": null}, "2023/9": {"fd": 653685000000.0, "pd": 300978000000.0, "fiyat": 218.1, "adet": 1380000000.0, "donenV": 254233000000.0, "duranV": 696107000000.0, "kvYuk": 243505000000.0, "uvYuk": 363435000000.0, "tv": 950340000000.0, "oz": 343400000000.0, "brutKar": 96593000000.0, "faalKar": 60134000000.0, "favok": 113952000000.0, "netBorc": 196328000000.0, "netKar": 78441000000.0, "satislar": 446830000000.0, "roe": 0.2988575815475703, "pddd": 0.8764647641234712, "fk": 3.8369985084330898, "fdFavok": 5.736494313395114, "pdNfk": 5.00512189443576, "fdNs": 1.4629389253183538, "nfkPd": 0.19979533387822365, "nbFavok": 1.7229008705419826, "efk": 0.13457914643152877, "hbk": 56.84130434782609, "ol": null, "no": null, "ols": null, "yo": null}, "2023/12": {"fd": 753936000000.0, "pd": 414000000000.0, "fiyat": 300.0, "adet": 1380000000.0, "donenV": 251895000000.0, "duranV": 797048000000.0, "kvYuk": 266808000000.0, "uvYuk": 325023000000.0, "tv": 1048943000000.0, "oz": 457112000000.0, "brutKar": 119446000000.0, "faalKar": 66923000000.0, "favok": 115397000000.0, "netBorc": 242746000000.0, "netKar": 162998000000.0, "satislar": 504398000000.0, "roe": 0.5105342038622543, "pddd": 0.9056861338140324, "fk": 2.5399084651345416, "fdFavok": 6.533410747246462, "pdNfk": 6.186214007142537, "fdNs": 1.4947244041411742, "nfkPd": 0.16164975845410628, "nbFavok": 2.103572883177206, "efk": 0.13267895590386955, "hbk": 118.11449275362318, "ol": null, "no": null, "ols": null, "yo": null}, "2024/3": {"fd": 818527000000.0, "pd": 443670000000.0, "fiyat": 321.5, "adet": 1380000000.0, "donenV": 275598000000.0, "duranV": 890378000000.0, "kvYuk": 306574000000.0, "uvYuk": 343881000000.0, "tv": 1165976000000.0, "oz": 515521000000.0, "brutKar": 16140000000.0, "faalKar": -908000000.0, "favok": 118989000000.0, "netBorc": 248478000000.0, "netKar": 165501000000.0, "satislar": 569579000000.0, "roe": 0.4682921446235859, "pddd": 0.8606244944434853, "fk": 2.68076930048761, "fdFavok": 6.879014026506652, "pdNfk": null, "fdNs": 1.4370736982929497, "nfkPd": -0.0020465661415015666, "nbFavok": 2.0882434510753094, "efk": -0.001594159897046766, "hbk": 119.92826086956522, "ol": 10, "no": 2, "ols": 4, "yo": null}, "2024/6": {"fd": 746306000000.0, "pd": 382260000000.0, "fiyat": 277.0, "adet": 1380000000.0, "donenV": 312030000000.0, "duranV": 921813000000.0, "kvYuk": 331593000000.0, "uvYuk": 344483000000.0, "tv": 1233843000000.0, "oz": 557767000000.0, "brutKar": 51386000000.0, "faalKar": 15604000000.0, "favok": 127431000000.0, "netBorc": 235211000000.0, "netKar": 182134000000.0, "satislar": 644821000000.0, "roe": 0.4406545922588949, "pddd": 0.6853399358513501, "fk": 2.098784411477264, "fdFavok": 5.856549819117797, "pdNfk": 24.49756472699308, "fdNs": 1.1573847625930298, "nfkPd": 0.04082038403181081, "nbFavok": 1.845791055551632, "efk": 0.02419896374342647, "hbk": 131.98115942028986, "ol": null, "no": null, "ols": null, "yo": null}, "2024/9": {"fd": 766626000000.0, "pd": 370530000000.0, "fiyat": 268.5, "adet": 1380000000.0, "donenV": 338882000000.0, "duranV": 1014787000000.0, "kvYuk": 348022000000.0, "uvYuk": 386956000000.0, "tv": 1353669000000.0, "oz": 618691000000.0, "brutKar": 112325000000.0, "faalKar": 56156000000.0, "favok": 130725000000.0, "netBorc": 282194000000.0, "netKar": 182327000000.0, "satislar": 697545000000.0, "roe": 0.3790223585918588, "pddd": 0.5988934702460518, "fk": 2.032227810472393, "fdFavok": 5.864417670682731, "pdNfk": 6.59822636939953, "fdNs": 1.099034470894351, "nfkPd": 0.1515558794159717, "nbFavok": 2.1586842608529357, "efk": 0.0805052003813374, "hbk": 132.12101449275363, "ol": 11, "no": 1, "ols": 4, "yo": null}, "2024/12": {"fd": 813419000000.0, "pd": 435735000000.0, "fiyat": 315.75, "adet": 1380000000.0, "donenV": 341910000000.0, "duranV": 1057696000000.0, "kvYuk": 339533000000.0, "uvYuk": 380061000000.0, "tv": 1399606000000.0, "oz": 680012000000.0, "brutKar": 142908000000.0, "faalKar": 63950000000.0, "favok": 136256000000.0, "netBorc": 275917000000.0, "netKar": 113357000000.0, "satislar": 745430000000.0, "roe": 0.1993749142573721, "pddd": 0.6407754569037017, "fk": 3.843917887735208, "fdFavok": 5.969784816815406, "pdNfk": 6.813682564503519, "fdNs": 1.0912077592798788, "nfkPd": 0.1467635145214408, "nbFavok": 2.0249897252231093, "efk": 0.08578941013911434, "hbk": 82.14275362318841, "ol": 6, "no": 4, "ols": 6, "yo": null}, "2025/3": {"fd": 896429000000.0, "pd": 431595000000.0, "fiyat": 312.75, "adet": 1380000000.0, "donenV": 352676000000.0, "duranV": 1182270000000.0, "kvYuk": 393028000000.0, "uvYuk": 424482000000.0, "tv": 1534946000000.0, "oz": 717436000000.0, "brutKar": 11731000000.0, "faalKar": -10246000000.0, "favok": 130923000000.0, "netBorc": 328773000000.0, "netKar": 104585000000.0, "satislar": 774904000000.0, "roe": 0.16964906318711845, "pddd": 0.6015797924832319, "fk": 4.126739016111297, "fdFavok": 6.846994034661595, "pdNfk": null, "fdNs": 1.1568258777861515, "nfkPd": -0.023739848700749546, "nbFavok": 2.511193602346417, "efk": -0.013222283018283555, "hbk": 75.78623188405797, "ol": 6, "no": 3, "ols": 7, "yo": 54}, "2025/6": {"fd": 911183000000.0, "pd": 407790000000.0, "fiyat": 295.5, "adet": 1380000000.0, "donenV": 397076000000.0, "duranV": 1255513000000.0, "kvYuk": 431666000000.0, "uvYuk": 468803000000.0, "tv": 1652589000000.0, "oz": 752120000000.0, "brutKar": 56146000000.0, "faalKar": 13285000000.0, "favok": 142929000000.0, "netBorc": 335241000000.0, "netKar": 100983000000.0, "satislar": 823353000000.0, "roe": 0.15418581908210402, "pddd": 0.5421874169015583, "fk": 4.038204450254003, "fdFavok": 6.375074337608183, "pdNfk": 30.695521264584116, "fdNs": 1.106673565287307, "nfkPd": 0.03257804261997597, "nbFavok": 2.3455072098734338, "efk": 0.016135242113649917, "hbk": 73.17608695652174, "ol": 6, "no": 2, "ols": 8, "yo": 51}, "2025/9": {"fd": 924348000000.0, "pd": 399510000000.0, "fiyat": 289.5, "adet": 1380000000.0, "donenV": 425657000000.0, "duranV": 1368789000000.0, "kvYuk": 433401000000.0, "uvYuk": 517094000000.0, "tv": 1794446000000.0, "oz": 843951000000.0, "brutKar": 118687000000.0, "faalKar": 51012000000.0, "favok": 146377000000.0, "netBorc": 385262000000.0, "netKar": 105477000000.0, "satislar": 884327000000.0, "roe": 0.14422804760153202, "pddd": 0.4733805635635244, "fk": 3.787650388236298, "fdFavok": 6.314844545249596, "pdNfk": 7.831686661961891, "fdNs": 1.0452558838529187, "nfkPd": 0.1276864158594278, "nbFavok": 2.6319845330892147, "efk": 0.05768454429187393, "hbk": 76.43260869565218, "ol": 6, "no": 2, "ols": 8, "yo": 48}, "2025/12": {"fd": 1046172000000.0, "pd": 397095000000.0, "fiyat": 287.75, "adet": 1380000000.0, "donenV": 436412000000.0, "duranV": 1560333000000.0, "kvYuk": 442076000000.0, "uvYuk": 643413000000.0, "tv": 1996745000000.0, "oz": 911256000000.0, "brutKar": 155560000000.0, "faalKar": 63535000000.0, "favok": 158217000000.0, "netBorc": 495486000000.0, "netKar": 118117000000.0, "satislar": 955472000000.0, "roe": 0.1484564510817788, "pddd": 0.4357666780794859, "fk": 3.361878476425917, "fdFavok": 6.612260376571418, "pdNfk": 6.250019674195325, "fdNs": 1.0949269052363648, "nfkPd": 0.15999949634218513, "nbFavok": 3.1316862284078195, "efk": 0.06649593080697289, "hbk": 85.59202898550724, "ol": 7, "no": 5, "ols": 4, "yo": 53}}, "olumlu": 7, "notr": 5, "olumsuz": 4, "periods": ["2025/12", "2025/9", "2025/6", "2025/3", "2024/12", "2024/9", "2024/6", "2024/3", "2023/12", "2023/9", "2023/6", "2023/3", "2022/12"], "puan": 44, "bilancoTarih": "2026-03-04"}};
-var LOGOS = {};
 </script>
 <div id="dash">
 
@@ -3825,6 +3821,228 @@ document.addEventListener('click',function(){
 </script>
 
 <script>
+async function xPaylas(){
+  const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
+  btn.textContent = '⟳ Ekran alınıyor...';
+  btn.disabled = true;
+
+  try {
+    const p0   = D.periods[0];
+    const r0   = D.rows[p0] || {};
+    const ol   = r0.ol  ?? D.olumlu  ?? 0;
+    const no   = r0.no  ?? D.notr    ?? 0;
+    const ols  = r0.ols ?? D.olumsuz ?? 0;
+    const yo   = r0.yo  ?? D.puan    ?? 0;
+    const sektor = (D.sector || '').replace(/[^a-zA-Z0-9À-ɏ]/g,'');
+    const siteLink = 'https://bilancoanaliz34.com.tr/hisse/' + D.ticker.toLowerCase() + '.html';
+
+    const metin = '\uD83C\uDF1F #'+D.ticker+' '+p0+' D\u00f6nemi Bilan\u00e7o \u00d6zeti\n\n'
+      +'\uD83D\uDFE2 Olumlu : '+ol+'\n'
+      +'\uD83D\uDFE1 N\u00f6tr : '+no+'\n'
+      +'\uD83D\uDD34 Olumsuz : '+ols+'\n\n'
+      +'\uD83C\uDFAF Yat\u0131r\u0131m Puan\u0131 : %'+yo+'\n\n'
+      +'Link : '+siteLink+'\n\n'
+      +'#rasyoanaliz #'+sektor+'\n\n'
+      +'#olumlu'+ol+' #n\u00f6tr'+no+' #olumsuz'+ols+'\n\n'
+      +'#borsa #bist #bist100 #endeks #halkaarz #bofa\n\n'
+      +'#bilanco #viop #xu100 #bilancoanaliz34';
+
+    btn.textContent = '⟳ Görsel oluşturuluyor...';
+    // Hisse başlığından grafiklerin sonuna kadar yakala
+    const basEl = document.getElementById('paylasim-bas');
+    const sonEl = document.getElementById('rtbl-wrap');
+
+    // Bounding rect hesapla
+    const pageTop    = document.getElementById('dash').getBoundingClientRect().top + window.scrollY;
+    const basTop     = basEl.getBoundingClientRect().top  + window.scrollY - pageTop - 20;
+    const sonBottom  = sonEl.getBoundingClientRect().bottom + window.scrollY - pageTop + 20;
+
+    // page div'ini hedef al — topbar hariç, yan boşluksuz
+    const pageEl = document.querySelector('#dash .page') || document.getElementById('dash');
+    const pageRect = pageEl.getBoundingClientRect();
+    const pageOffsetTop = pageRect.top + window.scrollY;
+    const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
+    const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
+
+    const canvas = await html2canvas(pageEl, {
+      scale: 1.5,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#F5F0E8',
+      logging: false,
+      x: 0,
+      y: captureY,
+      width: pageEl.offsetWidth,
+      height: captureH,
+      windowWidth: pageEl.offsetWidth
+    });
+
+    // Siyah kenarları kırp
+    const trimmed = trimCanvas(canvas);
+
+    trimmed.toBlob(async blob => {
+      // Görseli indir
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.href     = url;
+      a.download = D.ticker+'_'+p0+'_bilanco.png';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      // Metni panoya kopyala
+      try { await navigator.clipboard.writeText(metin); } catch(e){}
+
+      // X tweet sayfasını yeni sekmede aç — metin URL encode ile
+      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
+
+      btn.textContent = '✓ Görsel indirildi!';
+      btn.style.color = '#4caf7d';
+      setTimeout(() => {
+        btn.textContent = '𝕏 Paylaş';
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 3000);
+    }, 'image/png');
+
+  } catch(e) {
+    console.error(e);
+    btn.textContent = '𝕏 Paylaş';
+    btn.style.color = '';
+    btn.disabled = false;
+  }
+}
+</script>
+
+<script>
+function trimCanvas(canvas){
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const data = ctx.getImageData(0, 0, w, h).data;
+  const bg = [245, 240, 232]; // #F5F0E8
+  const thresh = 15;
+
+  function isBg(r,g,b){ return Math.abs(r-bg[0])<thresh && Math.abs(g-bg[1])<thresh && Math.abs(b-bg[2])<thresh; }
+
+  let top=h, bottom=0, left=w, right=0;
+  for(let y=0; y<h; y++){
+    for(let x=0; x<w; x++){
+      const i=(y*w+x)*4;
+      if(!isBg(data[i],data[i+1],data[i+2])){
+        if(y<top) top=y;
+        if(y>bottom) bottom=y;
+        if(x<left) left=x;
+        if(x>right) right=x;
+      }
+    }
+  }
+  const pad = 20;
+  top    = Math.max(0, top-pad);
+  bottom = Math.min(h, bottom+pad);
+  left   = Math.max(0, left-pad);
+  right  = Math.min(w, right+pad);
+
+  const trimmed = document.createElement('canvas');
+  trimmed.width  = right - left;
+  trimmed.height = bottom - top;
+  trimmed.getContext('2d').drawImage(canvas, left, top, trimmed.width, trimmed.height, 0, 0, trimmed.width, trimmed.height);
+  return trimmed;
+}
+
+// ── X PAYLAŞIM ──
+async function xPaylas(){
+  const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
+  btn.textContent = '⟳ Ekran alınıyor...';
+  btn.disabled = true;
+
+  try {
+    const p0   = D.periods[0];
+    const r0   = D.rows[p0] || {};
+    const ol   = r0.ol  ?? D.olumlu  ?? 0;
+    const no   = r0.no  ?? D.notr    ?? 0;
+    const ols  = r0.ols ?? D.olumsuz ?? 0;
+    const yo   = r0.yo  ?? D.puan    ?? 0;
+    const sektor = (D.sector || '').replace(/[^a-zA-Z0-9À-ɏ]/g,'');
+    const siteLink = 'https://bilancoanaliz34.com.tr/hisse/' + D.ticker.toLowerCase() + '.html';
+
+    const metin = '\uD83C\uDF1F #'+D.ticker+' '+p0+' D\u00f6nemi Bilan\u00e7o \u00d6zeti\n\n'
+      +'\uD83D\uDFE2 Olumlu : '+ol+'\n'
+      +'\uD83D\uDFE1 N\u00f6tr : '+no+'\n'
+      +'\uD83D\uDD34 Olumsuz : '+ols+'\n\n'
+      +'\uD83C\uDFAF Yat\u0131r\u0131m Puan\u0131 : %'+yo+'\n\n'
+      +'Link : '+siteLink+'\n\n'
+      +'#rasyoanaliz #'+sektor+'\n\n'
+      +'#olumlu'+ol+' #n\u00f6tr'+no+' #olumsuz'+ols+'\n\n'
+      +'#borsa #bist #bist100 #endeks #halkaarz #bofa\n\n'
+      +'#bilanco #viop #xu100 #bilancoanaliz34';
+
+    btn.textContent = '⟳ Görsel oluşturuluyor...';
+    // Hisse başlığından grafiklerin sonuna kadar yakala
+    const basEl = document.getElementById('paylasim-bas');
+    const sonEl = document.getElementById('rtbl-wrap');
+
+    // Bounding rect hesapla
+    const pageTop    = document.getElementById('dash').getBoundingClientRect().top + window.scrollY;
+    const basTop     = basEl.getBoundingClientRect().top  + window.scrollY - pageTop - 20;
+    const sonBottom  = sonEl.getBoundingClientRect().bottom + window.scrollY - pageTop + 20;
+
+    // page div'ini hedef al — topbar hariç, yan boşluksuz
+    const pageEl = document.querySelector('#dash .page') || document.getElementById('dash');
+    const pageRect = pageEl.getBoundingClientRect();
+    const pageOffsetTop = pageRect.top + window.scrollY;
+    const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
+    const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
+
+    const canvas = await html2canvas(pageEl, {
+      scale: 1.5,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#F5F0E8',
+      logging: false,
+      x: 0,
+      y: captureY,
+      width: pageEl.offsetWidth,
+      height: captureH,
+      windowWidth: pageEl.offsetWidth
+    });
+
+    // Siyah kenarları kırp
+    const trimmed = trimCanvas(canvas);
+
+    trimmed.toBlob(async blob => {
+      // Görseli indir
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.href     = url;
+      a.download = D.ticker+'_'+p0+'_bilanco.png';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      // Metni panoya kopyala
+      try { await navigator.clipboard.writeText(metin); } catch(e){}
+
+      // X tweet sayfasını yeni sekmede aç — metin URL encode ile
+      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
+
+      btn.textContent = '✓ Görsel indirildi!';
+      btn.style.color = '#4caf7d';
+      setTimeout(() => {
+        btn.textContent = '𝕏 Paylaş';
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 3000);
+    }, 'image/png');
+
+  } catch(e) {
+    console.error(e);
+    btn.textContent = '𝕏 Paylaş';
+    btn.style.color = '';
+    btn.disabled = false;
+  }
+}
+
+
+// Blog dropdown menü
+
 async function xPaylas(){
   const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
   btn.textContent = '⟳ Ekran alınıyor...';
