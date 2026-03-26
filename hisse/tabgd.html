@@ -985,7 +985,7 @@ function initSearch(){
   showPopular.forEach(t=>{
     const b=document.createElement('button');
     b.className='pop-btn';b.textContent=t;
-    b.onclick=()=>{addClick(t);selectTicker(t)};
+    b.onclick=()=>{ addClick(t); window.location.href='/hisse/'+t.toLowerCase()+'.html'; };
     pb.appendChild(b);
   });
 
@@ -1001,7 +1001,7 @@ function initSearch(){
     const b=document.createElement('button');
     b.className='pop-btn';
     b.textContent=t;
-    b.onclick=()=>{addClick(t);selectTicker(t)};
+    b.onclick=()=>{ addClick(t); window.location.href='/hisse/'+t.toLowerCase()+'.html'; };
     lb.appendChild(b);
   });
 
@@ -1017,7 +1017,7 @@ function initSearch(){
       .slice(0,12);
     if(!matches.length){res.classList.remove('open');return}
     res.innerHTML=matches.map(([t,info])=>
-      `<div class="sr-item" onclick="selectTicker('${t}')">
+      `<div class="sr-item" onclick="window.location.href='/hisse/'+('${t}').toLowerCase()+'.html'">
         <div><span class="sr-tick">${t}</span> <span class="sr-name">${info.company}</span></div>
         <span class="sr-sect">${(info.sector||'').split('-')[0].trim()}</span>
       </div>`
@@ -1345,7 +1345,7 @@ function buildHomeLists(){
       const lastCol = showBilancoTarih
         ? `<td style="color:var(--muted);font-size:.65rem;text-align:right">${info.bilancoTarih||'—'}</td>`
         : `<td style="color:var(--muted);font-size:.65rem;text-align:right">${p0}</td>`;
-      return `<tr onclick="selectTicker('${ticker}')">
+      return `<tr onclick="window.location.href='/hisse/${ticker.toLowerCase()}.html'">
         <td class="hl-rank">${i+1}</td>
         <td class="hl-tick" style="text-align:left">${ticker}</td>
         <td class="hl-name" style="text-align:left">${info.company||ticker}</td>
@@ -2703,7 +2703,7 @@ function initSearch(){
   showPopular.forEach(t=>{
     const b=document.createElement('button');
     b.className='pop-btn';b.textContent=t;
-    b.onclick=()=>{addClick(t);selectTicker(t)};
+    b.onclick=()=>{ addClick(t); window.location.href='/hisse/'+t.toLowerCase()+'.html'; };
     pb.appendChild(b);
   });
 
@@ -2719,7 +2719,7 @@ function initSearch(){
     const b=document.createElement('button');
     b.className='pop-btn';
     b.textContent=t;
-    b.onclick=()=>{addClick(t);selectTicker(t)};
+    b.onclick=()=>{ addClick(t); window.location.href='/hisse/'+t.toLowerCase()+'.html'; };
     lb.appendChild(b);
   });
 
@@ -2735,7 +2735,7 @@ function initSearch(){
       .slice(0,12);
     if(!matches.length){res.classList.remove('open');return}
     res.innerHTML=matches.map(([t,info])=>
-      `<div class="sr-item" onclick="selectTicker('${t}')">
+      `<div class="sr-item" onclick="window.location.href='/hisse/'+('${t}').toLowerCase()+'.html'">
         <div><span class="sr-tick">${t}</span> <span class="sr-name">${info.company}</span></div>
         <span class="sr-sect">${(info.sector||'').split('-')[0].trim()}</span>
       </div>`
@@ -3063,7 +3063,7 @@ function buildHomeLists(){
       const lastCol = showBilancoTarih
         ? `<td style="color:var(--muted);font-size:.65rem;text-align:right">${info.bilancoTarih||'—'}</td>`
         : `<td style="color:var(--muted);font-size:.65rem;text-align:right">${p0}</td>`;
-      return `<tr onclick="selectTicker('${ticker}')">
+      return `<tr onclick="window.location.href='/hisse/${ticker.toLowerCase()}.html'">
         <td class="hl-rank">${i+1}</td>
         <td class="hl-tick" style="text-align:left">${ticker}</td>
         <td class="hl-name" style="text-align:left">${info.company||ticker}</td>
