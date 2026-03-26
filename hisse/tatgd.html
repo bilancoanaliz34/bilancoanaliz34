@@ -3801,6 +3801,11 @@ window.addEventListener('load', function() {
         company:info.company,olumlu:info.olumlu,notr:info.notr,
         olumsuz:info.olumsuz,puan:info.puan};
   buildDash();
+  // Paylaş butonunu göster
+  ['btn-paylas','btn-paylas-home'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.style.display='inline-flex';
+  });
 });
 function resetApp(){ window.location.href='/'; }
 function showErr(m){ console.error(m); }
