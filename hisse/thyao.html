@@ -1390,7 +1390,7 @@ function selectTicker(ticker){
   (function(){var _e=document.getElementById('upload-screen');if(_e)_e.style.display='none';})();
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
-  document.getElementById('dash').style.display='block';
+  (function(){var _e=document.getElementById('dash');if(_e)_e.style.display='block';})();
   window.scrollTo(0,0);
   // URL'i güncelle — yenileme çalışsın
   history.pushState({ticker}, '', '/?hisse='+ticker);
@@ -1500,7 +1500,7 @@ function buildDash(){
   }, 1200);
 
   (function(){var _e=document.getElementById('upload-screen');if(_e)_e.style.display='none';})();
-  document.getElementById('dash').style.display='block';
+  (function(){var _e=document.getElementById('dash');if(_e)_e.style.display='block';})();
 }
 
 
@@ -2054,21 +2054,21 @@ function drawYoyBoxes(ap,bc){
 
 function resetApp(){
   CHS.forEach(c=>c.destroy());CHS=[];D={};
-  document.getElementById('dash').style.display='none';
+  (function(){var _e=document.getElementById('dash');if(_e)_e.style.display='none';})();
   (function(){var _e=document.getElementById('upload-screen');if(_e)_e.style.display='flex';})();
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
   ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
-  document.getElementById('home-lists').style.display='block';
+  (function(){var _e=document.getElementById('home-lists');if(_e)_e.style.display='block';})();
   const adHome = document.getElementById('ad-home-bottom');
   if(adHome) adHome.style.display='block';
-  document.getElementById('site-footer').style.display='flex';
+  (function(){var _e=document.getElementById('site-footer');if(_e)_e.style.display='flex';})();
   history.replaceState({}, '', '/');
   document.title = 'BilancoAnaliz34 | BIST Finansal Analiz';
   const metaDesc2 = document.querySelector('meta[name="description"]');
   if(metaDesc2) metaDesc2.setAttribute('content', 'BIST hisselerinin bilanço analizi, finansal rasyolar ve yatırım skorları. 442 hisse için ONO analizi.');
-  document.getElementById('dash').style.display='none';
+  (function(){var _e=document.getElementById('dash');if(_e)_e.style.display='none';})();
   (function(){var _e=document.getElementById('upload-screen');if(_e)_e.style.display='flex';})();
-  document.getElementById('home-lists').style.display='block';
+  (function(){var _e=document.getElementById('home-lists');if(_e)_e.style.display='block';})();
   adHome = document.getElementById('ad-home-bottom');
   if(adHome) adHome.style.display='block';
   document.getElementById('search-input').value='';
@@ -2228,7 +2228,7 @@ document.addEventListener('click', function(){
 // Cookie consent
 function acceptCookies(){
   try{ localStorage.setItem('ba34_cookie_ok','1'); }catch(e){}
-  document.getElementById('cookie-banner').style.display='none';
+  (function(){var _e=document.getElementById('cookie-banner');if(_e)_e.style.display='none';})();
 }
 document.addEventListener('DOMContentLoaded',function(){
   try{
@@ -2253,13 +2253,13 @@ window.addEventListener('popstate', function(e){
     (function(){var _e=document.getElementById('upload-screen');if(_e)_e.style.display='none';})();
     const adHomeP = document.getElementById('ad-home-bottom');
     if(adHomeP) adHomeP.style.display='none';
-    document.getElementById('dash').style.display='block';
+    (function(){var _e=document.getElementById('dash');if(_e)_e.style.display='block';})();
     buildDash();
   } else {
     D={};
-    document.getElementById('dash').style.display='none';
+    (function(){var _e=document.getElementById('dash');if(_e)_e.style.display='none';})();
     (function(){var _e=document.getElementById('upload-screen');if(_e)_e.style.display='flex';})();
-    document.getElementById('site-footer').style.display='flex';
+    (function(){var _e=document.getElementById('site-footer');if(_e)_e.style.display='flex';})();
   }
 });
 
@@ -2273,7 +2273,7 @@ function openAdmin(){
 }
 
 function closeAdmin(){
-  document.getElementById('admin-panel').style.display='none';
+  (function(){var _e=document.getElementById('admin-panel');if(_e)_e.style.display='none';})();
 }
 
 // URL'de ?admin varsa otomatik aç
@@ -3121,7 +3121,7 @@ function selectTicker(ticker){
   (function(){var _e=document.getElementById('upload-screen');if(_e)_e.style.display='none';})();
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
-  document.getElementById('dash').style.display='block';
+  (function(){var _e=document.getElementById('dash');if(_e)_e.style.display='block';})();
   window.scrollTo(0,0);
   // URL'i güncelle — yenileme çalışsın
   history.pushState({ticker}, '', '/?hisse='+ticker);
@@ -3231,7 +3231,7 @@ function buildDash(){
   }, 1200);
 
   (function(){var _e=document.getElementById('upload-screen');if(_e)_e.style.display='none';})();
-  document.getElementById('dash').style.display='block';
+  (function(){var _e=document.getElementById('dash');if(_e)_e.style.display='block';})();
 }
 
 
