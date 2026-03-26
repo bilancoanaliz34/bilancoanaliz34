@@ -154,6 +154,246 @@ def make_hisse_page(ticker, info):
             f"dönemsel büyüme grafikleri ve ONO analiz skoru. Sektör: {sector}.")
     hisse_json = json.dumps({ticker: info}, ensure_ascii=False)
 
+    PAYLAS_BLOCK = '''<script>
+function trimCanvas(canvas){
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const data = ctx.getImageData(0, 0, w, h).data;
+  const bg = [245, 240, 232]; // #F5F0E8
+  const thresh = 15;
+
+  function isBg(r,g,b){ return Math.abs(r-bg[0])<thresh && Math.abs(g-bg[1])<thresh && Math.abs(b-bg[2])<thresh; }
+
+  let top=h, bottom=0, left=w, right=0;
+  for(let y=0; y<h; y++){
+    for(let x=0; x<w; x++){
+      const i=(y*w+x)*4;
+      if(!isBg(data[i],data[i+1],data[i+2])){
+        if(y<top) top=y;
+        if(y>bottom) bottom=y;
+        if(x<left) left=x;
+        if(x>right) right=x;
+      }
+    }
+  }
+  const pad = 20;
+  top    = Math.max(0, top-pad);
+  bottom = Math.min(h, bottom+pad);
+  left   = Math.max(0, left-pad);
+  right  = Math.min(w, right+pad);
+
+  const trimmed = document.createElement('canvas');
+  trimmed.width  = right - left;
+  trimmed.height = bottom - top;
+  trimmed.getContext('2d').drawImage(canvas, left, top, trimmed.width, trimmed.height, 0, 0, trimmed.width, trimmed.height);
+  return trimmed;
+}
+
+// ── X PAYLAŞIM ──
+async function xPaylas(){
+  const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
+  btn.textContent = '⟳ Ekran alınıyor...';
+  btn.disabled = true;
+
+  try {
+    const p0   = D.periods[0];
+    const r0   = D.rows[p0] || {};
+    const ol   = r0.ol  ?? D.olumlu  ?? 0;
+    const no   = r0.no  ?? D.notr    ?? 0;
+    const ols  = r0.ols ?? D.olumsuz ?? 0;
+    const yo   = r0.yo  ?? D.puan    ?? 0;
+    const sektor = (D.sector || '').replace(/[^a-zA-Z0-9À-ɏ]/g,'');
+    const siteLink = 'https://bilancoanaliz34.com.tr/hisse/' + D.ticker.toLowerCase() + '.html';
+
+    const metin = '\uD83C\uDF1F #'+D.ticker+' '+p0+' D\u00f6nemi Bilan\u00e7o \u00d6zeti\n\n'
+      +'\uD83D\uDFE2 Olumlu : '+ol+'\n'
+      +'\uD83D\uDFE1 N\u00f6tr : '+no+'\n'
+      +'\uD83D\uDD34 Olumsuz : '+ols+'\n\n'
+      +'\uD83C\uDFAF Yat\u0131r\u0131m Puan\u0131 : %'+yo+'\n\n'
+      +'Link : '+siteLink+'\n\n'
+      +'#rasyoanaliz #'+sektor+'\n\n'
+      +'#olumlu'+ol+' #n\u00f6tr'+no+' #olumsuz'+ols+'\n\n'
+      +'#borsa #bist #bist100 #endeks #halkaarz #bofa\n\n'
+      +'#bilanco #viop #xu100 #bilancoanaliz34';
+
+    btn.textContent = '⟳ Görsel oluşturuluyor...';
+    // Hisse başlığından grafiklerin sonuna kadar yakala
+    const basEl = document.getElementById('paylasim-bas');
+    const sonEl = document.getElementById('rtbl-wrap');
+
+    // Bounding rect hesapla
+    const pageTop    = document.getElementById('dash').getBoundingClientRect().top + window.scrollY;
+    const basTop     = basEl.getBoundingClientRect().top  + window.scrollY - pageTop - 20;
+    const sonBottom  = sonEl.getBoundingClientRect().bottom + window.scrollY - pageTop + 20;
+
+    // page div'ini hedef al — topbar hariç, yan boşluksuz
+    const pageEl = document.querySelector('#dash .page') || document.getElementById('dash');
+    const pageRect = pageEl.getBoundingClientRect();
+    const pageOffsetTop = pageRect.top + window.scrollY;
+    const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
+    const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
+
+    // Logo: localStorage'dan geldiyse CORS yok, CDN'den geldiyse gizle
+    const logoEl = document.getElementById('d-logo');
+    const logoImg = logoEl ? logoEl.querySelector('img') : null;
+    const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
+    if(logoFromCDN) logoEl.style.visibility='hidden';
+
+    const canvas = await html2canvas(pageEl, {
+      scale: 1.5,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#F5F0E8',
+      logging: false,
+      x: 0,
+      y: captureY,
+      width: pageEl.offsetWidth,
+      height: captureH,
+      windowWidth: pageEl.offsetWidth
+    });
+
+    // Logo'yu geri göster
+    if(logoFromCDN && logoEl) logoEl.style.visibility='';
+
+    // Siyah kenarları kırp
+    const trimmed = trimCanvas(canvas);
+
+    trimmed.toBlob(async blob => {
+      // Görseli indir
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.href     = url;
+      a.download = D.ticker+'_'+p0+'_bilanco.png';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      // Metni panoya kopyala
+      try { await navigator.clipboard.writeText(metin); } catch(e){}
+
+      // X tweet sayfasını yeni sekmede aç — metin URL encode ile
+      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
+
+      btn.textContent = '✓ Görsel indirildi!';
+      btn.style.color = '#4caf7d';
+      setTimeout(() => {
+        btn.textContent = '𝕏 Paylaş';
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 3000);
+    }, 'image/png');
+
+  } catch(e) {
+    console.error(e);
+    btn.textContent = '𝕏 Paylaş';
+    btn.style.color = '';
+    btn.disabled = false;
+  }
+}
+
+
+// Blog dropdown menü
+
+async function xPaylas(){
+  const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
+  btn.textContent = '⟳ Ekran alınıyor...';
+  btn.disabled = true;
+
+  try {
+    const p0   = D.periods[0];
+    const r0   = D.rows[p0] || {};
+    const ol   = r0.ol  ?? D.olumlu  ?? 0;
+    const no   = r0.no  ?? D.notr    ?? 0;
+    const ols  = r0.ols ?? D.olumsuz ?? 0;
+    const yo   = r0.yo  ?? D.puan    ?? 0;
+    const sektor = (D.sector || '').replace(/[^a-zA-Z0-9À-ɏ]/g,'');
+    const siteLink = 'https://bilancoanaliz34.com.tr/hisse/' + D.ticker.toLowerCase() + '.html';
+
+    const metin = '\uD83C\uDF1F #'+D.ticker+' '+p0+' D\u00f6nemi Bilan\u00e7o \u00d6zeti\n\n'
+      +'\uD83D\uDFE2 Olumlu : '+ol+'\n'
+      +'\uD83D\uDFE1 N\u00f6tr : '+no+'\n'
+      +'\uD83D\uDD34 Olumsuz : '+ols+'\n\n'
+      +'\uD83C\uDFAF Yat\u0131r\u0131m Puan\u0131 : %'+yo+'\n\n'
+      +'Link : '+siteLink+'\n\n'
+      +'#rasyoanaliz #'+sektor+'\n\n'
+      +'#olumlu'+ol+' #n\u00f6tr'+no+' #olumsuz'+ols+'\n\n'
+      +'#borsa #bist #bist100 #endeks #halkaarz #bofa\n\n'
+      +'#bilanco #viop #xu100 #bilancoanaliz34';
+
+    btn.textContent = '⟳ Görsel oluşturuluyor...';
+    // Hisse başlığından grafiklerin sonuna kadar yakala
+    const basEl = document.getElementById('paylasim-bas');
+    const sonEl = document.getElementById('rtbl-wrap');
+
+    // Bounding rect hesapla
+    const pageTop    = document.getElementById('dash').getBoundingClientRect().top + window.scrollY;
+    const basTop     = basEl.getBoundingClientRect().top  + window.scrollY - pageTop - 20;
+    const sonBottom  = sonEl.getBoundingClientRect().bottom + window.scrollY - pageTop + 20;
+
+    // page div'ini hedef al — topbar hariç, yan boşluksuz
+    const pageEl = document.querySelector('#dash .page') || document.getElementById('dash');
+    const pageRect = pageEl.getBoundingClientRect();
+    const pageOffsetTop = pageRect.top + window.scrollY;
+    const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
+    const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
+
+    // Logo: localStorage'dan geldiyse CORS yok, CDN'den geldiyse gizle
+    const logoEl = document.getElementById('d-logo');
+    const logoImg = logoEl ? logoEl.querySelector('img') : null;
+    const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
+    if(logoFromCDN) logoEl.style.visibility='hidden';
+
+    const canvas = await html2canvas(pageEl, {
+      scale: 1.5,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#F5F0E8',
+      logging: false,
+      x: 0,
+      y: captureY,
+      width: pageEl.offsetWidth,
+      height: captureH,
+      windowWidth: pageEl.offsetWidth
+    });
+
+    // Logo'yu geri göster
+    if(logoFromCDN && logoEl) logoEl.style.visibility='';
+
+    // Siyah kenarları kırp
+    const trimmed = trimCanvas(canvas);
+
+    trimmed.toBlob(async blob => {
+      // Görseli indir
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.href     = url;
+      a.download = D.ticker+'_'+p0+'_bilanco.png';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      // Metni panoya kopyala
+      try { await navigator.clipboard.writeText(metin); } catch(e){}
+
+      // X tweet sayfasını yeni sekmede aç — metin URL encode ile
+      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
+
+      btn.textContent = '✓ Görsel indirildi!';
+      btn.style.color = '#4caf7d';
+      setTimeout(() => {
+        btn.textContent = '𝕏 Paylaş';
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 3000);
+    }, 'image/png');
+
+  } catch(e) {
+    console.error(e);
+    btn.textContent = '𝕏 Paylaş';
+    btn.style.color = '';
+    btn.disabled = false;
+  }
+}
+</script>'''
+
     return f"""<!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -191,245 +431,7 @@ var activePeriod = '';
 </script>
 {dash_html}
 {modals}
-<script>
-function trimCanvas(canvas){{
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-  const data = ctx.getImageData(0, 0, w, h).data;
-  const bg = [245, 240, 232]; // #F5F0E8
-  const thresh = 15;
-
-  function isBg(r,g,b){{ return Math.abs(r-bg[0])<thresh && Math.abs(g-bg[1])<thresh && Math.abs(b-bg[2])<thresh; }}
-
-  let top=h, bottom=0, left=w, right=0;
-  for(let y=0; y<h; y++){{
-    for(let x=0; x<w; x++){{
-      const i=(y*w+x)*4;
-      if(!isBg(data[i],data[i+1],data[i+2])){{
-        if(y<top) top=y;
-        if(y>bottom) bottom=y;
-        if(x<left) left=x;
-        if(x>right) right=x;
-      }}
-    }}
-  }}
-  const pad = 20;
-  top    = Math.max(0, top-pad);
-  bottom = Math.min(h, bottom+pad);
-  left   = Math.max(0, left-pad);
-  right  = Math.min(w, right+pad);
-
-  const trimmed = document.createElement('canvas');
-  trimmed.width  = right - left;
-  trimmed.height = bottom - top;
-  trimmed.getContext('2d').drawImage(canvas, left, top, trimmed.width, trimmed.height, 0, 0, trimmed.width, trimmed.height);
-  return trimmed;
-}}
-
-// ── X PAYLAŞIM ──
-async function xPaylas(){{
-  const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
-  btn.textContent = '⟳ Ekran alınıyor...';
-  btn.disabled = true;
-
-  try {{
-    const p0   = D.periods[0];
-    const r0   = D.rows[p0] || {{}};
-    const ol   = r0.ol  ?? D.olumlu  ?? 0;
-    const no   = r0.no  ?? D.notr    ?? 0;
-    const ols  = r0.ols ?? D.olumsuz ?? 0;
-    const yo   = r0.yo  ?? D.puan    ?? 0;
-    const sektor = (D.sector || '').replace(/[^a-zA-Z0-9À-ɏ]/g,'');
-    const siteLink = 'https://bilancoanaliz34.com.tr/hisse/' + D.ticker.toLowerCase() + '.html';
-
-    const metin = '\uD83C\uDF1F #'+D.ticker+' '+p0+' D\u00f6nemi Bilan\u00e7o \u00d6zeti\n\n'
-      +'\uD83D\uDFE2 Olumlu : '+ol+'\n'
-      +'\uD83D\uDFE1 N\u00f6tr : '+no+'\n'
-      +'\uD83D\uDD34 Olumsuz : '+ols+'\n\n'
-      +'\uD83C\uDFAF Yat\u0131r\u0131m Puan\u0131 : %'+yo+'\n\n'
-      +'Link : '+siteLink+'\n\n'
-      +'#rasyoanaliz #'+sektor+'\n\n'
-      +'#olumlu'+ol+' #n\u00f6tr'+no+' #olumsuz'+ols+'\n\n'
-      +'#borsa #bist #bist100 #endeks #halkaarz #bofa\n\n'
-      +'#bilanco #viop #xu100 #bilancoanaliz34';
-
-    btn.textContent = '⟳ Görsel oluşturuluyor...';
-    // Hisse başlığından grafiklerin sonuna kadar yakala
-    const basEl = document.getElementById('paylasim-bas');
-    const sonEl = document.getElementById('rtbl-wrap');
-
-    // Bounding rect hesapla
-    const pageTop    = document.getElementById('dash').getBoundingClientRect().top + window.scrollY;
-    const basTop     = basEl.getBoundingClientRect().top  + window.scrollY - pageTop - 20;
-    const sonBottom  = sonEl.getBoundingClientRect().bottom + window.scrollY - pageTop + 20;
-
-    // page div'ini hedef al — topbar hariç, yan boşluksuz
-    const pageEl = document.querySelector('#dash .page') || document.getElementById('dash');
-    const pageRect = pageEl.getBoundingClientRect();
-    const pageOffsetTop = pageRect.top + window.scrollY;
-    const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
-    const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
-
-    // Logo: localStorage'dan geldiyse CORS yok, CDN'den geldiyse gizle
-    const logoEl = document.getElementById('d-logo');
-    const logoImg = logoEl ? logoEl.querySelector('img') : null;
-    const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
-    if(logoFromCDN) logoEl.style.visibility='hidden';
-
-    const canvas = await html2canvas(pageEl, {{
-      scale: 1.5,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#F5F0E8',
-      logging: false,
-      x: 0,
-      y: captureY,
-      width: pageEl.offsetWidth,
-      height: captureH,
-      windowWidth: pageEl.offsetWidth
-    }});
-
-    // Logo'yu geri göster
-    if(logoFromCDN && logoEl) logoEl.style.visibility='';
-
-    // Siyah kenarları kırp
-    const trimmed = trimCanvas(canvas);
-
-    trimmed.toBlob(async blob => {{
-      // Görseli indir
-      const url = URL.createObjectURL(blob);
-      const a   = document.createElement('a');
-      a.href     = url;
-      a.download = D.ticker+'_'+p0+'_bilanco.png';
-      a.click();
-      URL.revokeObjectURL(url);
-
-      // Metni panoya kopyala
-      try {{ await navigator.clipboard.writeText(metin); }} catch(e){{}}
-
-      // X tweet sayfasını yeni sekmede aç — metin URL encode ile
-      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
-
-      btn.textContent = '✓ Görsel indirildi!';
-      btn.style.color = '#4caf7d';
-      setTimeout(() => {{
-        btn.textContent = '𝕏 Paylaş';
-        btn.style.color = '';
-        btn.disabled = false;
-      }}, 3000);
-    }}, 'image/png');
-
-  }} catch(e) {{
-    console.error(e);
-    btn.textContent = '𝕏 Paylaş';
-    btn.style.color = '';
-    btn.disabled = false;
-  }}
-}}
-
-
-// Blog dropdown menü
-
-async function xPaylas(){{
-  const btn = document.getElementById('btn-paylas') || document.getElementById('btn-paylas-home');
-  btn.textContent = '⟳ Ekran alınıyor...';
-  btn.disabled = true;
-
-  try {{
-    const p0   = D.periods[0];
-    const r0   = D.rows[p0] || {{}};
-    const ol   = r0.ol  ?? D.olumlu  ?? 0;
-    const no   = r0.no  ?? D.notr    ?? 0;
-    const ols  = r0.ols ?? D.olumsuz ?? 0;
-    const yo   = r0.yo  ?? D.puan    ?? 0;
-    const sektor = (D.sector || '').replace(/[^a-zA-Z0-9À-ɏ]/g,'');
-    const siteLink = 'https://bilancoanaliz34.com.tr/hisse/' + D.ticker.toLowerCase() + '.html';
-
-    const metin = '\uD83C\uDF1F #'+D.ticker+' '+p0+' D\u00f6nemi Bilan\u00e7o \u00d6zeti\n\n'
-      +'\uD83D\uDFE2 Olumlu : '+ol+'\n'
-      +'\uD83D\uDFE1 N\u00f6tr : '+no+'\n'
-      +'\uD83D\uDD34 Olumsuz : '+ols+'\n\n'
-      +'\uD83C\uDFAF Yat\u0131r\u0131m Puan\u0131 : %'+yo+'\n\n'
-      +'Link : '+siteLink+'\n\n'
-      +'#rasyoanaliz #'+sektor+'\n\n'
-      +'#olumlu'+ol+' #n\u00f6tr'+no+' #olumsuz'+ols+'\n\n'
-      +'#borsa #bist #bist100 #endeks #halkaarz #bofa\n\n'
-      +'#bilanco #viop #xu100 #bilancoanaliz34';
-
-    btn.textContent = '⟳ Görsel oluşturuluyor...';
-    // Hisse başlığından grafiklerin sonuna kadar yakala
-    const basEl = document.getElementById('paylasim-bas');
-    const sonEl = document.getElementById('rtbl-wrap');
-
-    // Bounding rect hesapla
-    const pageTop    = document.getElementById('dash').getBoundingClientRect().top + window.scrollY;
-    const basTop     = basEl.getBoundingClientRect().top  + window.scrollY - pageTop - 20;
-    const sonBottom  = sonEl.getBoundingClientRect().bottom + window.scrollY - pageTop + 20;
-
-    // page div'ini hedef al — topbar hariç, yan boşluksuz
-    const pageEl = document.querySelector('#dash .page') || document.getElementById('dash');
-    const pageRect = pageEl.getBoundingClientRect();
-    const pageOffsetTop = pageRect.top + window.scrollY;
-    const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
-    const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
-
-    // Logo: localStorage'dan geldiyse CORS yok, CDN'den geldiyse gizle
-    const logoEl = document.getElementById('d-logo');
-    const logoImg = logoEl ? logoEl.querySelector('img') : null;
-    const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
-    if(logoFromCDN) logoEl.style.visibility='hidden';
-
-    const canvas = await html2canvas(pageEl, {{
-      scale: 1.5,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#F5F0E8',
-      logging: false,
-      x: 0,
-      y: captureY,
-      width: pageEl.offsetWidth,
-      height: captureH,
-      windowWidth: pageEl.offsetWidth
-    }});
-
-    // Logo'yu geri göster
-    if(logoFromCDN && logoEl) logoEl.style.visibility='';
-
-    // Siyah kenarları kırp
-    const trimmed = trimCanvas(canvas);
-
-    trimmed.toBlob(async blob => {{
-      // Görseli indir
-      const url = URL.createObjectURL(blob);
-      const a   = document.createElement('a');
-      a.href     = url;
-      a.download = D.ticker+'_'+p0+'_bilanco.png';
-      a.click();
-      URL.revokeObjectURL(url);
-
-      // Metni panoya kopyala
-      try {{ await navigator.clipboard.writeText(metin); }} catch(e){{}}
-
-      // X tweet sayfasını yeni sekmede aç — metin URL encode ile
-      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
-
-      btn.textContent = '✓ Görsel indirildi!';
-      btn.style.color = '#4caf7d';
-      setTimeout(() => {{
-        btn.textContent = '𝕏 Paylaş';
-        btn.style.color = '';
-        btn.disabled = false;
-      }}, 3000);
-    }}, 'image/png');
-
-  }} catch(e) {{
-    console.error(e);
-    btn.textContent = '𝕏 Paylaş';
-    btn.style.color = '';
-    btn.disabled = false;
-  }}
-}}
-</script>
+{PAYLAS_BLOCK}
 <script>
 {core_js}
 window.addEventListener('load', function() {{
