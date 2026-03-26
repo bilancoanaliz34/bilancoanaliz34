@@ -98,6 +98,10 @@ try:
         yo_raw = num(row[30])
         yo_val = None if yo_raw is None else (round(yo_raw) if yo_raw > 1 else round(yo_raw*100))
 
+        # DEBUG: ilk satır için sütun değerlerini göster
+        if len(VERI_NEW) == 0:
+            print(f"DEBUG {ticker}/{donem}: ol={repr(row[27] if len(row)>27 else 'YOK')}, no={repr(row[28] if len(row)>28 else 'YOK')}, ols={repr(row[29] if len(row)>29 else 'YOK')}, yo={repr(row[30] if len(row)>30 else 'YOK')}, toplam_sutun={len(row)}")
+
         row_data = {
             'fd':num(row[15]),'pd':num(row[10]),'fiyat':num(row[8]),'adet':num(row[9]),
             'donenV':num(row[11]),'duranV':num(row[12]),'kvYuk':num(row[13]),'uvYuk':num(row[14]),
