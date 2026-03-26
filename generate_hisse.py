@@ -124,8 +124,15 @@ try:
     for t in VERI_NEW:
         VERI_NEW[t]['periods'].sort(key=sort_key, reverse=True)
         p0 = VERI_NEW[t]['periods'][0] if VERI_NEW[t]['periods'] else None
-        if p0 and VERI_NEW[t]['rows'].get(p0,{}).get('yo') is not None:
-            VERI_NEW[t]['puan'] = VERI_NEW[t]['rows'][p0]['yo']
+        if p0:
+            r0 = VERI_NEW[t]['rows'].get(p0, {})
+            if r0.get('yo') is not None:
+                VERI_NEW[t]['puan'] = r0['yo']
+            # Son dönemden olumlu/notr/olumsuz doldur
+            if r0.get('ol') is not None:
+                VERI_NEW[t]['olumlu']  = r0['ol']
+                VERI_NEW[t]['notr']    = r0['no']
+                VERI_NEW[t]['olumsuz'] = r0['ols']
 
     if len(VERI_NEW) > 100:
         VERI = VERI_NEW
@@ -193,9 +200,15 @@ window.addEventListener('load', function() {{
     var a2=a.split('/'),b2=b.split('/');
     return (parseInt(b2[0])*100+parseInt(b2[1]))-(parseInt(a2[0])*100+parseInt(a2[1]));
   }});
+  var p0 = sp[0];
+  var r0 = info.rows[p0] || {{}};
+  var olumlu  = (info.olumlu  != null) ? info.olumlu  : (r0.ol  != null ? r0.ol  : 0);
+  var notr    = (info.notr    != null) ? info.notr    : (r0.no  != null ? r0.no  : 0);
+  var olumsuz = (info.olumsuz != null) ? info.olumsuz : (r0.ols != null ? r0.ols : 0);
+  var puan    = (info.puan    != null) ? info.puan    : (r0.yo  != null ? r0.yo  : 0);
   D = {{ticker:ticker,periods:sp,rows:info.rows,sector:info.sector,
-        company:info.company,olumlu:info.olumlu,notr:info.notr,
-        olumsuz:info.olumsuz,puan:info.puan}};
+        company:info.company,olumlu:olumlu,notr:notr,
+        olumsuz:olumsuz,puan:puan}};
   buildDash();
   // Paylaş butonunu göster
   ['btn-paylas','btn-paylas-home'].forEach(function(id){{
