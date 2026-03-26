@@ -2606,7 +2606,1487 @@ async function xPaylas(){
 }
 </script>
 <script>
-{core_js}
+
+// GLOBALS
+// ════════════════════════════════════════════
+
+
+
+  // tüm hisse verileri
+
+// ════════════════════════════════════════════
+// VERİ YÜKLE — gömülü base64/gzip JSON
+// ════════════════════════════════════════════
+
+
+async function decompress(id){
+  const b64=document.getElementById(id).textContent.trim();
+  const bin=atob(b64);
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  const ds=new DecompressionStream('gzip');
+  const writer=ds.writable.getWriter();
+  writer.write(bytes);writer.close();
+  const out=await new Response(ds.readable).arrayBuffer();
+  return new TextDecoder().decode(out);
+}
+
+// ── OneDrive'dan veri çekme ──
+function oneDriveToDownload(shareUrl){
+  // OneDrive share linkini direkt download URL'e çevir
+  // Yöntem: ?download=1 ekle veya embed URL kullan
+  try {
+    // 1drv.ms veya onedrive.live.com linkleri
+    if(shareUrl.includes('1drv.ms') || shareUrl.includes('onedrive.live.com') || shareUrl.includes('sharepoint.com')){
+      // base64 encode ile API URL oluştur
+      const encoded = btoa(shareUrl).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+      return `https://api.onedrive.com/v1.0/shares/u!${encoded}/root/content`;
+    }
+    return null;
+  } catch(e){ return null; }
+}
+
+function handleLogoUpload(input){
+  const file = input.files[0];
+  if(!file) return;
+  const ticker = document.getElementById('logo-ticker-input').value.trim().toUpperCase();
+  const status = document.getElementById('logo-status');
+  const txt    = document.getElementById('logo-file-txt');
+
+  if(!ticker){ status.className='onedrive-status err'; status.textContent='Hisse kodu girin!'; return; }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const base64 = e.target.result; // data:image/png;base64,...
+    // LOGOS objesine ekle
+    if(!window.LOGOS) window.LOGOS = {};
+    LOGOS[ticker] = base64;
+    // localStorage'a kaydet
+    try{
+      const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+      saved[ticker] = base64;
+      localStorage.setItem('ba34_logos', JSON.stringify(saved));
+    }catch(e){}
+    status.className='onedrive-status ok';
+    status.textContent='✓ '+ticker+' logosu eklendi';
+    txt.textContent='📷 Logo seç';
+    document.getElementById('logo-ticker-input').value='';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function handleExcelUpload(input){
+  const file = input.files[0];
+  if(!file) return;
+  const status = document.getElementById('onedrive-status');
+  const label  = document.getElementById('admin-file-label');
+  const txt    = document.getElementById('admin-file-txt');
+
+  function setStatus(cls, msg){ status.className='onedrive-status '+cls; status.textContent=msg; }
+
+  txt.textContent = '⟳ Yükleniyor...';
+  setStatus('loading', 'Excel okunuyor...');
+
+  try {
+    const ab = await file.arrayBuffer();
+    const wb = XLSX.read(ab, {type:'array'});
+    setStatus('loading', 'Veriler işleniyor...');
+    const parsed = parseWorkbook(wb);
+    if(!parsed || Object.keys(parsed).length === 0) throw new Error('Veri okunamadı');
+
+    VERI = parsed;
+    buildHomeLists();
+
+    label.classList.add('loaded');
+    txt.textContent = '✓ ' + file.name;
+    setStatus('ok', `✓ ${Object.keys(parsed).length} hisse yüklendi — ${new Date().toLocaleTimeString('tr-TR')}`);
+
+    // Arama kutusunu temizle
+    const si = document.getElementById('search-input');
+    if(si) si.value = '';
+
+  } catch(e) {
+    setStatus('err', 'Hata: ' + e.message);
+    txt.textContent = '📂 Excel dosyası seç';
+  }
+}
+
+
+function parseCSV(csvText){
+  const lines = csvText.split('\n').filter(l=>l.trim());
+  if(lines.length < 3) return null;
+
+  function parseLine(line){
+    const result=[];let cur='',inQ=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"'){inQ=!inQ;}
+      else if(ch===','&&!inQ){result.push(cur.trim());cur='';}
+      else{cur+=ch;}
+    }
+    result.push(cur.trim());
+    return result.map(v=>v.replace(/^"|"$/g,'').trim());
+  }
+
+  function num(v){
+    if(v===null||v===undefined||v==='')return null;
+    let s=String(v).replace(/\s/g,'').trim();
+    // Binlik ayraç temizle: 1.234.567 → 1234567 veya 1,234,567 → 1234567
+    // Ondalık tespit: son . veya , den sonra 1-2 hane varsa ondalık
+    const dotParts=s.split('.');
+    const comParts=s.split(',');
+    if(dotParts.length>2){
+      // Birden fazla nokta var → binlik ayraç
+      s=dotParts.join('');
+    } else if(comParts.length>2){
+      // Birden fazla virgül var → binlik ayraç
+      s=comParts.join('');
+    } else if(dotParts.length===2 && dotParts[1].length>2){
+      // Noktadan sonra 3+ hane → binlik ayraç (1.234 → 1234)
+      s=dotParts.join('');
+    } else if(comParts.length===2 && comParts[1].length>2){
+      // Virgülden sonra 3+ hane → binlik ayraç
+      s=comParts.join('');
+    } else {
+      // Ondalık virgülü noktaya çevir
+      s=s.replace(',','.');
+    }
+    const n=parseFloat(s);
+    return isNaN(n)?null:n;
+  }
+  function numi(v){const n=num(v);return n===null?null:Math.round(n);}
+  function sortKey(p){const[y,m]=String(p).split('/');return parseInt(y)*100+parseInt(m||0);}
+
+  // Sütun pozisyonları (Excel col index, 0-based)
+  const CI = {
+    hisse:1, donem:3, sektor:4, firma:5, bilTarih:6,
+    fiyat:8, adet:9, pd:10, donenV:11, duranV:12,
+    kvYuk:13, uvYuk:14, fd:15, oz:16, brutKar:17,
+    faalKar:21, favok:22, netBorc:23, netKar:24, satislar:25,
+    roe:26, ol:27, no:28, ols:29, yo:30,
+    pddd:31, fk:32, fdFavok:33, pdNfk:34,
+    fdNs:35, nfkPd:36, nbFavok:37, efk:38, hbk:39
+  };
+
+  const g = (row, key) => row[CI[key]] !== undefined ? row[CI[key]] : null;
+
+  const result = {};
+  for(let i=2; i<lines.length; i++){
+    if(!lines[i].trim()) continue;
+    const row = parseLine(lines[i]);
+    const ticker = String(g(row,'hisse')||'').toUpperCase().trim();
+    const donem  = String(g(row,'donem')||'').trim();
+    if(!ticker||!donem||!/^\d{4}\/\d+$/.test(donem)) continue;
+
+    if(!result[ticker]){
+      result[ticker]={
+        ticker,
+        company:String(g(row,'firma')||ticker),
+        sector:String(g(row,'sektor')||''),
+        puan:null, bilancoTarih:null, periods:[], rows:{}
+      };
+    }
+    const r=result[ticker];
+    if(!r.periods.includes(donem)) r.periods.push(donem);
+
+    // bilancoTarih — DD.MM.YYYY → YYYY-MM-DD dönüştür ve en güncel olanı sakla
+    const btRaw = g(row,'bilTarih');
+    if(btRaw){
+      let btVal = String(btRaw).trim();
+      // DD.MM.YYYY formatını YYYY-MM-DD'ye çevir
+      const dm = btVal.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+      if(dm) btVal = dm[3]+'-'+dm[2].padStart(2,'0')+'-'+dm[1].padStart(2,'0');
+      if(!r.bilancoTarih || btVal > r.bilancoTarih) r.bilancoTarih = btVal;
+    }
+
+    const yoRaw=num(g(row,'yo'));
+    const yoVal=yoRaw===null?null:yoRaw>1?Math.round(yoRaw):Math.round(yoRaw*100);
+
+    r.rows[donem]={
+      fd:num(g(row,'fd')), pd:num(g(row,'pd')),
+      fiyat:num(g(row,'fiyat')), adet:num(g(row,'adet')),
+      donenV:num(g(row,'donenV')), duranV:num(g(row,'duranV')),
+      kvYuk:num(g(row,'kvYuk')), uvYuk:num(g(row,'uvYuk')),
+      tv:null, oz:num(g(row,'oz')),
+      brutKar:num(g(row,'brutKar')), faalKar:num(g(row,'faalKar')),
+      favok:num(g(row,'favok')), netBorc:num(g(row,'netBorc')),
+      netKar:num(g(row,'netKar')), satislar:num(g(row,'satislar')),
+      roe:num(g(row,'roe')),
+      ol:numi(g(row,'ol')), no:numi(g(row,'no')), ols:numi(g(row,'ols')),
+      yo:yoVal,
+      pddd:num(g(row,'pddd')), fk:num(g(row,'fk')),
+      fdFavok:num(g(row,'fdFavok')), pdNfk:num(g(row,'pdNfk')),
+      fdNs:num(g(row,'fdNs')), nfkPd:num(g(row,'nfkPd')),
+      nbFavok:num(g(row,'nbFavok')), efk:num(g(row,'efk')), hbk:num(g(row,'hbk'))
+    };
+    const rv=r.rows[donem];
+    if(rv.donenV!==null&&rv.duranV!==null) rv.tv=rv.donenV+rv.duranV;
+  }
+
+  for(const t in result){
+    result[t].periods.sort((a,b)=>sortKey(b)-sortKey(a));
+    const p0=result[t].periods[0];
+    if(p0&&result[t].rows[p0]?.yo!==null&&result[t].rows[p0]?.yo!==undefined)
+      result[t].puan=result[t].rows[p0].yo;
+  }
+  return result;
+}
+
+
+function parseWorkbook(wb){
+  const wsName = wb.SheetNames.find(n=>n.toLowerCase()==='veri') || wb.SheetNames[0];
+  const ws = wb.Sheets[wsName];
+  if(!ws) return null;
+
+  const rows = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:null});
+  if(rows.length < 3) return null;
+
+  // Başlık satırı (index 1 = 2. satır)
+  const hdr = rows[1] || [];
+  const ci = {};
+  hdr.forEach((v,i)=>{ if(v) ci[String(v).trim()] = i; });
+
+  const C = {
+    hisse:'Hisse', donem:'Dönem', sektor:'Sektör', firma:'FİRMA İSMİ',
+    bilTarih:'Bilanço Tarihi',
+    fiyat:'Hisse Fiyatı', adet:'Hisse Sayısı', pd:'Piyasa Değeri', fd:'Firma Değeri',
+    donenV:'Dönen Varlıklar', duranV:'Duran Varlıklar',
+    kvYuk:'Kısa Vadeli Yükümlülükler', uvYuk:'Uzun Vadeli Yükümlülükler',
+    oz:'Özkaynak', brutKar:'Brüt Kar', faalKar:'Faliyet Karı Zararı',
+    favok:'FAVÖK', netBorc:'NET BORÇ', netKar:'NET KAR YILLIK', satislar:'NET SATIŞLAR',
+    roe:'Özkaynak Karlılığı',
+    ol:'OLUMLU', no:'NÖTR', ols:'OLUMSUZ', yo:'YO',
+    pddd:'PD/DD', fk:'F/K', fdFavok:'FD/FAVÖK', pdNfk:'PD/NFK',
+    fdNs:'FD/NS', nfkPd:'NFK/PD', nbFavok:'NETBORÇ/FAVÖK', efk:'EFK', hbk:'HBK'
+  };
+
+  const getIdx = key => {
+    if(C[key] && ci[C[key]] !== undefined) return ci[C[key]];
+    return -1;
+  };
+
+  function sortKey(p){ const[y,m]=String(p).split('/'); return parseInt(y)*100+parseInt(m||0); }
+  function xlDate(v){ if(!v||isNaN(v))return null; try{const d=new Date(Date.UTC(1899,11,30)+parseInt(v)*86400000);return d.toISOString().slice(0,10);}catch{return null;} }
+  function num(v){ if(v===null||v===undefined||v==='')return null; const n=parseFloat(v); return isNaN(n)?null:n; }
+  function numi(v){ const n=num(v); return n===null?null:Math.round(n); }
+
+  const result = {};
+  for(let i=2; i<rows.length; i++){
+    const row = rows[i];
+    if(!row) continue;
+    const ticker = String(row[getIdx('hisse')]||'').trim().toUpperCase();
+    const donem  = String(row[getIdx('donem')]||'').trim();
+    if(!ticker || !donem || !/^\d{4}\/\d+$/.test(donem)) continue;
+
+    if(!result[ticker]){
+      result[ticker] = {
+        ticker,
+        company: String(row[getIdx('firma')]||ticker),
+        sector:  String(row[getIdx('sektor')]||''),
+        puan:    numi(row[ci['YO'] !== undefined ? ci['YO'] : -1]),
+        bilancoTarih: xlDate(row[getIdx('bilTarih')]),
+        periods: [], rows: {}
+      };
+    }
+
+    const r = result[ticker];
+    if(!r.periods.includes(donem)) r.periods.push(donem);
+
+    // Son dönemin bilanço tarihi
+    const bt = xlDate(row[getIdx('bilTarih')]);
+    if(bt && (!r.bilancoTarih || bt > r.bilancoTarih)) r.bilancoTarih = bt;
+
+    const yoVal = numi(row[getIdx('yo')]);
+    if(yoVal !== null) {
+      if(!r.puan || sortKey(donem) >= sortKey(r.periods[0]||'0/0'))
+        r.puan = yoVal;
+    }
+
+    r.rows[donem] = {
+      fd:num(row[getIdx('fd')]),      pd:num(row[getIdx('pd')]),
+      fiyat:num(row[getIdx('fiyat')]),adet:num(row[getIdx('adet')]),
+      donenV:num(row[getIdx('donenV')]),duranV:num(row[getIdx('duranV')]),
+      kvYuk:num(row[getIdx('kvYuk')]),uvYuk:num(row[getIdx('uvYuk')]),
+      tv:null, oz:num(row[getIdx('oz')]),
+      brutKar:num(row[getIdx('brutKar')]),faalKar:num(row[getIdx('faalKar')]),
+      favok:num(row[getIdx('favok')]),netBorc:num(row[getIdx('netBorc')]),
+      netKar:num(row[getIdx('netKar')]),satislar:num(row[getIdx('satislar')]),
+      roe:num(row[getIdx('roe')]),
+      ol:numi(row[getIdx('ol')]),no:numi(row[getIdx('no')]),ols:numi(row[getIdx('ols')]),
+      yo:(function(){ 
+        const v = num(row[getIdx('yo')]);
+        if(v===null) return null;
+        return v > 1 ? Math.round(v) : Math.round(v*100);
+      })(),
+      pddd:num(row[getIdx('pddd')]),fk:num(row[getIdx('fk')]),
+      fdFavok:num(row[getIdx('fdFavok')]),pdNfk:num(row[getIdx('pdNfk')]),
+      fdNs:num(row[getIdx('fdNs')]),nfkPd:num(row[getIdx('nfkPd')]),
+      nbFavok:num(row[getIdx('nbFavok')]),efk:num(row[getIdx('efk')]),hbk:num(row[getIdx('hbk')])
+    };
+    // tv hesapla
+    const rv = r.rows[donem];
+    if(rv.donenV!==null&&rv.duranV!==null) rv.tv=rv.donenV+rv.duranV;
+  }
+
+  // Dönemleri sırala, yo'yu düzelt
+  for(const t in result){
+    result[t].periods.sort((a,b)=>sortKey(b)-sortKey(a));
+    // Son dönem yo'sunu puan olarak kullan
+    const p0 = result[t].periods[0];
+    if(p0 && result[t].rows[p0]?.yo !== null && result[t].rows[p0]?.yo !== undefined)
+      result[t].puan = result[t].rows[p0].yo;
+  }
+
+  return result;
+}
+
+async function loadEmbeddedData(){
+  try{
+    // Önce Google Sheets'ten veri çekmeyi dene
+    try {
+      // Google Sheets JSON API (CORS yok, herkese açık sheet için çalışır)
+      const GID = '0'; // veri sayfasının gid'si
+      const csvUrl = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri';
+      const resp = await fetch(csvUrl);
+      if(resp.ok){
+        const csvText = await resp.text();
+        const parsed = parseCSV(csvText);
+        if(parsed && Object.keys(parsed).length > 0){
+          VERI = parsed;
+          console.log('✓ Google Sheets verisi yüklendi:', Object.keys(parsed).length, 'hisse');
+        } else {
+          throw new Error('CSV parse hatası');
+        }
+      } else {
+        throw new Error('Sheets fetch hatası: '+resp.status);
+      }
+    } catch(sheetsErr) {
+      console.warn('Google Sheets yüklenemedi, gömülü veri kullanılıyor:', sheetsErr.message);
+      VERI=JSON.parse(await decompress('VDATA'));
+    }
+
+    // Logo verisini arka planda yükle
+    decompress('LDATA').then(txt=>{
+      LOGOS=JSON.parse(txt);
+      // localStorage'daki ek logoları ekle
+      try{
+        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+        Object.assign(LOGOS, extra);
+      }catch(e){}
+    }).catch(()=>{
+      try{
+        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+        if(Object.keys(extra).length) LOGOS=extra;
+      }catch(e){}
+    });
+    initSearch();
+    // URL'de ?hisse=TICKER varsa direkt aç
+    const urlParams = new URLSearchParams(window.location.search);
+    const hisseParam = urlParams.get('hisse');
+    if(hisseParam && VERI[hisseParam.toUpperCase()]){
+      selectTicker(hisseParam.toUpperCase());
+    }
+  }catch(e){showErr('Veri yüklenemedi: '+e.message)}
+}
+
+// ════════════════════════════════════════════
+// SEARCH & HİSSE SEÇİMİ
+// ════════════════════════════════════════════
+const POPULAR=['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
+
+function initSearch(){
+  // Tıklanma sayacı — localStorage ile kalıcı
+  function getClicks(){ try{return JSON.parse(localStorage.getItem('ba34_clicks')||'{}')}catch{return{}} }
+  function addClick(t){ const m=getClicks(); m[t]=(m[t]||0)+1; try{localStorage.setItem('ba34_clicks',JSON.stringify(m))}catch{} }
+
+  // Popüler butonlar — tıklanma sayısına göre sırala, ilk 10
+  const clicks=getClicks();
+  const allTickers=Object.keys(VERI);
+  const sorted=allTickers.sort((a,b)=>(clicks[b]||0)-(clicks[a]||0));
+  const popularList=sorted.slice(0,10).filter(t=>VERI[t]);
+  // Eğer tıklanma yoksa fallback listesi
+  const FALLBACK=['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
+  const showPopular = Object.keys(clicks).length>0 ? popularList : FALLBACK.filter(t=>VERI[t]);
+
+  const pb=document.getElementById('popular-btns');
+  showPopular.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='pop-btn';b.textContent=t;
+    b.onclick=()=>{ addClick(t); window.location.href='/hisse/'+t.toLowerCase()+'.html'; };
+    pb.appendChild(b);
+  });
+
+  // En son bilançolar — bilanço tarihine göre sırala
+  const latestSorted=[...allTickers].sort((a,b)=>{
+    const ta=VERI[a]?.bilancoTarih||'0000-00-00';
+    const tb=VERI[b]?.bilancoTarih||'0000-00-00';
+    return tb.localeCompare(ta);
+  });
+  const latestList=latestSorted.slice(0,10);
+  const lb=document.getElementById('latest-btns');
+  latestList.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='pop-btn';
+    b.textContent=t;
+    b.onclick=()=>{ addClick(t); window.location.href='/hisse/'+t.toLowerCase()+'.html'; };
+    lb.appendChild(b);
+  });
+
+  // Arama input
+  const inp=document.getElementById('search-input');
+  const res=document.getElementById('search-results');
+
+  inp.addEventListener('input',()=>{
+    const q=inp.value.trim().toUpperCase();
+    if(q.length<1){res.classList.remove('open');return}
+    const matches=Object.entries(VERI)
+      .filter(([t,info])=>t.includes(q)||info.company.toUpperCase().includes(q))
+      .slice(0,12);
+    if(!matches.length){res.classList.remove('open');return}
+    res.innerHTML=matches.map(([t,info])=>
+      `<div class="sr-item" onclick="window.location.href='/hisse/'+('${t}').toLowerCase()+'.html'">
+        <div><span class="sr-tick">${t}</span> <span class="sr-name">${info.company}</span></div>
+        <span class="sr-sect">${(info.sector||'').split('-')[0].trim()}</span>
+      </div>`
+    ).join('');
+    res.classList.add('open');
+  });
+
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      const q=inp.value.trim().toUpperCase();
+      if(VERI[q])selectTicker(q);
+    }
+    if(e.key==='Escape')res.classList.remove('open');
+  });
+
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.search-box'))res.classList.remove('open');
+  });
+
+  buildHomeLists();
+}
+
+// ════════════════════════════════════════════
+// FİYAT KUTUSU — FD / lot sayısı
+// ════════════════════════════════════════════
+function calcHissePuani(){
+  const p0  = D.periods[0];
+  const [y0,m0] = p0.split('/');
+  const pYoy = (parseInt(y0)-1)+'/'+m0;
+  const pPrev = D.periods[1] || null; // bir önceki dönem
+
+  const f0   = calcFiyat(p0);
+  const fYoy = calcFiyat(pYoy);
+  const fPrev= pPrev ? calcFiyat(pPrev) : null;
+
+  // 1 yıllık artış puanı
+  let yillik = null;
+  if(f0!==null && fYoy!==null && fYoy!==0){
+    const artis = ((f0-fYoy)/Math.abs(fYoy))*100;
+    let puan;
+    if     (artis < 40)  puan = 4;
+    else if(artis < 60)  puan = 3;
+    else if(artis < 70)  puan = 2;
+    else if(artis < 80)  puan = 1;
+    else                 puan = 0;
+    yillik = {artis, puan};
+  }
+
+  // Son dönem artış puanı
+  let sonDonem = null;
+  if(f0!==null && fPrev!==null && fPrev!==0){
+    const artis = ((f0-fPrev)/Math.abs(fPrev))*100;
+    let puan;
+    if     (artis < 40)  puan = 4;
+    else if(artis < 60)  puan = 3;
+    else if(artis < 70)  puan = 2;
+    else if(artis < 80)  puan = 1;
+    else if(artis < 90)  puan = 0.5;
+    else                 puan = 0;
+    sonDonem = {artis, puan, donem: p0, donemPrev: pPrev};
+  }
+
+  return {yillik, sonDonem};
+}
+
+function buildHissePuani(){
+  const wrap = document.getElementById('hisse-puan-wrap');
+  if(!wrap) return;
+  const hp = calcHissePuani();
+  if(!hp){ wrap.innerHTML=''; return; }
+
+  function puanBox(lbl, artis, puan, maxP){
+    if(artis===null||puan===null) return '';
+    const col = puan>=3?'var(--green)':puan>=1?'var(--gold)':'var(--red)';
+    const arrow = artis>=0?'▲':'▼';
+    return `<div class="hisse-puan-box">
+      <div class="hisse-puan-lbl">${lbl}</div>
+      <div class="hisse-puan-val" style="color:${col}">${puan} <span class="hisse-puan-sub">${arrow} %${Math.abs(artis).toFixed(1)} &nbsp;|&nbsp; ${puan}/${maxP}</span></div>
+    </div>`;
+  }
+
+  wrap.innerHTML = `<div style="display:flex;gap:1rem;flex-wrap:wrap">
+    ${hp.yillik   ? puanBox('1 Yıllık Artış Puanı',  hp.yillik.artis,   hp.yillik.puan,   4) : ''}
+    ${hp.sonDonem ? puanBox('Son Dönem Artış Puanı',  hp.sonDonem.artis, hp.sonDonem.puan, 4) : ''}
+  </div>`;
+
+  // Toplam puan hesabını göster
+  buildToplamPuan(hp);
+}
+
+function buildToplamPuan(hp){
+  const wrap = document.getElementById('toplam-puan-wrap');
+  if(!wrap) return;
+
+  // Dönem puanları (alt tablodan aynı mantık)
+  const ap = D.periods.slice(0, 8).reverse();
+  const MAKS = [1,2,4,7,11,16,22,29];
+
+  let donemToplam = 0;
+  const donemRows = ap.map((p,i) => {
+    const r = D.rows[p];
+    const maxP = MAKS[i] ?? 1;
+    // K
+    let k = 1;
+    if(i > 0){
+      const rP = D.rows[ap[i-1]];
+      const oc = r?.ols ?? null, op = rP?.ols ?? null;
+      if(oc!==null && op!==null) k = oc<=op?1:0.75;
+    } else {
+      const allIdx = D.periods.indexOf(p);
+      const pPrev2 = allIdx>=0&&allIdx+1<D.periods.length?D.periods[allIdx+1]:null;
+      const oc = r?.ols ?? null;
+      const op = pPrev2?(D.rows[pPrev2]?.ols??null):null;
+      if(oc!==null && op!==null) k = oc<=op?1:0.75;
+    }
+    const ol = r?.ol??null, no = r?.no??null;
+    let puan;
+    if(ol===null||no===null) puan = 0.5*maxP*k;
+    else puan = (ol+0.5*no)/16*k*maxP;
+    donemToplam += puan;
+    return {p, maxP, k, ol, no, puan};
+  });
+
+  const yillikP  = hp.yillik?.puan  ?? 0;
+  const sonDonemP= hp.sonDonem?.puan ?? 0;
+  const genelToplam = donemToplam + yillikP + sonDonemP;
+  const genelMaks   = MAKS.reduce((a,b)=>a+b,0) + 4 + 4; // 29+...+1 + 4 + 4 = 101
+
+  const pcol = genelToplam/genelMaks>=0.6?'var(--green)':genelToplam/genelMaks>=0.4?'var(--gold)':'var(--red)';
+
+  wrap.innerHTML = `
+    <div class="toplam-puan-kart">
+      <div class="tp-baslik">Toplam Puan Hesabı</div>
+      <table class="tp-tbl">
+        <thead>
+          <tr><th>Bileşen</th><th>Puan</th><th>Maksimum</th><th>Açıklama</th></tr>
+        </thead>
+        <tbody>
+          ${donemRows.map(d=>`
+          <tr>
+            <td>${d.p}</td>
+            <td class="tp-val">${d.puan.toFixed(2)}</td>
+            <td class="tp-maks">${d.maxP}</td>
+            <td class="tp-acik" style="font-size:.62rem;color:var(--muted)">
+              ${d.ol!==null
+                ? `(${d.ol}+0.5×${d.no})÷16×${d.k}×${d.maxP}`
+                : `0.5×${d.maxP}×${d.k} (veri yok)`}
+            </td>
+          </tr>`).join('')}
+          <tr class="tp-ara">
+            <td>↳ Dönem Toplam</td>
+            <td class="tp-val">${donemToplam.toFixed(2)}</td>
+            <td class="tp-maks">${MAKS.reduce((a,b)=>a+b,0)}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>1 Yıllık Hisse Artışı</td>
+            <td class="tp-val">${yillikP}</td>
+            <td class="tp-maks">4</td>
+            <td class="tp-acik" style="font-size:.62rem;color:var(--muted)">
+              ${hp.yillik ? `%${hp.yillik.artis.toFixed(1)} artış` : '—'}
+            </td>
+          </tr>
+          <tr>
+            <td>Son Dönem Hisse Artışı</td>
+            <td class="tp-val">${sonDonemP}</td>
+            <td class="tp-maks">4</td>
+            <td class="tp-acik" style="font-size:.62rem;color:var(--muted)">
+              ${hp.sonDonem ? `%${hp.sonDonem.artis.toFixed(1)} artış` : '—'}
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="tp-toplam-row">
+            <td>GENEL TOPLAM</td>
+            <td class="tp-toplam-val" style="color:${pcol}">${genelToplam.toFixed(2)}</td>
+            <td class="tp-maks">${genelMaks}</td>
+            <td class="tp-acik" style="color:${pcol};font-weight:600">
+              %${(genelToplam/genelMaks*100).toFixed(1)}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+}
+
+function calcFiyat(p){
+  const r=D.rows[p];
+  if(!r||!r.pd) return null;
+  // Son dönemin hisse sayısını kullan (tüm dönemler için sabit)
+  const adet = D.rows[D.periods[0]]?.adet || r.adet;
+  if(!adet||adet===0) return null;
+  return r.pd / adet;
+}
+
+function buildFiyatBoxes(){
+  const p0  = D.periods[0];          // Son dönem (ör. 2025/12)
+  const [y0,m0] = p0.split('/');
+  const pYoy  = (parseInt(y0)-1)+'/'+m0; // 1 yıl önce (2024/12)
+  // Son dönem değişimi: bir önceki çeyrek
+  const pPrev = D.periods[1]||null;   // 2025/9
+
+  const f0   = calcFiyat(p0);
+  const fYoy = calcFiyat(pYoy);
+  const fPrev= pPrev?calcFiyat(pPrev):null;
+
+  function pctBox(lbl, curr, prev, subLbl){
+    if(curr===null||prev===null||prev===0) return `
+      <div class="fiyat-box">
+        <div class="fiyat-box-lbl">${lbl}</div>
+        <div class="fiyat-box-val" style="color:var(--muted)">—</div>
+        <div class="fiyat-box-sub">${subLbl}</div>
+      </div>`;
+    const pct=((curr-prev)/Math.abs(prev))*100;
+    const cls=pct>=0?'pos':'neg';
+    const arrow=pct>=0?'▲':'▼';
+    return `
+      <div class="fiyat-box ${cls}">
+        <div class="fiyat-box-lbl">${lbl}</div>
+        <div class="fiyat-box-val ${cls}">${arrow} %${Math.abs(pct).toFixed(1)}</div>
+        <div class="fiyat-box-sub">${subLbl}</div>
+      </div>`;
+  }
+
+  document.getElementById('fiyat-boxes').innerHTML =
+    pctBox('1 Yıllık Artış',  f0, fYoy,  pYoy+' → '+p0) +
+    pctBox('Son Dönem Artış', f0, fPrev, (pPrev||'—')+' → '+p0);
+}
+
+// ════════════════════════════════════════════
+// ONO HESAPLAMA — 16 kriter
+// 10 rasyo YoY + 6 grafik YoY (CANTE: O=3,N=5,X=8 ✓)
+// ════════════════════════════════════════════
+function calcONO(p){
+  const r=D.rows[p];
+  if(!r) return {ol:0,no:0,ols:0,puan:0};
+
+  // YoY eşi: aynı çeyrek 1 yıl önce
+  const [y,mo]=p.split('/');
+  const pPrev=(parseInt(y)-1)+'/'+mo;
+  const rp=D.rows[pPrev]||null;
+
+  let ol=0,no=0,ols=0;
+
+  function chkYoy(curr,prev,dir){
+    if(curr===null||curr===undefined||
+       prev===null||prev===undefined||prev===0){no++;return;}
+    const pct=((curr-prev)/Math.abs(prev))*100;
+    if(dir==='loGood'){
+      if(pct>=10) ols++;
+      else if(pct<=-10) ol++;
+      else no++;
+    } else {
+      if(pct>=10) ol++;
+      else if(pct<=-10) ols++;
+      else no++;
+    }
+  }
+
+  const getRoe=row=>{
+    if(!row||row.roe===null||row.roe===undefined) return null;
+    return Math.abs(row.roe)<=2?row.roe*100:row.roe;
+  };
+
+  // ── 10 RASYO KRİTERİ (YoY) ──
+  chkYoy(r.pddd,       rp?.pddd,     'loGood'); // 1  PD/DD
+  chkYoy(r.fk,         rp?.fk,       'loGood'); // 2  F/K
+  chkYoy(r.fdFavok,    rp?.fdFavok,  'loGood'); // 3  FD/FAVÖK
+  chkYoy(r.pdNfk,      rp?.pdNfk,    'loGood'); // 4  PD/NFK
+  chkYoy(r.fdNs,       rp?.fdNs,     'loGood'); // 5  FD/NS
+  chkYoy(r.nfkPd,      rp?.nfkPd,    'hiGood'); // 6  NFK/PD
+  chkYoy(getRoe(r),    getRoe(rp),   'hiGood'); // 7  ÖZKAYNAK KAR.
+  chkYoy(r.nbFavok,    rp?.nbFavok,  'loGood'); // 8  NET BORÇ/FAVÖK
+  chkYoy(r.efk,        rp?.efk,      'hiGood'); // 9  EFK
+  chkYoy(r.hbk,        rp?.hbk,      'hiGood'); // 10 HBK
+
+  // ── 6 GRAFİK KRİTERİ (YoY — 4. çeyrek: latY/12 vs prevY/12) ──
+  // Grafik YoY: büyümek olumlu (hiGood)
+  const latY=parseInt(y);
+  const prevY=latY-1;
+  const rC12=D.rows[latY+'/12']  ||null;  // bu yıl 4.çeyrek
+  const rP12=D.rows[prevY+'/12'] ||null;  // geçen yıl 4.çeyrek
+
+  chkYoy(rC12?.fd,       rP12?.fd,       'hiGood'); // 11 Firma Değeri
+  chkYoy(rC12?.tv,       rP12?.tv,       'hiGood'); // 12 Toplam Varlıklar
+  chkYoy(rC12?.oz,       rP12?.oz,       'hiGood'); // 13 Özkaynaklar
+  chkYoy(rC12?.netKar,   rP12?.netKar,   'hiGood'); // 14 Net Kar
+  chkYoy(rC12?.satislar, rP12?.satislar, 'hiGood'); // 15 Net Satışlar
+  chkYoy(rC12?.favok,    rP12?.favok,    'hiGood'); // 16 FAVÖK
+
+  const toplam=ol+no+ols;
+  const puan=toplam>0?Math.round((ol/toplam)*100):0;
+  return {ol,no,ols,puan};
+}
+
+function buildHomeLists(){
+  const wrap = document.getElementById('home-lists');
+  if(!wrap) return;
+
+  // En yüksek 10 puan
+  // Son dönem yo değerine göre sırala
+  const withPuan = Object.entries(VERI)
+    .map(([t,info]) => {
+      const p0 = info.periods?.[0];
+      const yo = p0 ? (info.rows?.[p0]?.yo ?? null) : null;
+      return [t, info, yo ?? info.puan ?? 0];
+    })
+    .filter(([t,info,score]) => score > 0)
+    .sort((a,b) => b[2] - a[2])
+    .slice(0, 10)
+    .map(([t,info]) => [t,info]);
+
+  function tableHTML(rows, cols, showBilancoTarih=false){
+    const head = cols.map((col,i) => {
+      const align = i<=2 ? 'left' : 'right';
+      return `<th style="text-align:${align}">${col}</th>`;
+    }).join('');
+    const body = rows.map(([ticker, info], i) => {
+      const p0  = info.periods?.[0] || '—';
+      const r0  = info.rows?.[p0] || {};
+      const yo  = r0.yo ?? null;
+      const puanVal = yo !== null ? yo : (info.puan ?? 0);
+      const puanTxt = yo !== null ? `%${yo}` : `%${info.puan??0}`;
+      const puanCls = puanVal>=60?'high':puanVal>=40?'mid':'low';
+      const lastCol = showBilancoTarih
+        ? `<td style="color:var(--muted);font-size:.65rem;text-align:right">${info.bilancoTarih||'—'}</td>`
+        : `<td style="color:var(--muted);font-size:.65rem;text-align:right">${p0}</td>`;
+      return `<tr onclick="window.location.href='/hisse/${ticker.toLowerCase()}.html'">
+        <td class="hl-rank">${i+1}</td>
+        <td class="hl-tick" style="text-align:left">${ticker}</td>
+        <td class="hl-name" style="text-align:left">${info.company||ticker}</td>
+        <td class="hl-sect" style="text-align:left">${info.sector||''}</td>
+        <td class="hl-puan ${puanCls}">${puanTxt}</td>
+        <td style="color:var(--muted);font-size:.65rem;text-align:right">${p0}</td>
+      </tr>`;
+    }).join('');
+    return `<table class="home-list-table">
+      <thead><tr><th style="text-align:right">#</th>${head}</tr></thead>
+      <tbody>${body}</tbody>
+    </table>`;
+  }
+
+  wrap.innerHTML = `
+    <div class="home-list-section">
+      <div class="home-list-title">En Yüksek Analiz Puanı</div>
+      ${tableHTML(withPuan, ['Hisse','Şirket','Sektör','Puan','Son Dönem'])}
+    </div>
+`;
+}
+
+function selectTicker(ticker){
+  const info=VERI[ticker];
+  if(!info){showErr(ticker+' bulunamadı.');return}
+  // Dönemleri sayısal olarak garantile (yıl*100+ay azalan)
+  const sortedPeriods = [...info.periods].sort((a,b)=>{
+    const [ay,am]=a.split('/'); const [by,bm]=b.split('/');
+    return (parseInt(by)*100+parseInt(bm))-(parseInt(ay)*100+parseInt(am));
+  });
+  D={
+    ticker,
+    periods:sortedPeriods,
+    rows:info.rows,
+    sector:info.sector,
+    company:info.company,
+    olumlu:info.olumlu,
+    notr:info.notr,
+    olumsuz:info.olumsuz,
+    puan:info.puan,
+  };
+  var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
+  ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
+  ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
+  document.getElementById('dash').style.display='block';
+  window.scrollTo(0,0);
+  // URL'i güncelle — yenileme çalışsın
+  history.pushState({ticker}, '', '/?hisse='+ticker);
+  // SEO: dynamic meta description
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if(metaDesc) metaDesc.setAttribute('content',
+    D.ticker + ' (' + (D.company||'') + ') bilanço analizi, finansal rasyolar, ONO skoru ve yatırım puanı. ' +
+    'Sektör: ' + (D.sector||'') + '. Son dönem: ' + (D.periods[0]||'') + '.'
+  );
+  document.title = D.ticker + ' Bilanço Analizi | BilancoAnaliz34';
+  // H1 güncelle
+  const h1el = document.querySelector('h1.logo-text');
+  if(h1el) h1el.setAttribute('data-page', D.ticker + ' Bilanço Analizi');
+  // Google Analytics hisse görüntüleme eventi
+  if(typeof gtag !== 'undefined'){
+    gtag('event', 'page_view', {
+      page_title: ticker,
+      page_location: '/?hisse='+ticker
+    });
+    gtag('event', 'hisse_goruntuleme', {
+      hisse_kodu: ticker,
+      sektor: D.sector || ''
+    });
+  }
+  // Görüntülenme sayacını artır (CountAPI)
+  fetch('https://api.countapi.xyz/hit/bilancoanaliz34.com.tr/'+ticker)
+    .then(r=>r.json())
+    .then(d=>{ window._viewCount = d.value; })
+    .catch(()=>{});
+  buildDash();
+}
+
+
+// ════════════════════════════════════════════
+// DASHBOARD İNŞA
+// ════════════════════════════════════════════
+function buildDash(){
+  document.getElementById('d-tick').textContent=D.ticker;
+  document.getElementById('d-comp').textContent=D.company;
+
+  // ONO — veri excelindeki son dönem değerleri
+  const r0 = D.rows[D.periods[0]] || {};
+  const ol_val  = r0.ol  ?? 0;
+  const no_val  = r0.no  ?? 0;
+  const ols_val = r0.ols ?? 0;
+  // Analiz skoru: yo değeri varsa onu kullan, yoksa ol/no/ols'den hesapla
+  let puan_val = r0.yo ?? null;
+  if (puan_val === null) {
+    const t = ol_val + no_val + ols_val;
+    puan_val = t > 0 ? Math.round((ol_val / t) * 100) : 0;
+  }
+  const circ=87.96;
+  const arc=document.getElementById('arc');
+  arc.style.strokeDashoffset=circ-(puan_val/100)*circ;
+  const pcol=puan_val>=60?'#4caf7d':puan_val>=40?'#c9a84c':'#e05252';
+  arc.style.stroke=pcol;
+  const pn=document.getElementById('pnum');
+  pn.textContent=puan_val+'%';pn.style.color=pcol;
+  document.getElementById('pol-num').textContent=ol_val;
+  document.getElementById('pol-num').style.color='#4caf7d';
+  document.getElementById('pno-num').textContent=no_val;
+  document.getElementById('pno-num').style.color='#c9a84c';
+  document.getElementById('pols-num').textContent=ols_val;
+  document.getElementById('pols-num').style.color='#e05252';
+  document.getElementById('d-sect').textContent=D.sector||'';
+  document.getElementById('d-donem').textContent=D.periods[0]||'';
+  buildFiyatBoxes();
+  buildHissePuani();
+  // Logo
+  const logoWrap=document.getElementById('d-logo');
+  const logoSrc=LOGOS[D.ticker];
+  if(logoSrc){
+    logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`;
+  } else {
+    // CDN'lerden logo çek — sırayla dene
+    const logoCdns = [
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker.toLowerCase()}_icon.png`,
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker}_icon.png`,
+    ];
+    logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
+    let tried = 0;
+    function tryLogo(idx){
+      if(idx >= logoCdns.length) return;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function(){
+        logoWrap.innerHTML=`<img src="${logoCdns[idx]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      };
+      img.onerror = function(){ tryLogo(idx+1); };
+      img.src = logoCdns[idx];
+    }
+    // Önce localStorage'dan kontrol et (admin panelinden yüklenenler)
+    try {
+      const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+      if(saved[D.ticker]){
+        logoWrap.innerHTML=`<img src="${saved[D.ticker]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      } else {
+        tryLogo(0);
+      }
+    } catch(e){ tryLogo(0); }
+  }
+
+  // Dönem butonları (son 8)
+  activePeriod=D.periods[0];
+  renderCharts();
+  renderRasyo();
+
+  // Görüntülenme sayacını göster — 0 da olsa
+  setTimeout(()=>{
+    const el = document.getElementById('view-count') || document.getElementById('view-count-footer');
+    if(el){
+      const count = window._viewCount ?? 0;
+      el.textContent = count.toLocaleString('tr-TR') + ' görüntülenme';
+    }
+  }, 1200);
+
+  var _us=document.getElementById('upload-screen'); if(_us)_us.style.display='none';
+  var _ds=document.getElementById('dash'); if(_ds)_ds.style.display='block';
+}
+
+
+
+
+// YoY eşi: '2024/9' → '2023/9'
+function yoyPair(p){
+  const [y,m]=p.split('/');
+  const prev=(parseInt(y)-1)+'/'+m;
+  return D.rows[prev]?prev:null;
+}
+
+// ════════════════════════════════════════════
+// FORMAT YARDIMCILARI
+// ════════════════════════════════════════════
+function fmtMn(v){
+  if(v===null||v===undefined||isNaN(v))return'—';
+  const a=Math.abs(v);
+  if(a>=1e12)return(v/1e12).toFixed(2)+' Tr ₺';
+  if(a>=1e9) return(v/1e9).toFixed(2)+' Mr ₺';
+  if(a>=1e6) return(v/1e6).toFixed(1)+' Mn ₺';
+  if(a>=1e3) return(v/1e3).toFixed(0)+' K ₺';
+  return v.toFixed(0)+' ₺';
+}
+function yoyHtml(curr,prev){
+  if(curr===null||prev===null||prev===0)return'';
+  const c=((curr-prev)/Math.abs(prev))*100;
+  return`<div class="chg ${c>=0?'up':'dn'}">${c>=0?'▲':'▼'} %${Math.abs(c).toFixed(1)} YoY</div>`;
+}
+
+
+// ════════════════════════════════════════════
+// YoY GRAFİKLER — 4 Çeyrek × 2 yıl
+// ════════════════════════════════════════════
+function renderCharts(){
+  CHS.forEach(c=>c.destroy());CHS=[];
+
+  const latY=parseInt(D.periods[0].split('/')[0]);
+  const prevY=latY-1;
+
+
+  const qtrs=[
+    {ay:'3', lbl:'1.Çeyrek'},
+    {ay:'6', lbl:'2.Çeyrek'},
+    {ay:'9', lbl:'3.Çeyrek'},
+    {ay:'12',lbl:'4.Çeyrek'},
+  ];
+
+  // Her grafik için renk çifti: [geçenYıl, buYıl]
+  // colors: [prevFill, currFill, prevBorder, currBorder]
+  const defs=[
+    {title:'Firma Değeri',     key:'fd',
+     colors:['rgba(26,74,107,.75)','rgba(59,159,212,.75)','rgba(26,74,107,.9)','rgba(59,159,212,.95)']},
+    {title:'Yıllık Net Kar',   key:'netKar',
+     colors:['rgba(139,32,32,.75)','rgba(224,82,82,.75)','rgba(139,32,32,.9)','rgba(224,82,82,.95)']},
+    {title:'Toplam Varlıklar', key:'tv',
+     colors:['rgba(122,64,16,.75)','rgba(232,137,46,.75)','rgba(122,64,16,.9)','rgba(232,137,46,.95)']},
+    {title:'Net Satışlar',     key:'satislar',
+     colors:['rgba(26,74,32,.75)','rgba(76,175,125,.75)','rgba(26,74,32,.9)','rgba(76,175,125,.95)']},
+    {title:'Özkaynaklar',      key:'oz',
+     colors:['rgba(61,26,107,.75)','rgba(155,89,212,.75)','rgba(61,26,107,.9)','rgba(155,89,212,.95)']},
+    {title:'FAVÖK',            key:'favok',
+     colors:['rgba(122,96,16,.75)','rgba(232,201,48,.75)','rgba(122,96,16,.9)','rgba(232,201,48,.95)']},
+  ];
+
+  const grid=document.getElementById('cgrid');
+  grid.innerHTML='';
+
+  const prevLabels=qtrs.map(q=>prevY+'/'+q.ay);
+  const currLabels=qtrs.map(q=>latY+'/'+q.ay);
+
+    const zeroLinePlugin = {
+      id:'zeroLine',
+      afterDraw(chart){
+        const yScale = chart.scales.y;
+        if(!yScale) return;
+        const y0 = yScale.getPixelForValue(0);
+        // chartArea kullan — daha güvenilir
+        const {left, right, top, bottom} = chart.chartArea;
+        if(y0 < top || y0 > bottom) return;
+        const ctx2 = chart.ctx;
+        ctx2.save();
+        ctx2.beginPath();
+        ctx2.moveTo(left, y0);
+        ctx2.lineTo(right, y0);
+        ctx2.strokeStyle = 'rgba(80,60,40,.6)';
+        ctx2.lineWidth = 1.2;
+        ctx2.setLineDash([]);
+        ctx2.stroke();
+        ctx2.restore();
+      }
+    };
+
+    Chart.register(zeroLinePlugin);
+
+  defs.forEach(def=>{
+    const lastY=qtrs.map(q=>{
+      const r=D.rows[prevY+'/'+q.ay];
+      return r&&r[def.key]!==null?r[def.key]/1e6:null;
+    });
+    const thisY=qtrs.map(q=>{
+      const r=D.rows[latY+'/'+q.ay];
+      return r&&r[def.key]!==null?r[def.key]/1e6:null;
+    });
+
+    // Negatif değerler için daha koyu ton kullan
+    const prevFill =lastY.map(v=>v===null?'transparent':def.colors[0]);
+    const currFill =thisY.map(v=>v===null?'transparent':def.colors[1]);
+    const prevBord =lastY.map(v=>v===null?'transparent':def.colors[2]);
+    const currBord =thisY.map(v=>v===null?'transparent':def.colors[3]);
+
+    // YoY değişim hesapla (4.Çeyrek = son dönem baz alınır)
+    // Her grafik altı için: prevY/12 → latY/12 karşılaştırması
+    const anchorPrev = D.rows[prevY+'/12'];
+    const anchorCurr = D.rows[latY+'/12'];
+    const vPrev = anchorPrev?anchorPrev[def.key]:null;
+    const vCurr = anchorCurr?anchorCurr[def.key]:null;
+    let yoyPct = null;
+    if(vPrev!==null&&vCurr!==null&&vPrev!==0) yoyPct=((vCurr-vPrev)/Math.abs(vPrev))*100;
+
+    // Badge SVG ikonlar
+    const SVG_UP=`<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="9" fill="rgba(76,175,125,.2)" stroke="rgba(76,175,125,.5)" stroke-width="1.2"/>
+      <polyline points="10,5 10,15" stroke="#4caf7d" stroke-width="2" stroke-linecap="round"/>
+      <polyline points="6,8.5 10,5 14,8.5" fill="none" stroke="#4caf7d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+    const SVG_DN=`<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="9" fill="rgba(224,82,82,.2)" stroke="rgba(224,82,82,.5)" stroke-width="1.2"/>
+      <polyline points="10,5 10,15" stroke="#e05252" stroke-width="2" stroke-linecap="round"/>
+      <polyline points="6,11.5 10,15 14,11.5" fill="none" stroke="#e05252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+    const SVG_NT=`<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="9" fill="rgba(201,168,76,.18)" stroke="rgba(201,168,76,.45)" stroke-width="1.2"/>
+      <line x1="5.5" y1="10" x2="14.5" y2="10" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+    let badgeSvg=SVG_NT, yoyClass='nt';
+    if(yoyPct!==null){
+      if(yoyPct>=10){badgeSvg=SVG_UP;yoyClass='up'}
+      else if(yoyPct<=-10){badgeSvg=SVG_DN;yoyClass='dn'}
+      else{badgeSvg=SVG_NT;yoyClass='nt'}
+    }
+    const yoyTxt=yoyPct!==null?(yoyPct>=0?'+':'')+yoyPct.toFixed(0)+'%':'—';
+
+    const card=document.createElement('div');
+    card.className='ch-card';
+    card.innerHTML=`
+      <div class="ch-title">${def.title} <span>(Mn ₺)</span></div>
+      <div class="ch-wrap"><canvas></canvas></div>
+      <div class="ch-footer">
+        <div class="ch-footer-left">
+          <div class="ch-badge ${yoyClass}">
+            ${badgeSvg}
+            <span class="ch-badge-pct">${yoyTxt}</span>
+          </div>
+          <span class="ch-yoy-lbl">1 Yıllık<br>Değişim</span>
+        </div>
+        <div class="ch-vals">
+          <div class="ch-val-item">
+            <span class="ch-val-dot" style="background:${def.colors[2]}"></span>
+            <span class="ch-val-yr">Bir Önceki Yıl</span>
+            <span class="ch-val-num">${fmtMn(vPrev)}</span>
+          </div>
+          <div class="ch-val-item">
+            <span class="ch-val-dot" style="background:${def.colors[3]}"></span>
+            <span class="ch-val-yr">Bu Yıl</span>
+            <span class="ch-val-num">${fmtMn(vCurr)}</span>
+          </div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+
+    const ch=new Chart(card.querySelector('canvas'),{
+      type:'bar',
+      data:{
+        labels:qtrs.map(q=>q.lbl),
+        datasets:[
+          {label:String(prevY),data:lastY,
+           backgroundColor:prevFill,borderColor:prevBord,
+           borderWidth:1.5,borderRadius:3,borderSkipped:false},
+          {label:String(latY), data:thisY,
+           backgroundColor:currFill,borderColor:currBord,
+           borderWidth:1.5,borderRadius:3,borderSkipped:false},
+        ]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            callbacks:{
+              title:items=>{
+                const qi=items[0].dataIndex;
+                const ds=items[0].datasetIndex;
+                return qtrs[qi].lbl+' ('+(ds===0?prevLabels[qi]:currLabels[qi])+')';
+              },
+              label:ctx=>{
+                const v=ctx.parsed.y;
+                return(ctx.datasetIndex===0?prevY:latY)+': '+(v!==null?v.toFixed(1)+' Mn ₺':'—');
+              }
+            },
+            backgroundColor:'#1a1e1a',borderColor:'#252825',borderWidth:1,
+            titleColor:'#e8c96e',bodyColor:'#e8e6df',
+            titleFont:{family:"'IBM Plex Mono'",size:11,weight:'600'},
+            bodyFont:{family:"'IBM Plex Mono'",size:11}
+          }
+        },
+        scales:{
+          x:{
+            ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:11,weight:'600'},maxRotation:0},
+            grid:{color:'rgba(140,122,94,.12)',lineWidth:1}
+          },
+          y:{
+            ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},
+              callback:v=>Math.abs(v)>=1000?(v/1000).toFixed(0)+'Mr':v.toFixed(0)},
+            grid:{color:'rgba(140,122,94,.12)',lineWidth:0.8,drawBorder:false},
+            border:{display:false}
+          }
+        }
+      }
+    });
+    CHS.push(ch);
+  });
+}
+
+// ════════════════════════════════════════════
+// RASYO TABLOSU
+// ════════════════════════════════════════════
+function renderRasyo(){
+  const maxP = Math.min(D.periods.length, 8);
+  const ap = D.periods.slice(0, maxP).reverse();
+
+  // boxCols: [1 yıl öncesi, son dönem]
+  const pLast = ap[ap.length-1];
+  const [yL,mL] = pLast.split('/');
+  const pLastYoy = (parseInt(yL)-1)+'/'+mL;
+  const bc = ap.includes(pLastYoy) ? [pLastYoy, pLast] : [pLast];
+
+  document.getElementById('rthead').innerHTML =
+    '<colgroup><col style="width:12px"><col style="width:54px">' +
+    ap.map(()=>'<col style="width:46px">').join('') + '</colgroup>' +
+    '<tr><th></th><th class="rt-name-hd">Rasyo</th>' +
+    ap.map(p => {
+      const boxCls = p===bc[0]?' box-prev':p===bc[1]?' box-curr':'';
+      return `<th class="${boxCls}">${p}</th>`;
+    }).join('') + '</tr>';
+
+  // ── Renk skalası: yeşil→sarı→kırmızı ──
+  function scaleColor(v, allVals, dir) {
+    const valid = allVals.filter(x => x!==null&&!isNaN(x));
+    if (!valid.length||v===null||isNaN(v)) return 'transparent';
+    const mn=Math.min(...valid), mx=Math.max(...valid);
+    if (mx===mn) return 'transparent';
+    let t=(v-mn)/(mx-mn);
+    if (dir==='hiGood') t=1-t;
+    let r,g,b;
+    if (t<0.5){const s=t*2;r=Math.round(20+s*(210-20));g=Math.round(140+s*(180-140));b=Math.round(40+s*(20-40));}
+    else{const s=(t-0.5)*2;r=Math.round(210+s*(180-210));g=Math.round(180+s*(25-180));b=Math.round(20+s*(25-20));}
+    const alpha=0.18+Math.abs(t-0.5)*2*0.55;
+    return `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
+  }
+
+  // SVG simgeler (küçük)
+  const SVG_UP=`<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(76,175,125,.2)" stroke="rgba(76,175,125,.6)" stroke-width="1.5"/><polyline points="10,5 10,15" stroke="#4caf7d" stroke-width="2" stroke-linecap="round"/><polyline points="6.5,8.5 10,5 13.5,8.5" fill="none" stroke="#4caf7d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const SVG_DN=`<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(224,82,82,.2)" stroke="rgba(224,82,82,.6)" stroke-width="1.5"/><polyline points="10,5 10,15" stroke="#e05252" stroke-width="2" stroke-linecap="round"/><polyline points="6.5,11.5 10,15 13.5,11.5" fill="none" stroke="#e05252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const SVG_NT=`<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(201,168,76,.18)" stroke="rgba(201,168,76,.55)" stroke-width="1.5"/><line x1="5.5" y1="10" x2="14.5" y2="10" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/></svg>`;
+
+  // YoY simgesi
+  function yoySimge(key, fn, dir){
+    const r0=D.rows[pLast]||{}, r0p=D.rows[pLastYoy]||{};
+    const v0=fn?fn(pLast):(r0[key]??null);
+    const v0p=fn?fn(pLastYoy):(r0p[key]??null);
+    if(v0===null||v0p===null||v0p===0) return SVG_NT;
+    const pct=((v0-v0p)/Math.abs(v0p))*100;
+    if(dir==='loGood') return pct>=10?SVG_DN:pct<=-10?SVG_UP:SVG_NT;
+    return pct>=10?SVG_UP:pct<=-10?SVG_DN:SVG_NT;
+  }
+
+  const f2=v=>v!==null&&!isNaN(v)?v.toFixed(2):'—';
+  const fp1=v=>v!==null&&!isNaN(v)?v.toFixed(1)+'%':'—';
+  const ffiyat=v=>v!==null&&!isNaN(v)?v.toFixed(2)+' ₺':'—';
+
+  const rasyolar=[
+    {n:'PD/DD',         key:'pddd',    fmt:f2,   scale:'loGood',dir:'loGood'},
+    {n:'F/K',           key:'fk',      fmt:f2,   scale:'loGood',dir:'loGood'},
+    {n:'FD/FAVÖK',      key:'fdFavok', fmt:f2,   scale:'loGood',dir:'loGood'},
+    {n:'PD/NFK',        key:'pdNfk',   fmt:f2,   scale:'loGood',dir:'loGood'},
+    {n:'FD/NS',         key:'fdNs',    fmt:f2,   scale:'loGood',dir:'loGood'},
+    {n:'NFK/PD',        key:'nfkPd',   fmt:f2,   scale:'hiGood',dir:'hiGood'},
+    {n:'ÖZKAYNAK KAR.',
+     fn:p=>{const r=D.rows[p];if(!r)return null;const v=r.roe;if(v===null)return null;return Math.abs(v)<=2?v*100:v;},
+     fmt:fp1,scale:'hiGood',dir:'hiGood'},
+    {n:'NET BORÇ/FAVÖK',key:'nbFavok', fmt:f2,   scale:'loGood',dir:'loGood'},
+    {n:'EFK',           key:'efk',     fmt:f2,   scale:'hiGood',dir:'hiGood'},
+    {n:'HBK',           key:'hbk',     fmt:f2,   scale:'hiGood',dir:'hiGood'},
+  ];
+
+  const rows=rasyolar.map(rs=>{
+    const getV=p=>{const r=D.rows[p];if(!r)return null;if(rs.fn)return rs.fn(p);return r[rs.key]??null;};
+    const allVals=ap.map(p=>getV(p));
+    const simge=yoySimge(rs.key,rs.fn||null,rs.dir);
+    const cells=ap.map(p=>{
+      const v=getV(p);
+      const bg=rs.scale?scaleColor(v,allVals,rs.scale):'transparent';
+      const boxCls=p===bc[0]?' box-prev':p===bc[1]?' box-curr':'';
+      return `<td class="${boxCls}" style="background:${bg}">${rs.fmt(v)}</td>`;
+    }).join('');
+    return `<tr><td class="rt-simge">${simge}</td><td class="rt-name">${rs.n}</td>${cells}</tr>`;
+  }).join('');
+
+  // ── HİSSE FİYATI satırı — ayırıcı çizgi + fiyat + ok ──
+  // Hisse fiyatı = PD / son dönemin adet sayısı (tüm dönemler için sabit)
+  const sonAdet = D.rows[D.periods[0]]?.adet || 1;
+  const fiyatCells=ap.map(p=>{
+    const r=D.rows[p];
+    const v=(r&&r.pd&&sonAdet)?(r.pd/sonAdet):null;
+    const pi=ap.indexOf(p);
+    const rPrev=pi>0?D.rows[ap[pi-1]]:null;
+    const vPrev=(rPrev&&rPrev.pd&&sonAdet)?(rPrev.pd/sonAdet):null;
+    let arrow='';
+    if(v!==null&&vPrev!==null){
+      if(v>vPrev) arrow=`<span class="fiyat-arrow up">▲</span>`;
+      else if(v<vPrev) arrow=`<span class="fiyat-arrow dn">▼</span>`;
+    }
+    const boxCls=p===bc[0]?' box-prev':p===bc[1]?' box-curr':'';
+    return `<td class="fiyat-td${boxCls}">${ffiyat(v)}${arrow}</td>`;
+  }).join('');
+
+  document.getElementById('rtbody').innerHTML =
+    rows +
+    `<tr class="fiyat-row">
+       <td class="rt-simge fiyat-sep-cell"></td>
+       <td class="rt-name fiyat-sep-cell">HİSSE FİYATI</td>
+       ${fiyatCells.replace(/class="fiyat-td/g,'class="fiyat-td fiyat-sep-cell')}
+     </tr>`;
+
+  setTimeout(()=>drawYoyBoxes(ap,bc), 150);
+  renderOnoTablo(ap);
+}
+
+function renderOnoTablo(ap){
+  const wrap = document.getElementById('ono-tablo-wrap');
+  if(!wrap) return;
+
+  const apTbl = ap; // tüm dönemler (8)
+  const head = '<tr><th>—</th>' + apTbl.map(p=>`<th>${p}</th>`).join('') + '</tr>';
+
+  const mkRow = (cls, lbl, key) => {
+    const cells = apTbl.map(p=>{
+      const r = D.rows[p];
+      const v = r?.[key];
+      if(v===null||v===undefined) return '<td class="td-dash">—</td>';
+      return `<td>${v}</td>`;
+    }).join('');
+    return `<tr class="${cls}"><td>${lbl}</td>${cells}</tr>`;
+  };
+
+  // SKOR satırı
+  const skorCells = apTbl.map(p=>{
+    const r=D.rows[p];
+    const v=r?.yo;
+    if(v===null||v===undefined) return '<td class="td-dash">—</td>';
+    const col=v>=60?'var(--green)':v>=40?'var(--gold)':'var(--red)';
+    return `<td style="color:${col}">%${v}</td>`;
+  }).join('');
+
+  // Toplam puan satırı — sabit rakamlar en eskiden en yeniye
+  const TOPLAM_PUANLAR = [1, 2, 4, 7, 11, 16, 22, 29];
+  const toplamCells = apTbl.map((p, i) => {
+    const val = TOPLAM_PUANLAR[i] ?? '—';
+    return `<td class="td-toplam">${val}</td>`;
+  }).join('');
+
+  // Dönem puan hesabı
+  const donemPuanCells = apTbl.map((p, i) => {
+    const r = D.rows[p];
+    const maxP = TOPLAM_PUANLAR[i] ?? 1;
+    // K değerini hesapla (aynı mantık)
+    let k = 1;
+    if(i > 0){
+      const rPrev = D.rows[apTbl[i-1]];
+      const olsCurr = r?.ols ?? null;
+      const olsPrev = rPrev?.ols ?? null;
+      if(olsCurr !== null && olsPrev !== null)
+        k = olsCurr <= olsPrev ? 1 : 0.75;
+    } else {
+      const allP = D.periods;
+      const idx = allP.indexOf(apTbl[i]);
+      const pPrev = (idx >= 0 && idx+1 < allP.length) ? allP[idx+1] : null;
+      const olsCurr = r?.ols ?? null;
+      const olsPrev = pPrev ? (D.rows[pPrev]?.ols ?? null) : null;
+      if(olsCurr !== null && olsPrev !== null)
+        k = olsCurr <= olsPrev ? 1 : 0.75;
+    }
+    const ol  = r?.ol  ?? null;
+    const no  = r?.no  ?? null;
+    let puan;
+    if(ol === null || no === null){
+      // Veri yok
+      puan = 0.5 * maxP * k;
+    } else {
+      puan = (ol + 0.5 * no) / 16 * k * maxP;
+    }
+    const cls = ol === null ? 'td-k-neg' : 'td-toplam';
+    return `<td class="${cls}">${puan.toFixed(2)}</td>`;
+  }).join('');
+
+  // K katsayısı: olumsuz azaldıysa 1, arttıysa 0.75
+  // Önceki dönemde veri yoksa K=1 (olumlu varsayım)
+  const kCells = apTbl.map((p,i) => {
+    const r  = D.rows[p];
+    const olsCurr = r?.ols ?? null;
+    if(olsCurr===null) return '<td class="td-k-pos">1.00</td>'; // veri yok → K=1
+    if(i===0){
+      // İlk dönem — tablodaki ilk ap'tan önceki döneme bak
+      const pPrev = apTbl[i] ? (() => {
+        const [y,m]=apTbl[i].split('/');
+        // bir önceki çeyrek
+        const allP = D.periods;
+        const idx = allP.indexOf(apTbl[i]);
+        return idx>=0 && idx+1<allP.length ? allP[idx+1] : null;
+      })() : null;
+      const olsPrev = pPrev ? (D.rows[pPrev]?.ols ?? null) : null;
+      if(olsPrev===null){ return '<td class="td-k-pos">1.00</td>'; } // veri yok → K=1
+      const k = olsCurr <= olsPrev ? 1 : 0.75;
+      return `<td class="${k===1?'td-k-pos':'td-k-neg'}">${k.toFixed(2)}</td>`;
+    }
+    const rP = D.rows[apTbl[i-1]];
+    const olsPrev = rP?.ols ?? null;
+    if(olsPrev===null){ return '<td class="td-k-pos">1.00</td>'; } // veri yok → K=1
+    const k = olsCurr <= olsPrev ? 1 : 0.75;
+    return `<td class="${k===1?'td-k-pos':'td-k-neg'}">${k.toFixed(2)}</td>`;
+  }).join('');
+
+  // Üst tablo: MAKSİMUM PUAN yok
+  const tblHtmlUst = `<table class="ono-tbl">
+    <thead>${head}</thead>
+    <tbody>
+      ${mkRow('row-ol','OLUMLU','ol')}
+      ${mkRow('row-no','NÖTR','no')}
+      ${mkRow('row-ols','OLUMSUZ','ols')}
+      <tr class="row-skor"><td>SKOR</td>${skorCells}</tr>
+    </tbody>
+  </table>`;
+
+  // Alt tablo: MAKSİMUM PUAN var
+  const tblHtmlAlt = `<table class="ono-tbl">
+    <thead>${head}</thead>
+    <tbody>
+      ${mkRow('row-ol','OLUMLU','ol')}
+      ${mkRow('row-no','NÖTR','no')}
+      ${mkRow('row-ols','OLUMSUZ','ols')}
+      <tr class="row-skor"><td>SKOR</td>${skorCells}</tr>
+      <tr class="row-k"><td>K KATSAYISI</td>${kCells}</tr>
+      <tr class="row-toplam"><td>MAKSİMUM PUAN</td>${toplamCells}</tr>
+      <tr class="row-donem-puan"><td>DÖNEM PUANI</td>${donemPuanCells}</tr>
+    </tbody>
+  </table>`;
+
+  wrap.innerHTML = tblHtmlUst;
+
+  // Analiz bölümündeki kopyayı da güncelle
+  const analizWrap = document.getElementById('analiz-ono-wrap');
+  if(analizWrap) analizWrap.innerHTML = tblHtmlAlt;
+
+  buildAnalizMaddeler(ap);
+}
+
+function buildAnalizMaddeler(ap){
+  const wrap = document.getElementById('analiz-maddeler');
+  if(!wrap) return;
+
+  const maddeler = [
+    {
+      n:'K',
+      html:`<strong>K Katsayısı</strong> — Tablodaki son satır.
+      <br>Her dönem için: o dönemin <strong>Olumsuz sayısı</strong> bir önceki döneme göre karşılaştırılır.
+      <br>• Olumsuz azaldı veya aynı kaldı → <span class="tag-ol">K = 1.00</span> (olumlu trend)
+      <br>• Olumsuz arttı → <span class="tag-ols">K = 0.75</span> (olumsuz trend)`
+    },
+    {
+      n:'P',
+      html:`<strong>Dönem Puan Hesabı</strong>
+      <br>Her dönem için aşağıdaki formül uygulanır:
+      <br><br>• <strong>Veri girilmemiş ise:</strong>
+      <br>&nbsp;&nbsp;&nbsp;<span class="tag-no">Puan = 0.5 × Maksimum Puan × K</span>
+      <br><br>• <strong>Veri girilmiş ise:</strong>
+      <br>&nbsp;&nbsp;&nbsp;<span class="tag-ol">Puan = (Olumlu + 0.5 × Nötr) ÷ 16 × K × Maksimum Puan</span>
+      <br><br><em>Maksimum Puan</em>: o dönemin ağırlık katsayısı (1, 2, 4, 7, 11, 16, 22, 29)
+      <br><em>K</em>: o dönemin K katsayısı (1.00 veya 0.75)`
+    },
+    {
+      n:'H',
+      html:`<strong>1 Yıllık Hisse Artışı Puanı</strong> — Maksimum 4 puan
+      <br>Son dönem ile 1 yıl önceki dönem fiyatı karşılaştırılır (PD ÷ son dönem adet sayısı).
+      <br><br>
+      <span class="tag-ol">Artış &lt; %40</span> → <strong>4 puan</strong><br>
+      <span class="tag-ol">%40 ≤ Artış &lt; %60</span> → <strong>3 puan</strong><br>
+      <span class="tag-no">%60 ≤ Artış &lt; %70</span> → <strong>2 puan</strong><br>
+      <span class="tag-no">%70 ≤ Artış &lt; %80</span> → <strong>1 puan</strong><br>
+      <span class="tag-ols">Artış ≥ %80</span> → <strong>0 puan</strong>`
+    },
+    {
+      n:'S',
+      html:`<strong>Son Dönem Hisse Artışı Puanı</strong> — Maksimum 4 puan
+      <br>Son dönem ile bir önceki dönem fiyatı karşılaştırılır (PD ÷ son dönem adet sayısı).
+      <br><br>
+      <span class="tag-ol">Artış &lt; %40</span> → <strong>4 puan</strong><br>
+      <span class="tag-ol">%40 ≤ Artış &lt; %60</span> → <strong>3 puan</strong><br>
+      <span class="tag-no">%60 ≤ Artış &lt; %70</span> → <strong>2 puan</strong><br>
+      <span class="tag-no">%70 ≤ Artış &lt; %80</span> → <strong>1 puan</strong><br>
+      <span class="tag-ols">%80 ≤ Artış &lt; %90</span> → <strong>0.5 puan</strong><br>
+      <span class="tag-ols">Artış ≥ %90</span> → <strong>0 puan</strong>`
+    },
+  ];
+
+  wrap.innerHTML = maddeler.map(m=>`
+    <div class="analiz-madde">
+      <span class="analiz-madde-num">${m.n}</span>
+      <div class="analiz-madde-txt">${m.html}</div>
+    </div>`).join('');
+}
+
+function drawYoyBoxes(ap,bc){
+  const wrap=document.getElementById('rtbl-wrap');
+  const tbl=document.getElementById('rtbl-main');
+  if(!wrap||!tbl)return;
+  wrap.querySelectorAll('.yoy-box').forEach(el=>el.remove());
+  const allThs=tbl.querySelectorAll('thead tr th');
+  // thead'deki sütun sırası: th[0]=simge, th[1]=Rasyo, th[2+]=dönemler
+  const colOffset=2;
+  const tblRect=tbl.getBoundingClientRect();
+  bc.forEach((period,bi)=>{
+    const idx=ap.indexOf(period);
+    if(idx<0)return;
+    const th=allThs[idx+colOffset];
+    if(!th)return;
+    const thRect=th.getBoundingClientRect();
+    // Tablo sol kenarına göre hesapla (scroll dahil)
+    const left=thRect.left - tblRect.left;
+    const box=document.createElement('div');
+    box.className='yoy-box';
+    box.style.left=(left-1)+'px';
+    box.style.width=(thRect.width+2)+'px';
+    wrap.appendChild(box);
+  });
+}
+
+// ════════════════════════════════════════════
+// PAYLAŞIM & RESET
+// ════════════════════════════════════════════
+
 window.addEventListener('load', function() {
   var ticker = 'DESA';
   var SHEET = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri';
