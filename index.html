@@ -2436,7 +2436,9 @@ window.addEventListener('popstate', function(e){
 
 function openAdmin(){
   const panel = document.getElementById('admin-panel');
+  document.body.appendChild(panel);
   panel.style.display='flex';
+  panel.style.zIndex='999999';
   try{
     const saved=localStorage.getItem('ba34_onedrive_url');
     if(saved) document.getElementById('onedrive-url').value=saved;
