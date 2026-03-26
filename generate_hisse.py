@@ -158,7 +158,7 @@ def make_hisse_page(ticker, info):
             f"dönemsel büyüme grafikleri ve ONO analiz skoru. Sektör: {sector}.")
     hisse_json = json.dumps({ticker: info}, ensure_ascii=False)
 
-    PAYLAS_BLOCK = '''<script>
+    PAYLAS_BLOCK = '''<script data-cfasync="false">
 function trimCanvas(canvas){
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
@@ -426,7 +426,7 @@ async function xPaylas(){
   </style>
 </head>
 <body>
-<script>
+<script data-cfasync="false">
 var VERI = {hisse_json};
 var LOGOS = {{}};
 var D = {{}};
@@ -436,7 +436,7 @@ var activePeriod = '';
 {dash_html}
 {modals}
 {PAYLAS_BLOCK}
-<script>
+<script data-cfasync="false">
 {core_js}
 window.addEventListener('load', function() {{
   var ticker = '{ticker}';
