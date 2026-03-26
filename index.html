@@ -278,7 +278,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .rtbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.6rem;margin-bottom:0;table-layout:fixed}
 .rtbl th{padding:.35rem .2rem;text-align:right;color:var(--muted);font-size:.62rem;font-weight:400;border-bottom:1px solid var(--border);white-space:nowrap}
 .rtbl th:first-child,.rtbl th:nth-child(2){text-align:left}
-.rtbl td{padding:.35rem .2rem;border-bottom:1px solid rgba(37,40,37,.4);color:var(--text2);white-space:nowrap;text-align:right;font-weight:400;overflow:hidden;text-overflow:ellipsis}
+.rtbl td{padding:.3rem .15rem;border-bottom:1px solid rgba(37,40,37,.4);color:var(--text2);white-space:nowrap;text-align:right;font-weight:400;overflow:hidden;text-overflow:ellipsis}
 .rtbl tr:hover td{background:rgba(255,255,255,.015)}
 .rt-name-hd{text-align:left!important}
 .rt-simge{width:10px;text-align:center!important;padding:.4rem .05rem!important;overflow:visible}
@@ -1874,7 +1874,7 @@ function renderRasyo(){
 
   document.getElementById('rthead').innerHTML =
     '<colgroup><col style="width:12px"><col style="width:54px">' +
-    ap.map(()=>'<col style="width:52px">').join('') + '</colgroup>' +
+    ap.map(()=>'<col style="width:46px">').join('') + '</colgroup>' +
     '<tr><th></th><th class="rt-name-hd">Rasyo</th>' +
     ap.map(p => {
       const boxCls = p===bc[0]?' box-prev':p===bc[1]?' box-curr':'';
