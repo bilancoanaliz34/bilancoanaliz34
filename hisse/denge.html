@@ -1387,7 +1387,7 @@ function selectTicker(ticker){
     olumsuz:info.olumsuz,
     puan:info.puan,
   };
-  document.getElementById('upload-screen').style.display='none';
+  var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   document.getElementById('dash').style.display='block';
@@ -1467,8 +1467,8 @@ function buildDash(){
   } else {
     // CDN'lerden logo çek — sırayla dene
     const logoCdns = [
-      `https://fintables.com/companies/${D.ticker}/logo`,
-      `https://cdn.fintables.com/companies/${D.ticker.toLowerCase()}/logo.png`,
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker.toLowerCase()}_icon.png`,
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker}_icon.png`,
     ];
     logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
     let tried = 0;
@@ -1482,7 +1482,14 @@ function buildDash(){
       img.onerror = function(){ tryLogo(idx+1); };
       img.src = logoCdns[idx];
     }
-    tryLogo(0);
+    // Önce yerel /logos/ klasörünü dene
+    const localLogo = '/logos/' + D.ticker.toLowerCase() + '.png';
+    const localImg = new Image();
+    localImg.onload = function(){
+      logoWrap.innerHTML=`<img src="${localLogo}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+    };
+    localImg.onerror = function(){ tryLogo(0); };
+    localImg.src = localLogo;
   }
 
   // Dönem butonları (son 8)
@@ -1499,8 +1506,8 @@ function buildDash(){
     }
   }, 1200);
 
-  document.getElementById('upload-screen').style.display='none';
-  document.getElementById('dash').style.display='block';
+  var _us=document.getElementById('upload-screen'); if(_us)_us.style.display='none';
+  var _ds=document.getElementById('dash'); if(_ds)_ds.style.display='block';
 }
 
 
@@ -2055,7 +2062,7 @@ function drawYoyBoxes(ap,bc){
 function resetApp(){
   CHS.forEach(c=>c.destroy());CHS=[];D={};
   document.getElementById('dash').style.display='none';
-  document.getElementById('upload-screen').style.display='flex';
+  var _us=document.getElementById('upload-screen');if(_us)_us.style.display='flex';
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
   ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
   document.getElementById('home-lists').style.display='block';
@@ -2067,7 +2074,7 @@ function resetApp(){
   const metaDesc2 = document.querySelector('meta[name="description"]');
   if(metaDesc2) metaDesc2.setAttribute('content', 'BIST hisselerinin bilanço analizi, finansal rasyolar ve yatırım skorları. 442 hisse için ONO analizi.');
   document.getElementById('dash').style.display='none';
-  document.getElementById('upload-screen').style.display='flex';
+  var _us=document.getElementById('upload-screen');if(_us)_us.style.display='flex';
   document.getElementById('home-lists').style.display='block';
   adHome = document.getElementById('ad-home-bottom');
   if(adHome) adHome.style.display='block';
@@ -2160,6 +2167,10 @@ async function xPaylas(){
     const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
     const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
 
+    // Logo CORS sorununu önle - geçici gizle
+    const logoEl = document.getElementById('d-logo');
+    if(logoEl) logoEl.style.visibility='hidden';
+
     const canvas = await html2canvas(pageEl, {
       scale: 1.5,
       useCORS: true,
@@ -2172,6 +2183,9 @@ async function xPaylas(){
       height: captureH,
       windowWidth: pageEl.offsetWidth
     });
+
+    // Logo'yu geri göster
+    if(logoEl) logoEl.style.visibility='';
 
     // Siyah kenarları kırp
     const trimmed = trimCanvas(canvas);
@@ -2250,7 +2264,7 @@ window.addEventListener('popstate', function(e){
       return (parseInt(by)*100+parseInt(bm))-(parseInt(ay)*100+parseInt(am));
     });
     D={ticker:hisse.toUpperCase(),periods:sorted,rows:info.rows,sector:info.sector,company:info.company,puan:info.puan};
-    document.getElementById('upload-screen').style.display='none';
+    var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
     const adHomeP = document.getElementById('ad-home-bottom');
     if(adHomeP) adHomeP.style.display='none';
     document.getElementById('dash').style.display='block';
@@ -2258,7 +2272,7 @@ window.addEventListener('popstate', function(e){
   } else {
     D={};
     document.getElementById('dash').style.display='none';
-    document.getElementById('upload-screen').style.display='flex';
+    var _us=document.getElementById('upload-screen');if(_us)_us.style.display='flex';
     document.getElementById('site-footer').style.display='flex';
   }
 });
@@ -3124,7 +3138,7 @@ function selectTicker(ticker){
     olumsuz:info.olumsuz,
     puan:info.puan,
   };
-  document.getElementById('upload-screen').style.display='none';
+  var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   document.getElementById('dash').style.display='block';
@@ -3204,8 +3218,8 @@ function buildDash(){
   } else {
     // CDN'lerden logo çek — sırayla dene
     const logoCdns = [
-      `https://fintables.com/companies/${D.ticker}/logo`,
-      `https://cdn.fintables.com/companies/${D.ticker.toLowerCase()}/logo.png`,
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker.toLowerCase()}_icon.png`,
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker}_icon.png`,
     ];
     logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
     let tried = 0;
@@ -3219,7 +3233,14 @@ function buildDash(){
       img.onerror = function(){ tryLogo(idx+1); };
       img.src = logoCdns[idx];
     }
-    tryLogo(0);
+    // Önce yerel /logos/ klasörünü dene
+    const localLogo = '/logos/' + D.ticker.toLowerCase() + '.png';
+    const localImg = new Image();
+    localImg.onload = function(){
+      logoWrap.innerHTML=`<img src="${localLogo}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+    };
+    localImg.onerror = function(){ tryLogo(0); };
+    localImg.src = localLogo;
   }
 
   // Dönem butonları (son 8)
@@ -3236,8 +3257,8 @@ function buildDash(){
     }
   }, 1200);
 
-  document.getElementById('upload-screen').style.display='none';
-  document.getElementById('dash').style.display='block';
+  var _us=document.getElementById('upload-screen'); if(_us)_us.style.display='none';
+  var _ds=document.getElementById('dash'); if(_ds)_ds.style.display='block';
 }
 
 
