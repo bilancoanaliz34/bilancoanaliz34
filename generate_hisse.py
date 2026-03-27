@@ -43,6 +43,10 @@ core_js = _re.sub(r'(let|var|const)\s+CHS\s*=\s*\[[^\]]*\]\s*;[^\n]*', '', core_
 core_js = _re.sub(r'(let|var|const)\s+VERI\s*=\s*\{[^}]*\}[^;]*;[^\n]*', '', core_js)
 core_js = core_js.replace('let LOGOS={};', '').replace('var LOGOS={};', '').replace('const LOGOS={};', '').replace('let LOGOS = {};', '').replace('var LOGOS = {};', '')
 core_js = _re.sub(r"(let|var|const)\s+activePeriod\s*=\s*'[^']*'\s*;[^\n]*", '', core_js)
+# const → var dönüşümü (Cloudflare çakışmalarını önle)
+import re as _re2
+core_js = _re2.sub(r'\bconst\s+(POPULAR|CI|GID|FALLBACK|MAKS|SVG_UP|SVG_DN|SVG_NT|TOPLAM_PUANLAR)\s*=', 
+                   lambda m: 'var ' + m.group(1) + ' =', core_js)
 print(f'✓ core_js globals temizlendi: {len(core_js)} kar')
 
 idx_pm = c.find('<!-- Policy Modal -->')
