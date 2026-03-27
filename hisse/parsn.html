@@ -965,7 +965,7 @@ async function loadEmbeddedData(){
 // ════════════════════════════════════════════
 // SEARCH & HİSSE SEÇİMİ
 // ════════════════════════════════════════════
-const POPULAR=['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
+var POPULAR=['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
 
 function initSearch(){
   // Tıklanma sayacı — localStorage ile kalıcı
@@ -2329,7 +2329,7 @@ function showPolicy(type){
   modal.style.display = 'flex';
 }
 function hideErr(){const e=document.getElementById('err');e.style.display='none';e.textContent=''}
-function showErr(m){const e=document.getElementById('err');e.style.display='block';e.textContent='⚠ '+m}
+function showErr(m){const e=document.getElementById('err');if(e){e.style.display='block';e.textContent='⚠ '+m;}else{console.warn('showErr:',m);}}
 
 // Sayfa yüklenince veriyi başlat
 loadEmbeddedData();
@@ -2758,7 +2758,7 @@ function parseCSV(csvText){
   function sortKey(p){const[y,m]=String(p).split('/');return parseInt(y)*100+parseInt(m||0);}
 
   // Sütun pozisyonları (Excel col index, 0-based)
-  const CI = {
+  var CI = {
     hisse:1, donem:3, sektor:4, firma:5, bilTarih:6,
     fiyat:8, adet:9, pd:10, donenV:11, duranV:12,
     kvYuk:13, uvYuk:14, fd:15, oz:16, brutKar:17,
@@ -2945,7 +2945,7 @@ async function loadEmbeddedData(){
     // Önce Google Sheets'ten veri çekmeyi dene
     try {
       // Google Sheets JSON API (CORS yok, herkese açık sheet için çalışır)
-      const GID = '0'; // veri sayfasının gid'si
+      var GID = '0'; // veri sayfasının gid'si
       const csvUrl = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri';
       const resp = await fetch(csvUrl);
       if(resp.ok){
@@ -2992,7 +2992,7 @@ async function loadEmbeddedData(){
 // ════════════════════════════════════════════
 // SEARCH & HİSSE SEÇİMİ
 // ════════════════════════════════════════════
-const POPULAR=['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
+var POPULAR=['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
 
 function initSearch(){
   // Tıklanma sayacı — localStorage ile kalıcı
@@ -3005,7 +3005,7 @@ function initSearch(){
   const sorted=allTickers.sort((a,b)=>(clicks[b]||0)-(clicks[a]||0));
   const popularList=sorted.slice(0,10).filter(t=>VERI[t]);
   // Eğer tıklanma yoksa fallback listesi
-  const FALLBACK=['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
+  var FALLBACK =['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
   const showPopular = Object.keys(clicks).length>0 ? popularList : FALLBACK.filter(t=>VERI[t]);
 
   const pb=document.getElementById('popular-btns');
@@ -3141,7 +3141,7 @@ function buildToplamPuan(hp){
 
   // Dönem puanları (alt tablodan aynı mantık)
   const ap = D.periods.slice(0, 8).reverse();
-  const MAKS = [1,2,4,7,11,16,22,29];
+  var MAKS = [1,2,4,7,11,16,22,29];
 
   let donemToplam = 0;
   const donemRows = ap.map((p,i) => {
@@ -3657,17 +3657,17 @@ function renderCharts(){
     if(vPrev!==null&&vCurr!==null&&vPrev!==0) yoyPct=((vCurr-vPrev)/Math.abs(vPrev))*100;
 
     // Badge SVG ikonlar
-    const SVG_UP=`<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    var SVG_UP =`<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="10" cy="10" r="9" fill="rgba(76,175,125,.2)" stroke="rgba(76,175,125,.5)" stroke-width="1.2"/>
       <polyline points="10,5 10,15" stroke="#4caf7d" stroke-width="2" stroke-linecap="round"/>
       <polyline points="6,8.5 10,5 14,8.5" fill="none" stroke="#4caf7d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`;
-    const SVG_DN=`<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    var SVG_DN =`<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="10" cy="10" r="9" fill="rgba(224,82,82,.2)" stroke="rgba(224,82,82,.5)" stroke-width="1.2"/>
       <polyline points="10,5 10,15" stroke="#e05252" stroke-width="2" stroke-linecap="round"/>
       <polyline points="6,11.5 10,15 14,11.5" fill="none" stroke="#e05252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`;
-    const SVG_NT=`<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    var SVG_NT =`<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="10" cy="10" r="9" fill="rgba(201,168,76,.18)" stroke="rgba(201,168,76,.45)" stroke-width="1.2"/>
       <line x1="5.5" y1="10" x2="14.5" y2="10" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>
     </svg>`;
@@ -3798,9 +3798,9 @@ function renderRasyo(){
   }
 
   // SVG simgeler (küçük)
-  const SVG_UP=`<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(76,175,125,.2)" stroke="rgba(76,175,125,.6)" stroke-width="1.5"/><polyline points="10,5 10,15" stroke="#4caf7d" stroke-width="2" stroke-linecap="round"/><polyline points="6.5,8.5 10,5 13.5,8.5" fill="none" stroke="#4caf7d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  const SVG_DN=`<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(224,82,82,.2)" stroke="rgba(224,82,82,.6)" stroke-width="1.5"/><polyline points="10,5 10,15" stroke="#e05252" stroke-width="2" stroke-linecap="round"/><polyline points="6.5,11.5 10,15 13.5,11.5" fill="none" stroke="#e05252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  const SVG_NT=`<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(201,168,76,.18)" stroke="rgba(201,168,76,.55)" stroke-width="1.5"/><line x1="5.5" y1="10" x2="14.5" y2="10" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/></svg>`;
+  var SVG_UP =`<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(76,175,125,.2)" stroke="rgba(76,175,125,.6)" stroke-width="1.5"/><polyline points="10,5 10,15" stroke="#4caf7d" stroke-width="2" stroke-linecap="round"/><polyline points="6.5,8.5 10,5 13.5,8.5" fill="none" stroke="#4caf7d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  var SVG_DN =`<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(224,82,82,.2)" stroke="rgba(224,82,82,.6)" stroke-width="1.5"/><polyline points="10,5 10,15" stroke="#e05252" stroke-width="2" stroke-linecap="round"/><polyline points="6.5,11.5 10,15 13.5,11.5" fill="none" stroke="#e05252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  var SVG_NT =`<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="rgba(201,168,76,.18)" stroke="rgba(201,168,76,.55)" stroke-width="1.5"/><line x1="5.5" y1="10" x2="14.5" y2="10" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/></svg>`;
 
   // YoY simgesi
   function yoySimge(key, fn, dir){
@@ -3902,7 +3902,7 @@ function renderOnoTablo(ap){
   }).join('');
 
   // Toplam puan satırı — sabit rakamlar en eskiden en yeniye
-  const TOPLAM_PUANLAR = [1, 2, 4, 7, 11, 16, 22, 29];
+  var TOPLAM_PUANLAR = [1, 2, 4, 7, 11, 16, 22, 29];
   const toplamCells = apTbl.map((p, i) => {
     const val = TOPLAM_PUANLAR[i] ?? '—';
     return `<td class="td-toplam">${val}</td>`;
