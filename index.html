@@ -1119,7 +1119,7 @@ async function loadEmbeddedData(){
 // ════════════════════════════════════════════
 // SEARCH & HİSSE SEÇİMİ
 // ════════════════════════════════════════════
-const POPULAR=['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
+var POPULAR=['EREGL','THYAO','GARAN','KRDMD','SASA','TUPRS','TOASO','ASELS','BIMAS','EUPWR'];
 
 function initSearch(){
   // Tıklanma sayacı — localStorage ile kalıcı
@@ -2483,7 +2483,7 @@ function showPolicy(type){
   modal.style.display = 'flex';
 }
 function hideErr(){const e=document.getElementById('err');e.style.display='none';e.textContent=''}
-function showErr(m){const e=document.getElementById('err');e.style.display='block';e.textContent='⚠ '+m}
+function showErr(m){const e=document.getElementById('err');if(e){e.style.display='block';e.textContent='⚠ '+m;}else{console.warn('showErr:',m);}}
 
 // Sayfa yüklenince veriyi başlat
 loadEmbeddedData();
