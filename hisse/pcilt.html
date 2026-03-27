@@ -4112,8 +4112,8 @@ window.addEventListener('load', function() {
     });
   }
 
-  // Google Sheets'ten canlı veri çek, ol/no/ols/yo güncelle
-  fetch(SHEET)
+  // Google Sheets'ten canlı veri çek - sayfa yüklendikten sonra
+  (window.requestIdleCallback || setTimeout)(function(){ fetch(SHEET)
     .then(function(r){ return r.text(); })
     .then(function(csv){
       var fresh = parseCSV(csv);
@@ -4131,6 +4131,7 @@ window.addEventListener('load', function() {
       if(!info) { console.error('Hisse bulunamadı: ' + ticker); return; }
       initDash(info);
     });
+  }, {timeout:3000});
 });
 function resetApp(){ window.location.href='/'; }
 function showErr(m){ console.error(m); }
