@@ -561,7 +561,6 @@ var activePeriod = '';
       <div class="onedrive-status" id="logo-status"></div>
     </div>
     <div class="admin-btns">
-      <button class="btn-admin-close" onclick="exportLogos()" style="border-color:var(--gold);color:var(--gold)">⬇ Logoları Aktar</button>
       <button class="btn-admin-close" onclick="closeAdmin()">✕ Kapat</button>
     </div>
     <div class="onedrive-status" id="onedrive-status"></div>
@@ -618,25 +617,6 @@ function oneDriveToDownload(shareUrl){
     }
     return null;
   } catch(e){ return null; }
-}
-
-function exportLogos(){
-  try {
-    const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-    const keys = Object.keys(saved);
-    if(!keys.length){ alert('Henüz logo yüklenmemiş.'); return; }
-    let js = 'if(!window.LOGOS)window.LOGOS={};
-';
-    keys.forEach(t => { js += "LOGOS['" + t + "'] = '" + saved[t] + "';
-"; });
-    const blob = new Blob([js], {type:'text/javascript'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'logos.js'; a.click();
-    URL.revokeObjectURL(url);
-    const st = document.getElementById('logo-status');
-    if(st){ st.className='onedrive-status ok'; st.textContent='✓ logos.js indirildi — GitHub köküne yükleyin'; }
-  } catch(e){ alert('Hata: '+e.message); }
 }
 
 function handleLogoUpload(input){
@@ -2664,25 +2644,6 @@ function oneDriveToDownload(shareUrl){
     }
     return null;
   } catch(e){ return null; }
-}
-
-function exportLogos(){
-  try {
-    const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-    const keys = Object.keys(saved);
-    if(!keys.length){ alert('Henüz logo yüklenmemiş.'); return; }
-    let js = 'if(!window.LOGOS)window.LOGOS={};
-';
-    keys.forEach(t => { js += "LOGOS['" + t + "'] = '" + saved[t] + "';
-"; });
-    const blob = new Blob([js], {type:'text/javascript'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'logos.js'; a.click();
-    URL.revokeObjectURL(url);
-    const st = document.getElementById('logo-status');
-    if(st){ st.className='onedrive-status ok'; st.textContent='✓ logos.js indirildi — GitHub köküne yükleyin'; }
-  } catch(e){ alert('Hata: '+e.message); }
 }
 
 function handleLogoUpload(input){
