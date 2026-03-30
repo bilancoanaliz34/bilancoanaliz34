@@ -713,7 +713,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
       <div class="onedrive-status" id="logo-status"></div>
     </div>
     <div class="admin-btns">
-      <button class="btn-admin-close" onclick="closeAdmin()">✕ Kapat</button>
+      <button class="btn-admin-close" onclick="exportLogos()" style="color:var(--gold)">⬇ Aktar</button><button class="btn-admin-close" onclick="closeAdmin()">✕ Kapat</button>
     </div>
     <div class="onedrive-status" id="onedrive-status"></div>
     <div class="admin-tip">1-Borsa_Çalışma.xlsx dosyasını seçin.</div>
@@ -774,6 +774,7 @@ function oneDriveToDownload(shareUrl){
   } catch(e){ return null; }
 }
 
+function exportLogos(){try{var s=JSON.parse(localStorage.getItem("ba34_logos")||"{}");var k=Object.keys(s);if(!k.length){alert("Logo yok");return;}var j="if(!window.LOGOS)window.LOGOS={};";k.forEach(function(t){j+=" LOGOS['"+t+"']='"+s[t]+"';";});var b=new Blob([j],{type:"text/javascript"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download="logos.js";a.click();URL.revokeObjectURL(u);var el=document.getElementById("logo-status");if(el){el.className="onedrive-status ok";el.textContent="logos.js indirildi";}}catch(e){alert(e.message);}}
 function handleLogoUpload(input){
   const file = input.files[0];
   if(!file) return;
