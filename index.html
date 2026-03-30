@@ -441,6 +441,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
   }
 ]
 </script>
+<script src="/logos.js" onerror="void(0)"></script>
 </head>
 <body>
 
@@ -775,6 +776,33 @@ function oneDriveToDownload(shareUrl){
 }
 
 function exportLogos(){
+  try {
+    const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+    const keys = Object.keys(saved);
+    if(!keys.length){ alert('Henüz logo yüklenmemiş.'); return; }
+
+    // logos.js dosyası oluştur - GitHub'a yüklenecek
+    let js = 'if(!window.LOGOS)window.LOGOS={};
+';
+    keys.forEach(ticker => {
+      js += "LOGOS['" + ticker + "'] = '" + saved[ticker] + "';
+";
+    });
+
+    const blob = new Blob([js], {type:'text/javascript'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'logos.js';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    document.getElementById('logo-status').className='onedrive-status ok';
+    document.getElementById('logo-status').textContent = '✓ logos.js indirildi — GitHub\'a kök dizine yükleyin';
+  } catch(e) { alert('Hata: '+e.message); }
+}
+
+function exportLogos_OLD(){
   try {
     const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
     const keys = Object.keys(saved);
