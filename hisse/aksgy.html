@@ -561,7 +561,6 @@ var activePeriod = '';
       <div class="onedrive-status" id="logo-status"></div>
     </div>
     <div class="admin-btns">
-      <button class="btn-admin-close" onclick="exportLogos()" style="border-color:var(--gold);color:var(--gold)">⬇ Logoları Aktar</button>
       <button class="btn-admin-close" onclick="closeAdmin()">✕ Kapat</button>
     </div>
     <div class="onedrive-status" id="onedrive-status"></div>
@@ -618,32 +617,6 @@ function oneDriveToDownload(shareUrl){
     }
     return null;
   } catch(e){ return null; }
-}
-
-function exportLogos(){
-  try {
-    const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-    const keys = Object.keys(saved);
-    if(!keys.length){ alert('Henüz logo yüklenmemiş.'); return; }
-    // Her logo için <img> tag'i oluştur ve kopyala
-    let output = '// LOGOS - index.html içine ekleyin\n';
-    output += 'if(!window.LOGOS)window.LOGOS={}; \n';
-    keys.forEach(ticker => {
-      output += `LOGOS['${ticker}'] = '${saved[ticker]}';\n`;
-    });
-    navigator.clipboard.writeText(output).then(()=>{
-      alert(`✓ ${keys.length} logo kopyalandı!\nindex.html'de </script> tagından önce yapıştırın.`);
-    }).catch(()=>{
-      // Clipboard yoksa textarea göster
-      const ta = document.createElement('textarea');
-      ta.value = output;
-      ta.style.cssText = 'position:fixed;top:10px;left:10px;width:80vw;height:80vh;z-index:999999;font-size:11px;';
-      document.body.appendChild(ta);
-      ta.select();
-      alert('Ctrl+C ile kopyalayın, sonra kapatın.');
-      ta.addEventListener('blur', ()=>ta.remove());
-    });
-  } catch(e) { alert('Hata: '+e.message); }
 }
 
 function handleLogoUpload(input){
@@ -941,11 +914,6 @@ function parseWorkbook(wb){
 }
 
 async function loadEmbeddedData(){
-  // localStorage'daki logoları LOGOS objesine yükle
-  try {
-    const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-    Object.assign(LOGOS, saved);
-  } catch(e){}
   try{
     // Önce Google Sheets'ten veri çekmeyi dene
     try {
@@ -2678,32 +2646,6 @@ function oneDriveToDownload(shareUrl){
   } catch(e){ return null; }
 }
 
-function exportLogos(){
-  try {
-    const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-    const keys = Object.keys(saved);
-    if(!keys.length){ alert('Henüz logo yüklenmemiş.'); return; }
-    // Her logo için <img> tag'i oluştur ve kopyala
-    let output = '// LOGOS - index.html içine ekleyin\n';
-    output += 'if(!window.LOGOS)window.LOGOS={}; \n';
-    keys.forEach(ticker => {
-      output += `LOGOS['${ticker}'] = '${saved[ticker]}';\n`;
-    });
-    navigator.clipboard.writeText(output).then(()=>{
-      alert(`✓ ${keys.length} logo kopyalandı!\nindex.html'de </script> tagından önce yapıştırın.`);
-    }).catch(()=>{
-      // Clipboard yoksa textarea göster
-      const ta = document.createElement('textarea');
-      ta.value = output;
-      ta.style.cssText = 'position:fixed;top:10px;left:10px;width:80vw;height:80vh;z-index:999999;font-size:11px;';
-      document.body.appendChild(ta);
-      ta.select();
-      alert('Ctrl+C ile kopyalayın, sonra kapatın.');
-      ta.addEventListener('blur', ()=>ta.remove());
-    });
-  } catch(e) { alert('Hata: '+e.message); }
-}
-
 function handleLogoUpload(input){
   const file = input.files[0];
   if(!file) return;
@@ -2999,11 +2941,6 @@ function parseWorkbook(wb){
 }
 
 async function loadEmbeddedData(){
-  // localStorage'daki logoları LOGOS objesine yükle
-  try {
-    const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-    Object.assign(LOGOS, saved);
-  } catch(e){}
   try{
     // Önce Google Sheets'ten veri çekmeyi dene
     try {
