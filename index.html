@@ -1108,7 +1108,7 @@ async function loadEmbeddedData(){
         if(Object.keys(extra).length) LOGOS=extra;
       }catch(e){}
     });
-    initSearch();
+    initSearch(); setTimeout(injectTableLogos, 500);
     // URL'de ?hisse=TICKER varsa direkt aç
     const urlParams = new URLSearchParams(window.location.search);
     const hisseParam = urlParams.get('hisse');
@@ -1503,7 +1503,7 @@ function buildHomeLists(){
         : `<td style="color:var(--muted);font-size:.65rem;text-align:right">${p0}</td>`;
       return `<tr onclick="window.location.href='/hisse/${ticker.toLowerCase()}.html'">
         <td class="hl-rank">${i+1}</td>
-        <td class="hl-tick" style="text-align:left;white-space:nowrap">${LOGOS[ticker]?'<img src="'+LOGOS[ticker]+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:3px;margin-right:4px" alt>':''}${ticker}</td>
+        <td class="hl-tick" style="text-align:left" data-ticker="${ticker}"><span class="tbl-logo"></span>${ticker}</td>
         <td class="hl-name" style="text-align:left">${info.company||ticker}</td>
         <td class="hl-sect" style="text-align:left">${info.sector||''}</td>
         <td class="hl-puan ${puanCls}">${puanTxt}</td>
@@ -1524,6 +1524,14 @@ function buildHomeLists(){
 `;
 }
 
+function injectTableLogos(){
+  document.querySelectorAll('[data-ticker] .tbl-logo').forEach(function(span){
+    var t = span.parentElement.getAttribute('data-ticker');
+    if(window.LOGOS && window.LOGOS[t]){
+      span.innerHTML = '<img src="'+window.LOGOS[t]+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:3px;margin-right:4px" alt>';
+    }
+  });
+}
 function selectTicker(ticker){
   const info=VERI[ticker];
   if(!info){showErr(ticker+' bulunamadı.');return}
