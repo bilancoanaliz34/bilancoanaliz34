@@ -1349,7 +1349,7 @@ function buildHomeLists(){
         : `<td style="color:var(--muted);font-size:.65rem;text-align:right">${p0}</td>`;
       return `<tr onclick="window.location.href='/hisse/${ticker.toLowerCase()}.html'">
         <td class="hl-rank">${i+1}</td>
-        <td class="hl-tick" style="text-align:left;white-space:nowrap"><img src="${LOGOS&&LOGOS[ticker]?LOGOS[ticker]:"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOW=="}" alt="" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:3px;margin-right:4px">${ticker}</td>
+        <td class="hl-tick" style="text-align:left;white-space:nowrap">${(window.LOGOS&&window.LOGOS[ticker])?'<img src="'+window.LOGOS[ticker]+'" alt="" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:3px;margin-right:4px">':''} ${ticker}</td>
         <td class="hl-name" style="text-align:left">${info.company||ticker}</td>
         <td class="hl-sect" style="text-align:left">${info.sector||''}</td>
         <td class="hl-puan ${puanCls}">${puanTxt}</td>
@@ -3377,7 +3377,7 @@ function buildHomeLists(){
         : `<td style="color:var(--muted);font-size:.65rem;text-align:right">${p0}</td>`;
       return `<tr onclick="window.location.href='/hisse/${ticker.toLowerCase()}.html'">
         <td class="hl-rank">${i+1}</td>
-        <td class="hl-tick" style="text-align:left;white-space:nowrap"><img src="${LOGOS&&LOGOS[ticker]?LOGOS[ticker]:"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOW=="}" alt="" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:3px;margin-right:4px">${ticker}</td>
+        <td class="hl-tick" style="text-align:left;white-space:nowrap">${(window.LOGOS&&window.LOGOS[ticker])?'<img src="'+window.LOGOS[ticker]+'" alt="" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;border-radius:3px;margin-right:4px">':''} ${ticker}</td>
         <td class="hl-name" style="text-align:left">${info.company||ticker}</td>
         <td class="hl-sect" style="text-align:left">${info.sector||''}</td>
         <td class="hl-puan ${puanCls}">${puanTxt}</td>
