@@ -19,7 +19,6 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="/logos.js" onerror="void(0)"></script>
   <style>
   
 :root{
@@ -4152,10 +4151,12 @@ window.addEventListener('load', function() {
           company:info.company,olumlu:olumlu,notr:notr,
           olumsuz:olumsuz,puan:puan};
     buildDash();
-    // logos.js büyük olduğu için parse gecikmesi olabilir — biraz bekle ve tekrar dene
-    applyLogo(ticker);
-    setTimeout(function() { applyLogo(ticker); }, 1000);
-    setTimeout(function() { applyLogo(ticker); }, 3000);
+    // logos.js'i şimdi yükle ve bitince logoyu uygula
+    var logosScript = document.createElement('script');
+    logosScript.src = '/logos.js';
+    logosScript.onload = function() { applyLogo(ticker); };
+    logosScript.onerror = function() { applyLogo(ticker); };
+    document.head.appendChild(logosScript);
     ['btn-paylas','btn-paylas-home'].forEach(function(id){
       var el=document.getElementById(id);
       if(el) el.style.display='inline-flex';
