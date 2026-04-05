@@ -448,7 +448,7 @@ async function xPaylas(){
 <body>
 <script data-cfasync="false">
 var VERI = {hisse_json};
-if(!window.LOGOS) window.LOGOS = {{}};  // logos.js zaten yüklediyse sıfırlama
+var LOGOS = {{}};
 var D = {{}};
 var CHS = [];
 var activePeriod = '';
@@ -461,6 +461,41 @@ var activePeriod = '';
 window.addEventListener('load', function() {{
   var ticker = '{ticker}';
   var SHEET = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri';
+
+  function applyLogo(ticker) {{
+    var logoWrap = document.getElementById('d-logo');
+    if(!logoWrap) return;
+    // 1) localStorage
+    try {{
+      var saved = JSON.parse(localStorage.getItem('ba34_logos')||'{{}}');
+      if(saved[ticker]) {{
+        logoWrap.innerHTML = '<img src="'+saved[ticker]+'" alt="'+ticker+'" style="width:48px;height:48px;object-fit:contain;border-radius:4px">';
+        return;
+      }}
+    }} catch(e) {{}}
+    // 2) LOGOS objesi
+    if(window.LOGOS && LOGOS[ticker]) {{
+      logoWrap.innerHTML = '<img src="'+LOGOS[ticker]+'" alt="'+ticker+'" style="width:48px;height:48px;object-fit:contain">';
+      return;
+    }}
+    // 3) CDN
+    var cdns = [
+      'https://storage.fintables.com/media/uploads/company-logos/'+ticker.toLowerCase()+'_icon.png',
+      'https://storage.fintables.com/media/uploads/company-logos/'+ticker+'_icon.png'
+    ];
+    function trycdn(i) {{
+      if(i >= cdns.length) return;
+      var img = new Image(); img.crossOrigin='anonymous';
+      img.onload = function() {{
+        if(!window.LOGOS) window.LOGOS={{}};
+        LOGOS[ticker] = cdns[i];
+        logoWrap.innerHTML = '<img src="'+cdns[i]+'" alt="'+ticker+'" style="width:48px;height:48px;object-fit:contain;border-radius:4px">';
+      }};
+      img.onerror = function() {{ trycdn(i+1); }};
+      img.src = cdns[i];
+    }}
+    trycdn(0);
+  }}
 
   function initDash(info) {{
     var sp = [...info.periods].sort(function(a,b){{
@@ -477,6 +512,10 @@ window.addEventListener('load', function() {{
           company:info.company,olumlu:olumlu,notr:notr,
           olumsuz:olumsuz,puan:puan}};
     buildDash();
+    // logos.js büyük olduğu için parse gecikmesi olabilir — biraz bekle ve tekrar dene
+    applyLogo(ticker);
+    setTimeout(function() {{ applyLogo(ticker); }}, 1000);
+    setTimeout(function() {{ applyLogo(ticker); }}, 3000);
     ['btn-paylas','btn-paylas-home'].forEach(function(id){{
       var el=document.getElementById(id);
       if(el) el.style.display='inline-flex';
