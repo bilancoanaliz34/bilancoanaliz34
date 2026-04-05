@@ -1625,12 +1625,8 @@ function buildDash(){
   buildHissePuani();
   // Logo
   const logoWrap=document.getElementById('d-logo');
-  // 1) LOGOS objesi (logos.js veya LDATA'dan gelen)
-  // 2) localStorage (admin panelinden eklenen)
-  // 3) Fintables CDN
-  // -- hepsini birleştir, önce lokal kaynaklar --
-  (function loadTickerLogo(ticker){
-    // localStorage'daki logolar her zaman önce kontrol edilir
+  // Öncelik: 1) localStorage, 2) LOGOS objesi, 3) CDN
+  (function showLogo(ticker){
     try {
       const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
       if(saved[ticker]){
@@ -1638,49 +1634,23 @@ function buildDash(){
         return;
       }
     } catch(e){}
-    // LOGOS objesi (logos.js veya LDATA)
     if(window.LOGOS && LOGOS[ticker]){
       logoWrap.innerHTML=`<img src="${LOGOS[ticker]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain">`;
       return;
     }
-    // CDN fallback
     logoWrap.innerHTML=`<div class="logo-placeholder">${ticker}</div>`;
-    const logoCdns = [
+    const cdns=[
       `https://storage.fintables.com/media/uploads/company-logos/${ticker.toLowerCase()}_icon.png`,
       `https://storage.fintables.com/media/uploads/company-logos/${ticker}_icon.png`,
     ];
-    function tryLogo(idx){
-      if(idx >= logoCdns.length) return;
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = function(){
-        // CDN logosu geldi — LOGOS'a da kaydet ki tekrar CDN'e gitmesin
-        if(!window.LOGOS) window.LOGOS={};
-        LOGOS[ticker] = logoCdns[idx];
-        logoWrap.innerHTML=`<img src="${logoCdns[idx]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
-      };
-      img.onerror = function(){ tryLogo(idx+1); };
-      img.src = logoCdns[idx];
+    function tryLogo(i){
+      if(i>=cdns.length) return;
+      const img=new Image(); img.crossOrigin='anonymous';
+      img.onload=function(){ if(!window.LOGOS) window.LOGOS={}; LOGOS[ticker]=cdns[i]; logoWrap.innerHTML=`<img src="${cdns[i]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`; };
+      img.onerror=function(){ tryLogo(i+1); };
+      img.src=cdns[i];
     }
-    // LOGOS henüz yüklenmediyse LDATA tamamlandıktan sonra tekrar dene
-    if(!window.LOGOS || Object.keys(LOGOS).length === 0){
-      setTimeout(function(){
-        try {
-          const saved2 = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-          if(saved2[ticker]){
-            logoWrap.innerHTML=`<img src="${saved2[ticker]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
-            return;
-          }
-        } catch(e){}
-        if(window.LOGOS && LOGOS[ticker]){
-          logoWrap.innerHTML=`<img src="${LOGOS[ticker]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain">`;
-          return;
-        }
-        tryLogo(0);
-      }, 800);
-    } else {
-      tryLogo(0);
-    }
+    tryLogo(0);
   })(D.ticker);
 
   // Dönem butonları (son 8)
