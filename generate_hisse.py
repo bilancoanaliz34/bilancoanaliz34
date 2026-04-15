@@ -108,7 +108,7 @@ try:
     VERI_NEW = {}
     for line in lines[2:]:
         row = parse_line(line)
-        if len(row) < 41: continue
+        if len(row) < 40: continue
         ticker = row[1].strip().upper()
         donem  = row[3].strip()
         if not ticker or not donem or '/' not in donem: continue
@@ -118,18 +118,20 @@ try:
         dm = re.match(r'^(\d{1,2})\.(\d{1,2})\.(\d{4})$', bilTarih)
         if dm: bilTarih = f"{dm.group(3)}-{dm.group(2).zfill(2)}-{dm.group(1).zfill(2)}"
 
-        yo_raw = num(row[31])
+        yo_raw = num(row[30])
         yo_val = None if yo_raw is None else (round(yo_raw) if yo_raw > 1 else round(yo_raw*100))
 
+
         row_data = {
-            'guncelFiyat':num(row[7]),'bilEndeks':num(row[8]),
-            'fd':num(row[16]),'pd':num(row[11]),'fiyat':num(row[9]),'adet':num(row[10]),
-            'donenV':num(row[12]),'duranV':num(row[13]),'kvYuk':num(row[14]),'uvYuk':num(row[15]),
-            'oz':num(row[17]),'brutKar':num(row[18]),'faalKar':num(row[22]),'favok':num(row[23]),
-            'netBorc':num(row[24]),'netKar':num(row[25]),'satislar':num(row[26]),'roe':num(row[27]),
-            'ol':numi(row[28]),'no':numi(row[29]),'ols':numi(row[30]),'yo':yo_val,
-            'pddd':num(row[32]),'fk':num(row[33]),'fdFavok':num(row[34]),'pdNfk':num(row[35]),
-            'fdNs':num(row[36]),'nfkPd':num(row[37]),'nbFavok':num(row[38]),'efk':num(row[39]),'hbk':num(row[40]),
+            'guncelFiyat':num(row[7]),
+            'bilEndeks':num(row[40]) if len(row) > 40 else None,
+            'fd':num(row[15]),'pd':num(row[10]),'fiyat':num(row[8]),'adet':num(row[9]),
+            'donenV':num(row[11]),'duranV':num(row[12]),'kvYuk':num(row[13]),'uvYuk':num(row[14]),
+            'oz':num(row[16]),'brutKar':num(row[17]),'faalKar':num(row[21]),'favok':num(row[22]),
+            'netBorc':num(row[23]),'netKar':num(row[24]),'satislar':num(row[25]),'roe':num(row[26]),
+            'ol':numi(row[27]),'no':numi(row[28]),'ols':numi(row[29]),'yo':yo_val,
+            'pddd':num(row[31]),'fk':num(row[32]),'fdFavok':num(row[33]),'pdNfk':num(row[34]),
+            'fdNs':num(row[35]),'nfkPd':num(row[36]),'nbFavok':num(row[37]),'efk':num(row[38]),'hbk':num(row[39]),
         }
         dv, drv = row_data.get('donenV'), row_data.get('duranV')
         row_data['tv'] = (dv + drv) if dv is not None and drv is not None else None
@@ -173,11 +175,13 @@ try:
     endeks_url = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=endeks'
     resp2 = requests.get(endeks_url, timeout=15)
     resp2.raise_for_status()
-    endeks_lines = [l for l in resp2.text.strip().split('\n') if l.strip()]
-    if len(endeks_lines) > 1:
-        last_row = parse_line(endeks_lines[-1])
-        if len(last_row) >= 3:
-            GUNCEL_ENDEKS = num(last_row[2])  # C sütunu = index 2
+    endeks_lines = [l.strip() for l in resp2.text.strip().split('\n') if l.strip()]
+    # Son satırdan C sütununu al (index 2) — B=tarih, C=endeks değeri
+    for line in reversed(endeks_lines[1:]):  # başlık satırını atla
+        last_row = parse_line(line)
+        if len(last_row) >= 3 and last_row[2].strip():
+            GUNCEL_ENDEKS = num(last_row[2])
+            break
     print(f"✓ Güncel endeks: {GUNCEL_ENDEKS}")
 except Exception as e2:
     print(f"⚠ Endeks çekme hatası: {e2}")
