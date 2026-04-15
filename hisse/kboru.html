@@ -1360,45 +1360,29 @@ function buildHomeLists(){
     .map(([t,info]) => [t,info]);
 
   function tableHTML(rows, cols, showBilancoTarih=false){
+    function perfCell(curr, base) {
+      if(curr===null||curr===undefined||base===null||base===undefined||base===0)
+        return '<td style="text-align:right;color:var(--muted);font-size:.7rem">—</td>';
+      const pct = ((curr - base) / Math.abs(base)) * 100;
+      const col = pct >= 0 ? 'var(--green)' : 'var(--red)';
+      const arr = pct >= 0 ? '▲' : '▼';
+      return '<td style="text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700;color:'+col+'">'+arr+' %'+Math.abs(pct).toFixed(1)+'</td>';
+    }
     const body = rows.map(([ticker, info], i) => {
-      const p0  = info.periods?.[0] || '—';
-      const r0  = info.rows?.[p0] || {};
-      const yo  = r0.yo ?? null;
+      const p0      = info.periods?.[0] || '—';
+      const r0      = info.rows?.[p0] || {};
+      const yo      = r0.yo ?? null;
       const puanVal = yo !== null ? yo : (info.puan ?? 0);
       const puanTxt = yo !== null ? '%'+yo : '%'+(info.puan??0);
       const puanCls = puanVal>=60?'high':puanVal>=40?'mid':'low';
-
-      // Hisse performans: (güncel - son dönem) / son dönem
-      const guncelFiyat = r0.guncelFiyat ?? null;
-      const sonFiyat    = r0.fiyat ?? null;
-      let hissePerfHTML = '<td style="text-align:right;color:var(--muted);font-size:.7rem">—</td>';
-      if(guncelFiyat !== null && sonFiyat !== null && sonFiyat !== 0){
-        const hp = ((guncelFiyat - sonFiyat) / Math.abs(sonFiyat)) * 100;
-        const hcol = hp >= 0 ? 'var(--green)' : 'var(--red)';
-        const harr = hp >= 0 ? '▲' : '▼';
-        hissePerfHTML = '<td style="text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700;color:'+hcol+'">'
-          + harr + ' %' + Math.abs(hp).toFixed(1) + '</td>';
-      }
-
-      // Endeks performans: (güncel endeks - bilanço endeks) / bilanço endeks
-      const guncelEndeks = info.guncelEndeks ?? null;
-      const bilEndeks    = r0.bilEndeks ?? null;
-      let endeksPerfHTML = '<td style="text-align:right;color:var(--muted);font-size:.7rem">—</td>';
-      if(guncelEndeks !== null && bilEndeks !== null && bilEndeks !== 0){
-        const ep = ((guncelEndeks - bilEndeks) / Math.abs(bilEndeks)) * 100;
-        const ecol = ep >= 0 ? 'var(--green)' : 'var(--red)';
-        const earr = ep >= 0 ? '▲' : '▼';
-        endeksPerfHTML = '<td style="text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700;color:'+ecol+'">'
-          + earr + ' %' + Math.abs(ep).toFixed(1) + '</td>';
-      }
-
-      return '<tr onclick="window.location.href=\'/hisse/'+ticker.toLowerCase()+'.html\'">'
+      const sekt    = (info.sector||'').split('-')[0].trim();
+      return '<tr onclick="window.location.href='/hisse/'+ticker.toLowerCase()+'.html'">'
         + '<td class="hl-rank">'+(i+1)+'</td>'
         + '<td class="hl-tick" style="text-align:left" data-ticker="'+ticker+'"><span class="tbl-logo"></span>'+ticker+'</td>'
-        + '<td class="hl-sect" style="text-align:left">'+((info.sector||'').split('-')[0].trim())+'</td>'
+        + '<td class="hl-sect" style="text-align:left">'+sekt+'</td>'
         + '<td class="hl-puan '+puanCls+'">'+puanTxt+'</td>'
-        + hissePerfHTML
-        + endeksPerfHTML
+        + perfCell(r0.guncelFiyat, r0.fiyat)
+        + perfCell(info.guncelEndeks, r0.bilEndeks)
         + '<td style="color:var(--muted);font-size:.65rem;text-align:right">'+p0+'</td>'
         + '</tr>';
     }).join('');
@@ -3547,45 +3531,29 @@ function buildHomeLists(){
     .map(([t,info]) => [t,info]);
 
   function tableHTML(rows, cols, showBilancoTarih=false){
+    function perfCell(curr, base) {
+      if(curr===null||curr===undefined||base===null||base===undefined||base===0)
+        return '<td style="text-align:right;color:var(--muted);font-size:.7rem">—</td>';
+      const pct = ((curr - base) / Math.abs(base)) * 100;
+      const col = pct >= 0 ? 'var(--green)' : 'var(--red)';
+      const arr = pct >= 0 ? '▲' : '▼';
+      return '<td style="text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700;color:'+col+'">'+arr+' %'+Math.abs(pct).toFixed(1)+'</td>';
+    }
     const body = rows.map(([ticker, info], i) => {
-      const p0  = info.periods?.[0] || '—';
-      const r0  = info.rows?.[p0] || {};
-      const yo  = r0.yo ?? null;
+      const p0      = info.periods?.[0] || '—';
+      const r0      = info.rows?.[p0] || {};
+      const yo      = r0.yo ?? null;
       const puanVal = yo !== null ? yo : (info.puan ?? 0);
       const puanTxt = yo !== null ? '%'+yo : '%'+(info.puan??0);
       const puanCls = puanVal>=60?'high':puanVal>=40?'mid':'low';
-
-      // Hisse performans: (güncel - son dönem) / son dönem
-      const guncelFiyat = r0.guncelFiyat ?? null;
-      const sonFiyat    = r0.fiyat ?? null;
-      let hissePerfHTML = '<td style="text-align:right;color:var(--muted);font-size:.7rem">—</td>';
-      if(guncelFiyat !== null && sonFiyat !== null && sonFiyat !== 0){
-        const hp = ((guncelFiyat - sonFiyat) / Math.abs(sonFiyat)) * 100;
-        const hcol = hp >= 0 ? 'var(--green)' : 'var(--red)';
-        const harr = hp >= 0 ? '▲' : '▼';
-        hissePerfHTML = '<td style="text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700;color:'+hcol+'">'
-          + harr + ' %' + Math.abs(hp).toFixed(1) + '</td>';
-      }
-
-      // Endeks performans: (güncel endeks - bilanço endeks) / bilanço endeks
-      const guncelEndeks = info.guncelEndeks ?? null;
-      const bilEndeks    = r0.bilEndeks ?? null;
-      let endeksPerfHTML = '<td style="text-align:right;color:var(--muted);font-size:.7rem">—</td>';
-      if(guncelEndeks !== null && bilEndeks !== null && bilEndeks !== 0){
-        const ep = ((guncelEndeks - bilEndeks) / Math.abs(bilEndeks)) * 100;
-        const ecol = ep >= 0 ? 'var(--green)' : 'var(--red)';
-        const earr = ep >= 0 ? '▲' : '▼';
-        endeksPerfHTML = '<td style="text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700;color:'+ecol+'">'
-          + earr + ' %' + Math.abs(ep).toFixed(1) + '</td>';
-      }
-
-      return '<tr onclick="window.location.href=\'/hisse/'+ticker.toLowerCase()+'.html\'">'
+      const sekt    = (info.sector||'').split('-')[0].trim();
+      return '<tr onclick="window.location.href='/hisse/'+ticker.toLowerCase()+'.html'">'
         + '<td class="hl-rank">'+(i+1)+'</td>'
         + '<td class="hl-tick" style="text-align:left" data-ticker="'+ticker+'"><span class="tbl-logo"></span>'+ticker+'</td>'
-        + '<td class="hl-sect" style="text-align:left">'+((info.sector||'').split('-')[0].trim())+'</td>'
+        + '<td class="hl-sect" style="text-align:left">'+sekt+'</td>'
         + '<td class="hl-puan '+puanCls+'">'+puanTxt+'</td>'
-        + hissePerfHTML
-        + endeksPerfHTML
+        + perfCell(r0.guncelFiyat, r0.fiyat)
+        + perfCell(info.guncelEndeks, r0.bilEndeks)
         + '<td style="color:var(--muted);font-size:.65rem;text-align:right">'+p0+'</td>'
         + '</tr>';
     }).join('');
