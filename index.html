@@ -1140,6 +1140,7 @@ async function loadEmbeddedData(){
             break;
           }
         }
+        if(typeof buildHomeLists === 'function') buildHomeLists();
       }).catch(()=>{});
 
     // Logo verisini arka planda yükle
@@ -1150,6 +1151,10 @@ async function loadEmbeddedData(){
         const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
         Object.assign(LOGOS, extra);
       }catch(e){}
+      // Logolar gelince tabloyu ve sektör panelini yenile
+      injectTableLogos();
+      const aktifBtn=document.querySelector('.sektor-btn.active');
+      if(aktifBtn) aktifBtn.click();
     }).catch(()=>{
       try{
         const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
@@ -1613,6 +1618,8 @@ function buildHomeLists(){
     +'</div>';
 
   if(sektorList.length>0) sekorRender(sektorList[0]);
+  // Tablo logoları
+  setTimeout(injectTableLogos, 300);
 }
 
 function sekorRender(sd){
