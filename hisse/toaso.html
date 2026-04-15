@@ -1376,7 +1376,7 @@ function buildHomeLists(){
       const puanTxt = yo !== null ? '%'+yo : '%'+(info.puan??0);
       const puanCls = puanVal>=60?'high':puanVal>=40?'mid':'low';
       const sekt    = (info.sector||'').split('-')[0].trim();
-      return '<tr onclick="window.location.href='/hisse/'+ticker.toLowerCase()+'.html'">'
+      return '<tr onclick="window.location.href=\'/hisse/'+ticker.toLowerCase()+'.html\'">'
         + '<td class="hl-rank">'+(i+1)+'</td>'
         + '<td class="hl-tick" style="text-align:left" data-ticker="'+ticker+'"><span class="tbl-logo"></span>'+ticker+'</td>'
         + '<td class="hl-sect" style="text-align:left">'+sekt+'</td>'
@@ -3547,7 +3547,7 @@ function buildHomeLists(){
       const puanTxt = yo !== null ? '%'+yo : '%'+(info.puan??0);
       const puanCls = puanVal>=60?'high':puanVal>=40?'mid':'low';
       const sekt    = (info.sector||'').split('-')[0].trim();
-      return '<tr onclick="window.location.href='/hisse/'+ticker.toLowerCase()+'.html'">'
+      return '<tr onclick="window.location.href=\'/hisse/'+ticker.toLowerCase()+'.html\'">'
         + '<td class="hl-rank">'+(i+1)+'</td>'
         + '<td class="hl-tick" style="text-align:left" data-ticker="'+ticker+'"><span class="tbl-logo"></span>'+ticker+'</td>'
         + '<td class="hl-sect" style="text-align:left">'+sekt+'</td>'
