@@ -104,6 +104,13 @@ try:
     resp.raise_for_status()
     lines = resp.text.strip().split('\n')
     print(f"✓ {len(lines)} satır geldi")
+    # Debug: sütun indexlerini kontrol et
+    if len(lines) > 2:
+        test_row = parse_line(lines[2])
+        print(f"DEBUG sütun sayısı: {len(test_row)}")
+        print(f"DEBUG row[1]={test_row[1] if len(test_row)>1 else 'YOK'}")
+        print(f"DEBUG row[7]={test_row[7] if len(test_row)>7 else 'YOK'} (H=güncel fiyat?)")
+        print(f"DEBUG row[40]={test_row[40] if len(test_row)>40 else 'YOK'} (AO=bilanço endeks?)")
 
     VERI_NEW = {}
     for line in lines[2:]:
