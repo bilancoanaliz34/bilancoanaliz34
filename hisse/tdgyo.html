@@ -367,6 +367,33 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
   .dash-head{flex-direction:column}
 }
 
+.sektor-panel{display:flex;gap:1.2rem;width:100%;flex-wrap:wrap;margin-top:.5rem}
+.sektor-liste{flex:0 0 220px;display:flex;flex-direction:column;gap:3px;max-height:520px;overflow-y:auto}
+.sektor-btn{font-family:var(--mono);font-size:.72rem;padding:.7rem .8rem;min-height:2.8rem;border-radius:var(--r);border:1px solid var(--border);background:none;color:var(--text2);cursor:pointer;text-align:left;transition:all .15s;white-space:normal;word-break:break-word;width:100%;line-height:1.4}
+.sektor-btn:hover{border-color:var(--gold);color:var(--gold)}
+.sektor-btn.active{border-color:var(--gold);background:rgba(154,111,26,.12);color:var(--gold);font-weight:700}
+.sektor-icerik{flex:1;min-width:240px;display:flex;flex-direction:column;gap:.8rem}
+.sektor-baslik{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.sektor-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.9rem}
+.sektor-hisse-list{display:flex;flex-direction:column;gap:3px}
+.sektor-hisse-row{display:flex;align-items:center;gap:.5rem;padding:.4rem .5rem;border-radius:4px;cursor:pointer;transition:background .12s}
+.sektor-hisse-row:hover{background:rgba(154,111,26,.06)}
+.sh-logo{width:22px;height:22px;border-radius:3px;object-fit:contain;flex-shrink:0;background:var(--bg3)}
+.sh-tick{font-family:var(--mono);font-size:.78rem;font-weight:700;color:var(--gold);min-width:48px;flex-shrink:0}
+.sh-name{font-family:var(--mono);font-size:.65rem;color:var(--text2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sh-ono{font-family:var(--mono);font-size:.62rem;display:flex;gap:0;flex-shrink:0;align-items:center}.sh-ol{color:var(--green);width:22px;text-align:center;font-weight:700}.sh-no{color:var(--gold2);width:22px;text-align:center;font-weight:700}.sh-ols{color:var(--red);width:22px;text-align:center;font-weight:700}.sh-ono-wrap{display:flex;flex-direction:column;gap:0;flex-shrink:0}.sh-ono-hd{display:flex;gap:0;font-family:var(--mono);font-size:.55rem;color:var(--muted);}.sh-ono-hd span{width:22px;text-align:center}
+.sh-puan{font-family:var(--mono);font-size:.68rem;font-weight:700;min-width:28px;text-align:right;flex-shrink:0}
+.ono-grafik-wrap{display:flex;gap:1rem;align-items:center}
+.ono-grafik-bars{flex:1;display:flex;flex-direction:column;gap:.45rem}
+.ono-bar-row{display:flex;align-items:center;gap:.5rem}
+.ono-bar-lbl{font-family:var(--mono);font-size:.66rem;font-weight:700;width:50px;flex-shrink:0}
+.ono-bar-bg{flex:1;height:13px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.ono-bar-fill{height:100%;border-radius:3px}
+.ono-bar-val{font-family:var(--mono);font-size:.66rem;font-weight:700;min-width:26px;text-align:right;flex-shrink:0}
+.ono-ozet{display:flex;flex-direction:column;align-items:center;gap:.3rem;flex-shrink:0}
+.ono-ozet-puan{font-family:var(--serif);font-size:2rem;font-weight:900;line-height:1}
+.ono-ozet-lbl{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+
   #upload-screen { display: none !important; }
   #dash { display: block !important; }
   </style>
@@ -1361,12 +1388,136 @@ function buildHomeLists(){
     </table>`;
   }
 
-  wrap.innerHTML = `
-    <div class="home-list-section">
-      <div class="home-list-title">En Yüksek Analiz Puanı</div>
-      ${tableHTML(withPuan, ['Hisse','Şirket','Sektör','Puan','Son Dönem'])}
-    </div>
-`;
+  // Sektör listesi hazırla
+  var sektorMap = {};
+  Object.entries(VERI).forEach(function(e){
+    var t=e[0], info=e[1];
+    var sekt=(info.sector||'DİĞER').trim();
+    var p0=info.periods?.[0];
+    var yo=p0?(info.rows?.[p0]?.yo??null):null;
+    var puan=yo??info.puan??0;
+    if(!sektorMap[sekt]) sektorMap[sekt]=[];
+    sektorMap[sekt].push([t,info,puan]);
+  });
+  var sektorList=Object.entries(sektorMap).map(function(e){
+    var sekt=e[0], hisseler=e[1];
+    var sirali=[].concat(hisseler).sort(function(a,b){return b[2]-a[2];});
+    var ort=Math.round(hisseler.reduce(function(s,h){return s+h[2];},0)/hisseler.length);
+    return {sekt:sekt,hisseler:sirali,ort:ort,sayi:hisseler.length};
+  }).sort(function(a,b){return b.ort-a.ort;});
+
+  var btnHTML='';
+  sektorList.forEach(function(sd,i){
+    var enc=encodeURIComponent(sd.sekt);
+    btnHTML+='<button class="sektor-btn'+(i===0?' active':'')+'" onclick="sekorSec(this,\''+enc+'\')" title="'+sd.sekt+'">'+sd.sekt+'</button>';
+  });
+
+  wrap.innerHTML =
+    '<div class="home-list-section">'
+    +'<div class="home-list-title">En Yüksek Analiz Puanı</div>'
+    +tableHTML(withPuan, ['Hisse','Şirket','Sektör','Puan','Son Dönem'])
+    +'</div>'
+    +'<div class="home-list-section">'
+    +'<div class="home-list-title">Sektöre Göre En İyi 5 Hisse</div>'
+    +'<div class="sektor-panel">'
+    +'<div class="sektor-liste">'+btnHTML+'</div>'
+    +'<div class="sektor-icerik" id="sektor-icerik"></div>'
+    +'</div>'
+    +'</div>';
+
+  if(sektorList.length>0) sekorRender(sektorList[0]);
+}
+
+function sekorRender(sd){
+  var wrap=document.getElementById('sektor-icerik');
+  if(!wrap) return;
+  var top5=sd.hisseler.slice(0,5);
+  var maxP=top5[0]?top5[0][2]:100;
+
+  // Başlık satırı
+  var headerHTML=
+    '<div class="sektor-hisse-row" style="cursor:default;padding:.25rem .5rem;border-bottom:1px solid var(--border);margin-bottom:3px">'
+    +'<div style="width:22px;flex-shrink:0"></div>'
+    +'<span class="sh-tick" style="color:var(--muted);font-size:.6rem;font-weight:400">Hisse</span>'
+    +'<span class="sh-name" style="color:var(--muted);font-size:.6rem;font-weight:400">Şirket</span>'
+    +'<div class="sh-ono">'
+      +'<span class="sh-ol" style="font-weight:400;color:var(--green)">OL</span>'
+      +'<span class="sh-no" style="font-weight:400;color:var(--gold2)">NT</span>'
+      +'<span class="sh-ols" style="font-weight:400;color:var(--red)">OLS</span>'
+    +'</div>'
+    +'<span class="sh-puan" style="color:var(--muted);font-size:.6rem;font-weight:400">Puan</span>'
+    +'</div>';
+
+  var hHTML='';
+  for(var i=0;i<top5.length;i++){
+    var ticker=top5[i][0], info=top5[i][1], puan=top5[i][2];
+    var p0=info.periods?.[0], r0=p0?(info.rows?.[p0]||{}):{};
+    var ol=r0.ol!=null?r0.ol:'—', no=r0.no!=null?r0.no:'—', ols=r0.ols!=null?r0.ols:'—';
+    var col=puan>=60?'var(--green)':puan>=40?'var(--gold2)':'var(--red)';
+    var logoSrc=(window.LOGOS&&LOGOS[ticker])?LOGOS[ticker]:'';
+    var logoEl=logoSrc?'<img class="sh-logo" src="'+logoSrc+'" alt="">':'<div class="sh-logo"></div>';
+    hHTML+='<div class="sektor-hisse-row" onclick="window.location.href=\'/hisse/'+ticker.toLowerCase()+'.html\'">'
+      +logoEl
+      +'<span class="sh-tick">'+ticker+'</span>'
+      +'<span class="sh-name">'+(info.company||ticker)+'</span>'
+      +'<div class="sh-ono">'
+        +'<span class="sh-ol">'+ol+'</span>'
+        +'<span class="sh-no">'+no+'</span>'
+        +'<span class="sh-ols">'+ols+'</span>'
+      +'</div>'
+      +'<span class="sh-puan" style="color:'+col+'">%'+puan+'</span>'
+      +'</div>';
+  }
+
+  var totOl=0,totNo=0,totOls=0,totP=0,n=0;
+  sd.hisseler.forEach(function(h){
+    var info2=h[1], p0=info2.periods?.[0], r0=p0?(info2.rows?.[p0]||{}):{};
+    if(r0.ol!=null){totOl+=r0.ol;totNo+=r0.no||0;totOls+=r0.ols||0;n++;}
+    totP+=(r0.yo??info2.puan??0);
+  });
+  var ortP=sd.hisseler.length>0?Math.round(totP/sd.hisseler.length):0;
+  var ortOl=n>0?(totOl/n).toFixed(1):'—', ortNo=n>0?(totNo/n).toFixed(1):'—', ortOls=n>0?(totOls/n).toFixed(1):'—';
+  var mxO=n>0?Math.max(totOl/n,totNo/n,totOls/n,1):1;
+  var olW=n>0?Math.round(totOl/n/mxO*100):0, noW=n>0?Math.round(totNo/n/mxO*100):0, olsW=n>0?Math.round(totOls/n/mxO*100):0;
+  var pCol=ortP>=60?'var(--green)':ortP>=40?'var(--gold2)':'var(--red)';
+
+  wrap.innerHTML=
+    '<div class="sektor-baslik">'+sd.sekt+' <span style="font-weight:400;color:var(--muted)">('+sd.sayi+' hisse)</span></div>'
+    +'<div class="sektor-card">'
+      +'<div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em">En İyi 5 Hisse</div>'
+      +headerHTML
+      +'<div style="height:1px;background:var(--border);margin:.2rem 0"></div>'
+      +'<div class="sektor-hisse-list">'+hHTML+'</div>'
+    +'</div>'
+    +'<div class="sektor-card">'
+      +'<div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em">Sektör ONO Ortalaması</div>'
+      +'<div class="ono-grafik-wrap">'
+        +'<div class="ono-grafik-bars">'
+          +'<div class="ono-bar-row"><span class="ono-bar-lbl" style="color:var(--green)">Olumlu</span><div class="ono-bar-bg"><div class="ono-bar-fill" style="width:'+olW+'%;background:var(--green)"></div></div><span class="ono-bar-val" style="color:var(--green)">'+ortOl+'</span></div>'
+          +'<div class="ono-bar-row"><span class="ono-bar-lbl" style="color:var(--gold2)">Nötr</span><div class="ono-bar-bg"><div class="ono-bar-fill" style="width:'+noW+'%;background:var(--gold2)"></div></div><span class="ono-bar-val" style="color:var(--gold2)">'+ortNo+'</span></div>'
+          +'<div class="ono-bar-row"><span class="ono-bar-lbl" style="color:var(--red)">Olumsuz</span><div class="ono-bar-bg"><div class="ono-bar-fill" style="width:'+olsW+'%;background:var(--red)"></div></div><span class="ono-bar-val" style="color:var(--red)">'+ortOls+'</span></div>'
+        +'</div>'
+        +'<div class="ono-ozet">'
+          +'<div class="ono-ozet-puan" style="color:'+pCol+'">%'+ortP+'</div>'
+          +'<div class="ono-ozet-lbl">Ort. Puan</div>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+}
+
+function sekorSec(btn,enc){
+  document.querySelectorAll('.sektor-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var sektAdi=decodeURIComponent(enc);
+  var hisseler=[];
+  Object.entries(VERI).forEach(function(e){
+    var t=e[0],info=e[1];
+    if((info.sector||'DİĞER').trim()!==sektAdi) return;
+    var p0=info.periods?.[0], yo=p0?(info.rows?.[p0]?.yo??null):null;
+    hisseler.push([t,info,yo??info.puan??0]);
+  });
+  hisseler.sort(function(a,b){return b[2]-a[2];});
+  sekorRender({sekt:sektAdi,hisseler:hisseler,sayi:hisseler.length});
 }
 
 function injectTableLogos(){
@@ -1470,33 +1621,37 @@ function buildDash(){
   buildHissePuani();
   // Logo
   const logoWrap=document.getElementById('d-logo');
-  // Öncelik: 1) localStorage, 2) LOGOS objesi, 3) CDN
-  (function showLogo(ticker){
+  const logoSrc=LOGOS[D.ticker];
+  if(logoSrc){
+    logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`;
+  } else {
+    // CDN'lerden logo çek — sırayla dene
+    const logoCdns = [
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker.toLowerCase()}_icon.png`,
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker}_icon.png`,
+    ];
+    logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
+    let tried = 0;
+    function tryLogo(idx){
+      if(idx >= logoCdns.length) return;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function(){
+        logoWrap.innerHTML=`<img src="${logoCdns[idx]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      };
+      img.onerror = function(){ tryLogo(idx+1); };
+      img.src = logoCdns[idx];
+    }
+    // Önce localStorage'dan kontrol et (admin panelinden yüklenenler)
     try {
       const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-      if(saved[ticker]){
-        logoWrap.innerHTML=`<img src="${saved[ticker]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
-        return;
+      if(saved[D.ticker]){
+        logoWrap.innerHTML=`<img src="${saved[D.ticker]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      } else {
+        tryLogo(0);
       }
-    } catch(e){}
-    if(window.LOGOS && LOGOS[ticker]){
-      logoWrap.innerHTML=`<img src="${LOGOS[ticker]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain">`;
-      return;
-    }
-    logoWrap.innerHTML=`<div class="logo-placeholder">${ticker}</div>`;
-    const cdns=[
-      `https://storage.fintables.com/media/uploads/company-logos/${ticker.toLowerCase()}_icon.png`,
-      `https://storage.fintables.com/media/uploads/company-logos/${ticker}_icon.png`,
-    ];
-    function tryLogo(i){
-      if(i>=cdns.length) return;
-      const img=new Image(); img.crossOrigin='anonymous';
-      img.onload=function(){ if(!window.LOGOS) window.LOGOS={}; LOGOS[ticker]=cdns[i]; logoWrap.innerHTML=`<img src="${cdns[i]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`; };
-      img.onerror=function(){ tryLogo(i+1); };
-      img.src=cdns[i];
-    }
-    tryLogo(0);
-  })(D.ticker);
+    } catch(e){ tryLogo(0); }
+  }
 
   // Dönem butonları (son 8)
   activePeriod=D.periods[0];
@@ -3393,12 +3548,136 @@ function buildHomeLists(){
     </table>`;
   }
 
-  wrap.innerHTML = `
-    <div class="home-list-section">
-      <div class="home-list-title">En Yüksek Analiz Puanı</div>
-      ${tableHTML(withPuan, ['Hisse','Şirket','Sektör','Puan','Son Dönem'])}
-    </div>
-`;
+  // Sektör listesi hazırla
+  var sektorMap = {};
+  Object.entries(VERI).forEach(function(e){
+    var t=e[0], info=e[1];
+    var sekt=(info.sector||'DİĞER').trim();
+    var p0=info.periods?.[0];
+    var yo=p0?(info.rows?.[p0]?.yo??null):null;
+    var puan=yo??info.puan??0;
+    if(!sektorMap[sekt]) sektorMap[sekt]=[];
+    sektorMap[sekt].push([t,info,puan]);
+  });
+  var sektorList=Object.entries(sektorMap).map(function(e){
+    var sekt=e[0], hisseler=e[1];
+    var sirali=[].concat(hisseler).sort(function(a,b){return b[2]-a[2];});
+    var ort=Math.round(hisseler.reduce(function(s,h){return s+h[2];},0)/hisseler.length);
+    return {sekt:sekt,hisseler:sirali,ort:ort,sayi:hisseler.length};
+  }).sort(function(a,b){return b.ort-a.ort;});
+
+  var btnHTML='';
+  sektorList.forEach(function(sd,i){
+    var enc=encodeURIComponent(sd.sekt);
+    btnHTML+='<button class="sektor-btn'+(i===0?' active':'')+'" onclick="sekorSec(this,\''+enc+'\')" title="'+sd.sekt+'">'+sd.sekt+'</button>';
+  });
+
+  wrap.innerHTML =
+    '<div class="home-list-section">'
+    +'<div class="home-list-title">En Yüksek Analiz Puanı</div>'
+    +tableHTML(withPuan, ['Hisse','Şirket','Sektör','Puan','Son Dönem'])
+    +'</div>'
+    +'<div class="home-list-section">'
+    +'<div class="home-list-title">Sektöre Göre En İyi 5 Hisse</div>'
+    +'<div class="sektor-panel">'
+    +'<div class="sektor-liste">'+btnHTML+'</div>'
+    +'<div class="sektor-icerik" id="sektor-icerik"></div>'
+    +'</div>'
+    +'</div>';
+
+  if(sektorList.length>0) sekorRender(sektorList[0]);
+}
+
+function sekorRender(sd){
+  var wrap=document.getElementById('sektor-icerik');
+  if(!wrap) return;
+  var top5=sd.hisseler.slice(0,5);
+  var maxP=top5[0]?top5[0][2]:100;
+
+  // Başlık satırı
+  var headerHTML=
+    '<div class="sektor-hisse-row" style="cursor:default;padding:.25rem .5rem;border-bottom:1px solid var(--border);margin-bottom:3px">'
+    +'<div style="width:22px;flex-shrink:0"></div>'
+    +'<span class="sh-tick" style="color:var(--muted);font-size:.6rem;font-weight:400">Hisse</span>'
+    +'<span class="sh-name" style="color:var(--muted);font-size:.6rem;font-weight:400">Şirket</span>'
+    +'<div class="sh-ono">'
+      +'<span class="sh-ol" style="font-weight:400;color:var(--green)">OL</span>'
+      +'<span class="sh-no" style="font-weight:400;color:var(--gold2)">NT</span>'
+      +'<span class="sh-ols" style="font-weight:400;color:var(--red)">OLS</span>'
+    +'</div>'
+    +'<span class="sh-puan" style="color:var(--muted);font-size:.6rem;font-weight:400">Puan</span>'
+    +'</div>';
+
+  var hHTML='';
+  for(var i=0;i<top5.length;i++){
+    var ticker=top5[i][0], info=top5[i][1], puan=top5[i][2];
+    var p0=info.periods?.[0], r0=p0?(info.rows?.[p0]||{}):{};
+    var ol=r0.ol!=null?r0.ol:'—', no=r0.no!=null?r0.no:'—', ols=r0.ols!=null?r0.ols:'—';
+    var col=puan>=60?'var(--green)':puan>=40?'var(--gold2)':'var(--red)';
+    var logoSrc=(window.LOGOS&&LOGOS[ticker])?LOGOS[ticker]:'';
+    var logoEl=logoSrc?'<img class="sh-logo" src="'+logoSrc+'" alt="">':'<div class="sh-logo"></div>';
+    hHTML+='<div class="sektor-hisse-row" onclick="window.location.href=\'/hisse/'+ticker.toLowerCase()+'.html\'">'
+      +logoEl
+      +'<span class="sh-tick">'+ticker+'</span>'
+      +'<span class="sh-name">'+(info.company||ticker)+'</span>'
+      +'<div class="sh-ono">'
+        +'<span class="sh-ol">'+ol+'</span>'
+        +'<span class="sh-no">'+no+'</span>'
+        +'<span class="sh-ols">'+ols+'</span>'
+      +'</div>'
+      +'<span class="sh-puan" style="color:'+col+'">%'+puan+'</span>'
+      +'</div>';
+  }
+
+  var totOl=0,totNo=0,totOls=0,totP=0,n=0;
+  sd.hisseler.forEach(function(h){
+    var info2=h[1], p0=info2.periods?.[0], r0=p0?(info2.rows?.[p0]||{}):{};
+    if(r0.ol!=null){totOl+=r0.ol;totNo+=r0.no||0;totOls+=r0.ols||0;n++;}
+    totP+=(r0.yo??info2.puan??0);
+  });
+  var ortP=sd.hisseler.length>0?Math.round(totP/sd.hisseler.length):0;
+  var ortOl=n>0?(totOl/n).toFixed(1):'—', ortNo=n>0?(totNo/n).toFixed(1):'—', ortOls=n>0?(totOls/n).toFixed(1):'—';
+  var mxO=n>0?Math.max(totOl/n,totNo/n,totOls/n,1):1;
+  var olW=n>0?Math.round(totOl/n/mxO*100):0, noW=n>0?Math.round(totNo/n/mxO*100):0, olsW=n>0?Math.round(totOls/n/mxO*100):0;
+  var pCol=ortP>=60?'var(--green)':ortP>=40?'var(--gold2)':'var(--red)';
+
+  wrap.innerHTML=
+    '<div class="sektor-baslik">'+sd.sekt+' <span style="font-weight:400;color:var(--muted)">('+sd.sayi+' hisse)</span></div>'
+    +'<div class="sektor-card">'
+      +'<div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em">En İyi 5 Hisse</div>'
+      +headerHTML
+      +'<div style="height:1px;background:var(--border);margin:.2rem 0"></div>'
+      +'<div class="sektor-hisse-list">'+hHTML+'</div>'
+    +'</div>'
+    +'<div class="sektor-card">'
+      +'<div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em">Sektör ONO Ortalaması</div>'
+      +'<div class="ono-grafik-wrap">'
+        +'<div class="ono-grafik-bars">'
+          +'<div class="ono-bar-row"><span class="ono-bar-lbl" style="color:var(--green)">Olumlu</span><div class="ono-bar-bg"><div class="ono-bar-fill" style="width:'+olW+'%;background:var(--green)"></div></div><span class="ono-bar-val" style="color:var(--green)">'+ortOl+'</span></div>'
+          +'<div class="ono-bar-row"><span class="ono-bar-lbl" style="color:var(--gold2)">Nötr</span><div class="ono-bar-bg"><div class="ono-bar-fill" style="width:'+noW+'%;background:var(--gold2)"></div></div><span class="ono-bar-val" style="color:var(--gold2)">'+ortNo+'</span></div>'
+          +'<div class="ono-bar-row"><span class="ono-bar-lbl" style="color:var(--red)">Olumsuz</span><div class="ono-bar-bg"><div class="ono-bar-fill" style="width:'+olsW+'%;background:var(--red)"></div></div><span class="ono-bar-val" style="color:var(--red)">'+ortOls+'</span></div>'
+        +'</div>'
+        +'<div class="ono-ozet">'
+          +'<div class="ono-ozet-puan" style="color:'+pCol+'">%'+ortP+'</div>'
+          +'<div class="ono-ozet-lbl">Ort. Puan</div>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+}
+
+function sekorSec(btn,enc){
+  document.querySelectorAll('.sektor-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var sektAdi=decodeURIComponent(enc);
+  var hisseler=[];
+  Object.entries(VERI).forEach(function(e){
+    var t=e[0],info=e[1];
+    if((info.sector||'DİĞER').trim()!==sektAdi) return;
+    var p0=info.periods?.[0], yo=p0?(info.rows?.[p0]?.yo??null):null;
+    hisseler.push([t,info,yo??info.puan??0]);
+  });
+  hisseler.sort(function(a,b){return b[2]-a[2];});
+  sekorRender({sekt:sektAdi,hisseler:hisseler,sayi:hisseler.length});
 }
 
 function injectTableLogos(){
@@ -3502,33 +3781,37 @@ function buildDash(){
   buildHissePuani();
   // Logo
   const logoWrap=document.getElementById('d-logo');
-  // Öncelik: 1) localStorage, 2) LOGOS objesi, 3) CDN
-  (function showLogo(ticker){
+  const logoSrc=LOGOS[D.ticker];
+  if(logoSrc){
+    logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`;
+  } else {
+    // CDN'lerden logo çek — sırayla dene
+    const logoCdns = [
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker.toLowerCase()}_icon.png`,
+      `https://storage.fintables.com/media/uploads/company-logos/${D.ticker}_icon.png`,
+    ];
+    logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
+    let tried = 0;
+    function tryLogo(idx){
+      if(idx >= logoCdns.length) return;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function(){
+        logoWrap.innerHTML=`<img src="${logoCdns[idx]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      };
+      img.onerror = function(){ tryLogo(idx+1); };
+      img.src = logoCdns[idx];
+    }
+    // Önce localStorage'dan kontrol et (admin panelinden yüklenenler)
     try {
       const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-      if(saved[ticker]){
-        logoWrap.innerHTML=`<img src="${saved[ticker]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
-        return;
+      if(saved[D.ticker]){
+        logoWrap.innerHTML=`<img src="${saved[D.ticker]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      } else {
+        tryLogo(0);
       }
-    } catch(e){}
-    if(window.LOGOS && LOGOS[ticker]){
-      logoWrap.innerHTML=`<img src="${LOGOS[ticker]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain">`;
-      return;
-    }
-    logoWrap.innerHTML=`<div class="logo-placeholder">${ticker}</div>`;
-    const cdns=[
-      `https://storage.fintables.com/media/uploads/company-logos/${ticker.toLowerCase()}_icon.png`,
-      `https://storage.fintables.com/media/uploads/company-logos/${ticker}_icon.png`,
-    ];
-    function tryLogo(i){
-      if(i>=cdns.length) return;
-      const img=new Image(); img.crossOrigin='anonymous';
-      img.onload=function(){ if(!window.LOGOS) window.LOGOS={}; LOGOS[ticker]=cdns[i]; logoWrap.innerHTML=`<img src="${cdns[i]}" alt="${ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`; };
-      img.onerror=function(){ tryLogo(i+1); };
-      img.src=cdns[i];
-    }
-    tryLogo(0);
-  })(D.ticker);
+    } catch(e){ tryLogo(0); }
+  }
 
   // Dönem butonları (son 8)
   activePeriod=D.periods[0];
