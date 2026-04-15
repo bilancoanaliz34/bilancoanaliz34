@@ -468,7 +468,14 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
   }
 ]
 </script>
-<script src="/logos.js" onerror="void(0)"></script>
+<script>
+(function(){
+  var s=document.createElement('script');
+  s.src='/logos.js?v='+Math.floor(Date.now()/3600000); // her saat değişir
+  s.onerror=function(){};
+  document.head.appendChild(s);
+})();
+</script>
 </head>
 <body>
 
