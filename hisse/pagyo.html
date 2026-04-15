@@ -992,21 +992,11 @@ async function loadEmbeddedData(){
     // Logo verisini arka planda yükle
     decompress('LDATA').then(txt=>{
       LOGOS=JSON.parse(txt);
-      // localStorage'daki ek logoları ekle
-      try{
-        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-        Object.assign(LOGOS, extra);
-      }catch(e){}
       // Logolar gelince tabloyu ve sektör panelini yenile
       injectTableLogos();
       const aktifBtn=document.querySelector('.sektor-btn.active');
       if(aktifBtn) aktifBtn.click();
-    }).catch(()=>{
-      try{
-        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-        if(Object.keys(extra).length) LOGOS=extra;
-      }catch(e){}
-    });
+    }).catch(()=>{});
     initSearch(); setTimeout(injectTableLogos, 500);
     // URL'de ?hisse=TICKER varsa direkt aç
     const urlParams = new URLSearchParams(window.location.search);
@@ -1682,15 +1672,7 @@ function buildDash(){
       img.onerror = function(){ tryLogo(idx+1); };
       img.src = logoCdns[idx];
     }
-    // Önce localStorage'dan kontrol et (admin panelinden yüklenenler)
-    try {
-      const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-      if(saved[D.ticker]){
-        logoWrap.innerHTML=`<img src="${saved[D.ticker]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
-      } else {
-        tryLogo(0);
-      }
-    } catch(e){ tryLogo(0); }
+    tryLogo(0);
   }
 
   // Dönem butonları (son 8)
@@ -3191,21 +3173,11 @@ async function loadEmbeddedData(){
     // Logo verisini arka planda yükle
     decompress('LDATA').then(txt=>{
       LOGOS=JSON.parse(txt);
-      // localStorage'daki ek logoları ekle
-      try{
-        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-        Object.assign(LOGOS, extra);
-      }catch(e){}
       // Logolar gelince tabloyu ve sektör panelini yenile
       injectTableLogos();
       const aktifBtn=document.querySelector('.sektor-btn.active');
       if(aktifBtn) aktifBtn.click();
-    }).catch(()=>{
-      try{
-        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-        if(Object.keys(extra).length) LOGOS=extra;
-      }catch(e){}
-    });
+    }).catch(()=>{});
     initSearch(); setTimeout(injectTableLogos, 500);
     // URL'de ?hisse=TICKER varsa direkt aç
     const urlParams = new URLSearchParams(window.location.search);
@@ -3881,15 +3853,7 @@ function buildDash(){
       img.onerror = function(){ tryLogo(idx+1); };
       img.src = logoCdns[idx];
     }
-    // Önce localStorage'dan kontrol et (admin panelinden yüklenenler)
-    try {
-      const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-      if(saved[D.ticker]){
-        logoWrap.innerHTML=`<img src="${saved[D.ticker]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
-      } else {
-        tryLogo(0);
-      }
-    } catch(e){ tryLogo(0); }
+    tryLogo(0);
   }
 
   // Dönem butonları (son 8)
