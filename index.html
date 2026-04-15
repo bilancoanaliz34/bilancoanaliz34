@@ -916,6 +916,7 @@ function parseCSV(csvText){
   // Sütun pozisyonları (Excel col index, 0-based)
   const CI = {
     hisse:1, donem:3, sektor:4, firma:5, bilTarih:6,
+    guncelFiyat:7, bilEndeks:40,
     fiyat:8, adet:9, pd:10, donenV:11, duranV:12,
     kvYuk:13, uvYuk:14, fd:15, oz:16, brutKar:17,
     faalKar:21, favok:22, netBorc:23, netKar:24, satislar:25,
@@ -960,6 +961,7 @@ function parseCSV(csvText){
 
     r.rows[donem]={
       fd:num(g(row,'fd')), pd:num(g(row,'pd')),
+      guncelFiyat:num(g(row,'guncelFiyat')), bilEndeks:num(g(row,'bilEndeks')),
       fiyat:num(g(row,'fiyat')), adet:num(g(row,'adet')),
       donenV:num(g(row,'donenV')), duranV:num(g(row,'duranV')),
       kvYuk:num(g(row,'kvYuk')), uvYuk:num(g(row,'uvYuk')),
@@ -1120,6 +1122,23 @@ async function loadEmbeddedData(){
       console.warn('Google Sheets yüklenemedi, gömülü veri kullanılıyor:', sheetsErr.message);
       VERI=JSON.parse(await decompress('VDATA'));
     }
+
+    // Güncel endeks değerini endeks sayfasından çek
+    fetch('https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=endeks')
+      .then(r2=>r2.text())
+      .then(csv2=>{
+        const lines2=csv2.trim().split('\n').filter(l=>l.trim());
+        for(let i=lines2.length-1;i>=1;i--){
+          const cols=lines2[i].split(',');
+          const raw=cols[2]?cols[2].replace(/['"]/g,'').trim():'';
+          const v=parseFloat(raw.replace(',','.'));
+          if(v&&!isNaN(v)){
+            Object.values(VERI).forEach(info=>{ info.guncelEndeks=v; });
+            console.log('✓ Güncel endeks:', v);
+            break;
+          }
+        }
+      }).catch(()=>{});
 
     // Logo verisini arka planda yükle
     decompress('LDATA').then(txt=>{
