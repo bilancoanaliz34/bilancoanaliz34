@@ -123,6 +123,7 @@ try:
 
 
         row_data = {
+            'guncelFiyat':num(row[7]),'bilEndeks':num(row[8]),
             'fd':num(row[15]),'pd':num(row[10]),'fiyat':num(row[8]),'adet':num(row[9]),
             'donenV':num(row[11]),'duranV':num(row[12]),'kvYuk':num(row[13]),'uvYuk':num(row[14]),
             'oz':num(row[16]),'brutKar':num(row[17]),'faalKar':num(row[21]),'favok':num(row[22]),
@@ -166,6 +167,27 @@ try:
 
 except Exception as e:
     print(f"⚠ Google Sheets hatası: {e} — VDATA kullanılıyor")
+
+# ── Endeks sayfasından güncel endeks değerini çek ─────────────────────────────
+GUNCEL_ENDEKS = None
+try:
+    endeks_url = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=endeks'
+    resp2 = requests.get(endeks_url, timeout=15)
+    resp2.raise_for_status()
+    endeks_lines = [l for l in resp2.text.strip().split('\n') if l.strip()]
+    # Son satırdan C sütununu al (index 2)
+    if len(endeks_lines) > 1:
+        last_row = parse_line(endeks_lines[-1])
+        if len(last_row) >= 3:
+            GUNCEL_ENDEKS = num(last_row[2])  # C sütunu = index 2
+    print(f"✓ Güncel endeks: {GUNCEL_ENDEKS}")
+except Exception as e2:
+    print(f"⚠ Endeks çekme hatası: {e2}")
+
+# Her hissenin VERI objesine guncelEndeks ekle
+if GUNCEL_ENDEKS is not None:
+    for t in VERI:
+        VERI[t]['guncelEndeks'] = GUNCEL_ENDEKS
 
 # ── Hisse sayfası template ───────────────────────────────────────────────────
 def make_hisse_page(ticker, info):
@@ -438,6 +460,7 @@ async function xPaylas(){
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="/logos.js" onerror="void(0)"></script>
   <style>
   {main_css}
   #upload-screen {{ display: none !important; }}
@@ -447,7 +470,7 @@ async function xPaylas(){
 <body>
 <script data-cfasync="false">
 var VERI = {hisse_json};
-if(!window.LOGOS) window.LOGOS = {{}};
+var LOGOS = {{}};
 var D = {{}};
 var CHS = [];
 var activePeriod = '';
@@ -460,41 +483,6 @@ var activePeriod = '';
 window.addEventListener('load', function() {{
   var ticker = '{ticker}';
   var SHEET = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri';
-
-  function applyLogo(ticker) {{
-    var logoWrap = document.getElementById('d-logo');
-    if(!logoWrap) return;
-    // 1) localStorage
-    try {{
-      var saved = JSON.parse(localStorage.getItem('ba34_logos')||'{{}}');
-      if(saved[ticker]) {{
-        logoWrap.innerHTML = '<img src="'+saved[ticker]+'" alt="'+ticker+'" style="width:48px;height:48px;object-fit:contain;border-radius:4px">';
-        return;
-      }}
-    }} catch(e) {{}}
-    // 2) LOGOS objesi
-    if(window.LOGOS && LOGOS[ticker]) {{
-      logoWrap.innerHTML = '<img src="'+LOGOS[ticker]+'" alt="'+ticker+'" style="width:48px;height:48px;object-fit:contain">';
-      return;
-    }}
-    // 3) CDN
-    var cdns = [
-      'https://storage.fintables.com/media/uploads/company-logos/'+ticker.toLowerCase()+'_icon.png',
-      'https://storage.fintables.com/media/uploads/company-logos/'+ticker+'_icon.png'
-    ];
-    function trycdn(i) {{
-      if(i >= cdns.length) return;
-      var img = new Image(); img.crossOrigin='anonymous';
-      img.onload = function() {{
-        if(!window.LOGOS) window.LOGOS={{}};
-        LOGOS[ticker] = cdns[i];
-        logoWrap.innerHTML = '<img src="'+cdns[i]+'" alt="'+ticker+'" style="width:48px;height:48px;object-fit:contain;border-radius:4px">';
-      }};
-      img.onerror = function() {{ trycdn(i+1); }};
-      img.src = cdns[i];
-    }}
-    trycdn(0);
-  }}
 
   function initDash(info) {{
     var sp = [...info.periods].sort(function(a,b){{
@@ -511,12 +499,6 @@ window.addEventListener('load', function() {{
           company:info.company,olumlu:olumlu,notr:notr,
           olumsuz:olumsuz,puan:puan}};
     buildDash();
-    // logos.js'i şimdi yükle ve bitince logoyu uygula
-    var logosScript = document.createElement('script');
-    logosScript.src = '/logos.js';
-    logosScript.onload = function() {{ applyLogo(ticker); }};
-    logosScript.onerror = function() {{ applyLogo(ticker); }};
-    document.head.appendChild(logosScript);
     ['btn-paylas','btn-paylas-home'].forEach(function(id){{
       var el=document.getElementById(id);
       if(el) el.style.display='inline-flex';
