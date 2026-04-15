@@ -762,11 +762,11 @@ function parseCSV(csvText){
   // Sütun pozisyonları (Excel col index, 0-based)
   const CI = {
     hisse:1, donem:3, sektor:4, firma:5, bilTarih:6,
-    guncelFiyat:7, bilEndeks:40,
-    fiyat:8, adet:9, pd:10, donenV:11, duranV:12,
-    kvYuk:13, uvYuk:14, fd:15, oz:16, brutKar:17,
-    faalKar:21, favok:22, netBorc:23, netKar:24, satislar:25,
-    roe:26, ol:27, no:28, ols:29, yo:30,
+    guncelFiyat:7, bilEndeks:8,
+    fiyat:9, adet:10, pd:11, donenV:12, duranV:13,
+    kvYuk:14, uvYuk:15, fd:16, oz:17, brutKar:18,
+    faalKar:22, favok:23, netBorc:24, netKar:25, satislar:26,
+    roe:27, ol:28, no:29, ols:30, yo:31,
     pddd:31, fk:32, fdFavok:33, pdNfk:34,
     fdNs:35, nfkPd:36, nbFavok:37, efk:38, hbk:39
   };
@@ -853,6 +853,7 @@ function parseWorkbook(wb){
   const C = {
     hisse:'Hisse', donem:'Dönem', sektor:'Sektör', firma:'FİRMA İSMİ',
     bilTarih:'Bilanço Tarihi',
+    guncelFiyat:'Güncel Hisse Fiyatı', bilEndeks:'Endeks',
     fiyat:'Hisse Fiyatı', adet:'Hisse Sayısı', pd:'Piyasa Değeri', fd:'Firma Değeri',
     donenV:'Dönen Varlıklar', duranV:'Duran Varlıklar',
     kvYuk:'Kısa Vadeli Yükümlülükler', uvYuk:'Uzun Vadeli Yükümlülükler',
@@ -908,6 +909,7 @@ function parseWorkbook(wb){
 
     r.rows[donem] = {
       fd:num(row[getIdx('fd')]),      pd:num(row[getIdx('pd')]),
+      guncelFiyat:num(row[getIdx('guncelFiyat')]), bilEndeks:num(row[getIdx('bilEndeks')]),
       fiyat:num(row[getIdx('fiyat')]),adet:num(row[getIdx('adet')]),
       donenV:num(row[getIdx('donenV')]),duranV:num(row[getIdx('duranV')]),
       kvYuk:num(row[getIdx('kvYuk')]),uvYuk:num(row[getIdx('uvYuk')]),
@@ -2952,11 +2954,11 @@ function parseCSV(csvText){
   // Sütun pozisyonları (Excel col index, 0-based)
   var CI = {
     hisse:1, donem:3, sektor:4, firma:5, bilTarih:6,
-    guncelFiyat:7, bilEndeks:40,
-    fiyat:8, adet:9, pd:10, donenV:11, duranV:12,
-    kvYuk:13, uvYuk:14, fd:15, oz:16, brutKar:17,
-    faalKar:21, favok:22, netBorc:23, netKar:24, satislar:25,
-    roe:26, ol:27, no:28, ols:29, yo:30,
+    guncelFiyat:7, bilEndeks:8,
+    fiyat:9, adet:10, pd:11, donenV:12, duranV:13,
+    kvYuk:14, uvYuk:15, fd:16, oz:17, brutKar:18,
+    faalKar:22, favok:23, netBorc:24, netKar:25, satislar:26,
+    roe:27, ol:28, no:29, ols:30, yo:31,
     pddd:31, fk:32, fdFavok:33, pdNfk:34,
     fdNs:35, nfkPd:36, nbFavok:37, efk:38, hbk:39
   };
@@ -3043,6 +3045,7 @@ function parseWorkbook(wb){
   const C = {
     hisse:'Hisse', donem:'Dönem', sektor:'Sektör', firma:'FİRMA İSMİ',
     bilTarih:'Bilanço Tarihi',
+    guncelFiyat:'Güncel Hisse Fiyatı', bilEndeks:'Endeks',
     fiyat:'Hisse Fiyatı', adet:'Hisse Sayısı', pd:'Piyasa Değeri', fd:'Firma Değeri',
     donenV:'Dönen Varlıklar', duranV:'Duran Varlıklar',
     kvYuk:'Kısa Vadeli Yükümlülükler', uvYuk:'Uzun Vadeli Yükümlülükler',
@@ -3098,6 +3101,7 @@ function parseWorkbook(wb){
 
     r.rows[donem] = {
       fd:num(row[getIdx('fd')]),      pd:num(row[getIdx('pd')]),
+      guncelFiyat:num(row[getIdx('guncelFiyat')]), bilEndeks:num(row[getIdx('bilEndeks')]),
       fiyat:num(row[getIdx('fiyat')]),adet:num(row[getIdx('adet')]),
       donenV:num(row[getIdx('donenV')]),duranV:num(row[getIdx('duranV')]),
       kvYuk:num(row[getIdx('kvYuk')]),uvYuk:num(row[getIdx('uvYuk')]),
