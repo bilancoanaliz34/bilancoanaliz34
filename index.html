@@ -916,13 +916,13 @@ function parseCSV(csvText){
   // Sütun pozisyonları (Excel col index, 0-based)
   const CI = {
     hisse:1, donem:3, sektor:4, firma:5, bilTarih:6,
-    guncelFiyat:7, bilEndeks:8,
-    fiyat:9, adet:10, pd:11, donenV:12, duranV:13,
-    kvYuk:14, uvYuk:15, fd:16, oz:17, brutKar:18,
-    faalKar:22, favok:23, netBorc:24, netKar:25, satislar:26,
-    roe:27, ol:28, no:29, ols:30, yo:31,
-    pddd:32, fk:33, fdFavok:34, pdNfk:35,
-    fdNs:36, nfkPd:37, nbFavok:38, efk:39, hbk:40
+    guncelFiyat:7, bilEndeks:40,
+    fiyat:8, adet:9, pd:10, donenV:11, duranV:12,
+    kvYuk:13, uvYuk:14, fd:15, oz:16, brutKar:17,
+    faalKar:21, favok:22, netBorc:23, netKar:24, satislar:25,
+    roe:26, ol:27, no:28, ols:29, yo:30,
+    pddd:31, fk:32, fdFavok:33, pdNfk:34,
+    fdNs:35, nfkPd:36, nbFavok:37, efk:38, hbk:39
   };
 
   const g = (row, key) => row[CI[key]] !== undefined ? row[CI[key]] : null;
