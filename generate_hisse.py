@@ -64,9 +64,12 @@ VERI   = json.loads(gzip.decompress(base64.b64decode(b64)).decode('utf-8'))
 print(f"✓ VDATA'dan {len(VERI)} hisse alındı")
 
 # ── Google Sheets'ten güncel veriyi çek ───────────────────────────────────────
-import requests
+try:
+    import requests
+except ImportError:
+    requests = None
 
-SHEET_URL = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri'
+SHEET_URL = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tqtqx=out:csv&sheet=veri'
 
 def num(v):
     if v is None: return None
@@ -99,6 +102,9 @@ def parse_line(line):
     return [v.strip('"') for v in result]
 
 try:
+    if requests is None:
+        raise RuntimeError("requests modülü yok")
+
     print("Google Sheets'ten veri çekiliyor...")
     resp = requests.get(SHEET_URL, timeout=30)
     resp.raise_for_status()
@@ -172,7 +178,10 @@ except Exception as e:
 # ── Endeks sayfasından güncel endeks değerini çek ─────────────────────────────
 GUNCEL_ENDEKS = None
 try:
-    endeks_url = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=endeks'
+    if requests is None:
+        raise RuntimeError("requests modülü yok")
+
+    endeks_url = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tqtqx=out:csv&sheet=endeks'
     resp2 = requests.get(endeks_url, timeout=15)
     resp2.raise_for_status()
     endeks_lines = [l.strip() for l in resp2.text.strip().split('\n') if l.strip()]
@@ -243,10 +252,10 @@ async function xPaylas(){
   try {
     const p0   = D.periods[0];
     const r0   = D.rows[p0] || {};
-    const ol   = r0.ol  ?? D.olumlu  ?? 0;
-    const no   = r0.no  ?? D.notr    ?? 0;
-    const ols  = r0.ols ?? D.olumsuz ?? 0;
-    const yo   = r0.yo  ?? D.puan    ?? 0;
+    const ol   = r0.ol   D.olumlu   0;
+    const no   = r0.no   D.notr     0;
+    const ols  = r0.ols  D.olumsuz  0;
+    const yo   = r0.yo   D.puan     0;
     const sektor = (D.sector || '').replace(/[^a-zA-Z0-9À-ɏ]/g,'');
     const siteLink = 'https://bilancoanaliz34.com.tr/hisse/' + D.ticker.toLowerCase() + '.html';
 
@@ -280,7 +289,7 @@ async function xPaylas(){
 
     // Logo: localStorage'dan geldiyse CORS yok, CDN'den geldiyse gizle
     const logoEl = document.getElementById('d-logo');
-    const logoImg = logoEl ? logoEl.querySelector('img') : null;
+    const logoImg = logoEl  logoEl.querySelector('img') : null;
     const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
     if(logoFromCDN) logoEl.style.visibility='hidden';
 
@@ -316,7 +325,7 @@ async function xPaylas(){
       try { await navigator.clipboard.writeText(metin); } catch(e){}
 
       // X tweet sayfasını yeni sekmede aç — metin URL encode ile
-      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
+      window.open('https://x.com/intent/tweettext='+encodeURIComponent(metin), '_blank');
 
       btn.textContent = '✓ Görsel indirildi!';
       btn.style.color = '#4caf7d';
@@ -346,10 +355,10 @@ async function xPaylas(){
   try {
     const p0   = D.periods[0];
     const r0   = D.rows[p0] || {};
-    const ol   = r0.ol  ?? D.olumlu  ?? 0;
-    const no   = r0.no  ?? D.notr    ?? 0;
-    const ols  = r0.ols ?? D.olumsuz ?? 0;
-    const yo   = r0.yo  ?? D.puan    ?? 0;
+    const ol   = r0.ol   D.olumlu   0;
+    const no   = r0.no   D.notr     0;
+    const ols  = r0.ols  D.olumsuz  0;
+    const yo   = r0.yo   D.puan     0;
     const sektor = (D.sector || '').replace(/[^a-zA-Z0-9À-ɏ]/g,'');
     const siteLink = 'https://bilancoanaliz34.com.tr/hisse/' + D.ticker.toLowerCase() + '.html';
 
@@ -383,7 +392,7 @@ async function xPaylas(){
 
     // Logo: localStorage'dan geldiyse CORS yok, CDN'den geldiyse gizle
     const logoEl = document.getElementById('d-logo');
-    const logoImg = logoEl ? logoEl.querySelector('img') : null;
+    const logoImg = logoEl  logoEl.querySelector('img') : null;
     const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
     if(logoFromCDN) logoEl.style.visibility='hidden';
 
@@ -419,7 +428,7 @@ async function xPaylas(){
       try { await navigator.clipboard.writeText(metin); } catch(e){}
 
       // X tweet sayfasını yeni sekmede aç — metin URL encode ile
-      window.open('https://x.com/intent/tweet?text='+encodeURIComponent(metin), '_blank');
+      window.open('https://x.com/intent/tweettext='+encodeURIComponent(metin), '_blank');
 
       btn.textContent = '✓ Görsel indirildi!';
       btn.style.color = '#4caf7d';
@@ -457,13 +466,13 @@ async function xPaylas(){
   {{"@context":"https://schema.org","@type":"FinancialProduct","name":"{company} ({ticker})","description":"{desc}","url":"https://bilancoanaliz34.com.tr/hisse/{ticker.lower()}.html","provider":{{"@type":"Organization","name":"BilancoAnaliz34","url":"https://bilancoanaliz34.com.tr"}}}}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script>
   (function(){{
     var s=document.createElement('script');
-    s.src='/logos.js?v='+Math.floor(Date.now()/3600000);
+    s.src='/logos.jsv='+Math.floor(Date.now()/3600000);
     s.onerror=function(){{}};
     document.head.appendChild(s);
   }})();
@@ -489,7 +498,7 @@ var activePeriod = '';
 {core_js}
 window.addEventListener('load', function() {{
   var ticker = '{ticker}';
-  var SHEET = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri';
+  var SHEET = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tqtqx=out:csv&sheet=veri';
 
   function initDash(info) {{
     var sp = [...info.periods].sort(function(a,b){{
@@ -498,10 +507,10 @@ window.addEventListener('load', function() {{
     }});
     var p0 = sp[0];
     var r0 = info.rows[p0] || {{}};
-    var olumlu  = (info.olumlu  != null) ? info.olumlu  : (r0.ol  != null ? r0.ol  : 0);
-    var notr    = (info.notr    != null) ? info.notr    : (r0.no  != null ? r0.no  : 0);
-    var olumsuz = (info.olumsuz != null) ? info.olumsuz : (r0.ols != null ? r0.ols : 0);
-    var puan    = (info.puan    != null) ? info.puan    : (r0.yo  != null ? r0.yo  : 0);
+    var olumlu  = (info.olumlu  != null)  info.olumlu  : (r0.ol  != null  r0.ol  : 0);
+    var notr    = (info.notr    != null)  info.notr    : (r0.no  != null  r0.no  : 0);
+    var olumsuz = (info.olumsuz != null)  info.olumsuz : (r0.ols != null  r0.ols : 0);
+    var puan    = (info.puan    != null)  info.puan    : (r0.yo  != null  r0.yo  : 0);
     D = {{ticker:ticker,periods:sp,rows:info.rows,sector:info.sector,
           company:info.company,olumlu:olumlu,notr:notr,
           olumsuz:olumsuz,puan:puan}};
@@ -536,8 +545,6 @@ window.addEventListener('load', function() {{
 function resetApp(){{ window.location.href='/'; }}
 function showErr(m){{ console.error(m); }}
 function hideErr(){{}}
-function openAdmin(){{}} function closeAdmin(){{}}
-function handleExcelUpload(){{}} function handleLogoUpload(){{}}
 function acceptCookies(){{
   try{{localStorage.setItem('ba34_cookie_ok','1');}}catch(e){{}}
   var b=document.getElementById('cookie-banner');if(b)b.style.display='none';
