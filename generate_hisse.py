@@ -35,10 +35,13 @@ idx_js = c.find('\n// GLOBALS\n')
 idx_je = c.find('\nfunction resetApp()')
 core_js = c[idx_js:idx_je]
 # var LOGOS={}; satırını direkt kaldır
-import re as _re2
-core_js = _re2.sub(r'var LOGOS=\{\};?\s*\n?', '', core_js)
-core_js = _re2.sub(r'let LOGOS=\{\};?\s*\n?', '', core_js)
-core_js = _re2.sub(r'const LOGOS=\{\};?\s*\n?', '', core_js)
+core_js = core_js.replace('var LOGOS={};
+', '').replace('var LOGOS={};
+', '').replace('var LOGOS={};', '')
+core_js = core_js.replace('let LOGOS={};
+', '').replace('let LOGOS={};', '')
+core_js = core_js.replace('const LOGOS={};
+', '').replace('const LOGOS={};', '')
 # let tanımlarını sil - regex ile tüm varyantları yakala
 import re as _re
 # Basit string replace ile global tanımları sil
