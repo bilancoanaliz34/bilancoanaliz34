@@ -1663,10 +1663,15 @@ function buildDash(){
   buildHissePuani();
   // Logo
   const logoWrap=document.getElementById('d-logo');
-  const logoSrc=LOGOS[D.ticker];
-  if(logoSrc){
-    logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`;
-  } else {
+  function applyDashLogo(){
+    const src=window.LOGOS&&LOGOS[D.ticker]?LOGOS[D.ticker]:null;
+    if(src){
+      logoWrap.innerHTML='<img src="'+src+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain">';
+      return true;
+    }
+    return false;
+  }
+  if(!applyDashLogo()){
     // CDN'lerden logo çek — sırayla dene
     const logoCdns = [
       `https://storage.fintables.com/media/uploads/company-logos/${D.ticker.toLowerCase()}_icon.png`,
@@ -3862,10 +3867,15 @@ function buildDash(){
   buildHissePuani();
   // Logo
   const logoWrap=document.getElementById('d-logo');
-  const logoSrc=LOGOS[D.ticker];
-  if(logoSrc){
-    logoWrap.innerHTML=`<img src="${logoSrc}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain">`;
-  } else {
+  function applyDashLogo(){
+    const src=window.LOGOS&&LOGOS[D.ticker]?LOGOS[D.ticker]:null;
+    if(src){
+      logoWrap.innerHTML='<img src="'+src+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain">';
+      return true;
+    }
+    return false;
+  }
+  if(!applyDashLogo()){
     // CDN'lerden logo çek — sırayla dene
     const logoCdns = [
       `https://storage.fintables.com/media/uploads/company-logos/${D.ticker.toLowerCase()}_icon.png`,
