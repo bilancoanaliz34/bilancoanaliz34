@@ -51,6 +51,7 @@ core_js = _re.sub(r'(let|var|const)\s+D\s*=\s*\{[^}]*\}\s*;[^\n]*', '', core_js)
 core_js = _re.sub(r'(let|var|const)\s+CHS\s*=\s*\[[^\]]*\]\s*;[^\n]*', '', core_js)
 core_js = _re.sub(r'(let|var|const)\s+VERI\s*=\s*\{[^}]*\}[^;]*;[^\n]*', '', core_js)
 core_js = core_js.replace('let LOGOS={};', '').replace('var LOGOS={};', '').replace('const LOGOS={};', '').replace('let LOGOS = {};', '').replace('var LOGOS = {};', '')
+core_js = _re.sub(r'(let|var|const)\s+LOGOS\s*=\s*\{[^}]*\}\s*;?', '', core_js)
 core_js = _re.sub(r"(let|var|const)\s+activePeriod\s*=\s*'[^']*'\s*;[^\n]*", '', core_js)
 # const → var dönüşümü (Cloudflare çakışmalarını önle)
 import re as _re2
