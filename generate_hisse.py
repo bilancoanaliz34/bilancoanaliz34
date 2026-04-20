@@ -510,6 +510,11 @@ window.addEventListener('load', function() {{
           company:info.company,olumlu:olumlu,notr:notr,
           olumsuz:olumsuz,puan:puan}};
     buildDash();
+    // Logo: LOGOS zaten yüklüyse hemen uygula
+    if(window.LOGOS && LOGOS[ticker]){{
+      var lw=document.getElementById('d-logo');
+      if(lw) lw.innerHTML='<img src="'+LOGOS[ticker]+'" alt="'+ticker+'" style="width:48px;height:48px;object-fit:contain">';
+    }}
     ['btn-paylas','btn-paylas-home'].forEach(function(id){{
       var el=document.getElementById(id);
       if(el) el.style.display='inline-flex';
