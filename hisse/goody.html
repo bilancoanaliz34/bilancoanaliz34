@@ -1753,7 +1753,12 @@ function yoyHtml(curr,prev){
 function renderCharts(){
   CHS.forEach(c=>c.destroy());CHS=[];
 
-  const latY=parseInt(D.periods[0].split('/')[0]);
+  // latY: 4 çeyreği tam olan en son yılı bul
+  const _p0year = parseInt(D.periods[0].split('/')[0]);
+  const _p0month = parseInt(D.periods[0].split('/')[1]);
+  // Eğer son dönem yılında 4 çeyrek yoksa (örn sadece 1.çeyrek), bir önceki yılı kullan
+  const _latYFull = D.periods.filter(p=>p.startsWith(_p0year+'/')).length;
+  const latY = (_latYFull >= 4 || _p0month === 12) ? _p0year : _p0year - 1;
   const prevY=latY-1;
 
 
@@ -3957,7 +3962,12 @@ function yoyHtml(curr,prev){
 function renderCharts(){
   CHS.forEach(c=>c.destroy());CHS=[];
 
-  const latY=parseInt(D.periods[0].split('/')[0]);
+  // latY: 4 çeyreği tam olan en son yılı bul
+  const _p0year = parseInt(D.periods[0].split('/')[0]);
+  const _p0month = parseInt(D.periods[0].split('/')[1]);
+  // Eğer son dönem yılında 4 çeyrek yoksa (örn sadece 1.çeyrek), bir önceki yılı kullan
+  const _latYFull = D.periods.filter(p=>p.startsWith(_p0year+'/')).length;
+  const latY = (_latYFull >= 4 || _p0month === 12) ? _p0year : _p0year - 1;
   const prevY=latY-1;
 
 
