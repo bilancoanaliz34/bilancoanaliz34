@@ -4489,8 +4489,14 @@ window.addEventListener('load', function() {
     D = {ticker:ticker,periods:sp,rows:info.rows,sector:info.sector,
           company:info.company,olumlu:olumlu,notr:notr,
           olumsuz:olumsuz,puan:puan};
+    // Inline logoyu LOGOS objesine geri yükle (var LOGOS={} sıfırlamış olabilir)
+    document.querySelectorAll('script[data-cfasync]').forEach(function(s){
+      if(s.textContent.indexOf('LOGOS[')>=0){
+        try{ eval(s.textContent); }catch(e){}
+      }
+    });
     buildDash();
-    // Logo: LOGOS zaten yüklüyse hemen uygula
+    // Logo uygula
     if(window.LOGOS && LOGOS[ticker]){
       var lw=document.getElementById('d-logo');
       if(lw) lw.innerHTML='<img src="'+LOGOS[ticker]+'" alt="'+ticker+'" style="width:48px;height:48px;object-fit:contain">';
