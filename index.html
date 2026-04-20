@@ -1986,12 +1986,11 @@ function renderCharts(){
     const prevBord =lastY.map(v=>v===null?'transparent':def.colors[2]);
     const currBord =thisY.map(v=>v===null?'transparent':def.colors[3]);
 
-    // YoY değişim hesapla (4.Çeyrek = son dönem baz alınır)
-    // Her grafik altı için: prevY/12 → latY/12 karşılaştırması
-    const anchorPrev = D.rows[prevY+'/12'];
-    const anchorCurr = D.rows[latY+'/12'];
-    const vPrev = anchorPrev?anchorPrev[def.key]:null;
+    // YoY hesabı: son dönem vs 1 yıl öncesi
+    const anchorCurr = D.rows[currLabels[3]];
+    const anchorPrev = D.rows[prevLabels[3]];
     const vCurr = anchorCurr?anchorCurr[def.key]:null;
+    const vPrev = anchorPrev?anchorPrev[def.key]:null;
     let yoyPct = null;
     if(vPrev!==null&&vCurr!==null&&vPrev!==0) yoyPct=((vCurr-vPrev)/Math.abs(vPrev))*100;
 
@@ -2034,12 +2033,12 @@ function renderCharts(){
         <div class="ch-vals">
           <div class="ch-val-item">
             <span class="ch-val-dot" style="background:${def.colors[2]}"></span>
-            <span class="ch-val-yr">Bir Önceki Yıl</span>
+            <span class="ch-val-yr">${prevLabels[3]}</span>
             <span class="ch-val-num">${fmtMn(vPrev)}</span>
           </div>
           <div class="ch-val-item">
             <span class="ch-val-dot" style="background:${def.colors[3]}"></span>
-            <span class="ch-val-yr">Bu Yıl</span>
+            <span class="ch-val-yr">${currLabels[3]}</span>
             <span class="ch-val-num">${fmtMn(vCurr)}</span>
           </div>
         </div>
@@ -2072,7 +2071,8 @@ function renderCharts(){
               },
               label:ctx=>{
                 const v=ctx.parsed.y;
-                return(ctx.datasetIndex===0?prevY:latY)+': '+(v!==null?v.toFixed(1)+' Mn ₺':'—');
+                const lbl=ctx.datasetIndex===0?prevLabels[ctx.dataIndex]:currLabels[ctx.dataIndex];
+                return lbl+': '+(v!==null?v.toFixed(1)+' Mn ₺':'—');
               }
             },
             backgroundColor:'#1a1e1a',borderColor:'#252825',borderWidth:1,
