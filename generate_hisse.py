@@ -8,6 +8,15 @@ import os, re, json, gzip, base64, sys
 
 # ── index.html'den bölümleri çıkar ───────────────────────────────────────────
 print("index.html okunuyor...")
+
+# ── logos.js'i oku ────────────────────────────────────────────────────────────
+logos_inline = "if(!window.LOGOS)window.LOGOS={};"
+if _os.path.exists('logos.js'):
+    with open('logos.js', 'r', encoding='utf-8') as _lf:
+        logos_inline = _lf.read().strip()
+    print(f"✓ logos.js okundu ({len(logos_inline)} karakter)")
+else:
+    print("⚠ logos.js bulunamadı, boş LOGOS kullanılıyor")
 import os as _os
 _html_file = 'index.html' if _os.path.exists('index.html') else 'bilanco-dashboard.html'
 with open(_html_file, 'r', encoding='utf-8') as f:
@@ -460,13 +469,8 @@ async function xPaylas(){
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script>
-  (function(){{
-    var s=document.createElement('script');
-    s.src='/logos.js?v='+Math.floor(Date.now()/3600000);
-    s.onerror=function(){{}};
-    document.head.appendChild(s);
-  }})();
+  <script data-cfasync="false">
+  {logos_inline}
   </script>
   <style>
   {main_css}
