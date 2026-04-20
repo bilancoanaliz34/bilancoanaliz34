@@ -481,7 +481,7 @@ async function xPaylas(){
 <body>
 <script data-cfasync="false">
 var VERI = {hisse_json};
-var LOGOS = {{}};
+if(!window.LOGOS) window.LOGOS = {{}};
 var D = {{}};
 var CHS = [];
 var activePeriod = '';
