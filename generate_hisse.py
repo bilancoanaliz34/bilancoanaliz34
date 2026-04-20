@@ -11,9 +11,9 @@ print("index.html okunuyor...")
 
 # ── logos.js'i oku ────────────────────────────────────────────────────────────
 logos_inline = "if(!window.LOGOS)window.LOGOS={};"
-if _os.path.exists('logos.js'):
-    with open('logos.js', 'r', encoding='utf-8') as _lf:
-        logos_inline = _lf.read().strip()
+if os.path.exists('logos.js'):
+    with open('logos.js', 'r', encoding='utf-8') as lf:
+        logos_inline = lf.read().strip()
     print(f"✓ logos.js okundu ({len(logos_inline)} karakter)")
 else:
     print("⚠ logos.js bulunamadı, boş LOGOS kullanılıyor")
