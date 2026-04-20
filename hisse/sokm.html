@@ -1753,26 +1753,24 @@ function yoyHtml(curr,prev){
 function renderCharts(){
   CHS.forEach(c=>c.destroy());CHS=[];
 
-  // latY: 4 çeyreği tam olan en son yılı bul
-  const _p0year = parseInt(D.periods[0].split('/')[0]);
-  const _p0month = parseInt(D.periods[0].split('/')[1]);
-  // Eğer son dönem yılında 4 çeyrek yoksa (örn sadece 1.çeyrek), bir önceki yılı kullan
-  const _latYFull = D.periods.filter(p=>p.startsWith(_p0year+'/')).length;
-  const latY = (_latYFull >= 4 || _p0month === 12) ? _p0year : _p0year - 1;
+  // Son 4 dönemi al (en yeni en sağda)
+  const _sorted = [...D.periods].sort((a,b)=>{
+    const [ay,am]=a.split('/'); const [by,bm]=b.split('/');
+    return (parseInt(ay)*100+parseInt(am))-(parseInt(by)*100+parseInt(bm));
+  });
+  const _last4 = _sorted.slice(-4);
+  const currLabels = _last4;
+  const prevLabels = _last4.map(p=>{
+    const [y,m]=p.split('/'); return (parseInt(y)-1)+'/'+m;
+  });
+  const qtrs = _last4.map(p=>{
+    const _m=parseInt(p.split('/')[1]);
+    const _monthOrder=[3,6,9,12];
+    const _q=_monthOrder.indexOf(_m)+1;
+    return {ay:String(_m), lbl:_q+'.Çeyrek', period:p};
+  });
+  const latY=parseInt(_last4[3].split('/')[0]);
   const prevY=latY-1;
-
-
-  // Son dönem en sağda olacak şekilde son 4 çeyreği bul
-  const _lastMonth = parseInt(D.periods[0].split('/')[1]);
-  const _monthOrder = [3,6,9,12];
-  const _lastIdx = _monthOrder.indexOf(_lastMonth);
-  const _qtrsRaw = [];
-  for(let _i=0; _i<4; _i++){
-    const _m = _monthOrder[(_lastIdx - 3 + _i + 4) % 4];
-    const _q = _monthOrder.indexOf(_m) + 1;
-    _qtrsRaw.push({ay:String(_m), lbl:_q+'.Çeyrek'});
-  }
-  const qtrs = _qtrsRaw;
 
   // Her grafik için renk çifti: [geçenYıl, buYıl]
   // colors: [prevFill, currFill, prevBorder, currBorder]
@@ -1794,18 +1792,7 @@ function renderCharts(){
   const grid=document.getElementById('cgrid');
   grid.innerHTML='';
 
-  // Her çeyrek için doğru yılı hesapla
-  // Son dönemin ayından büyük aylar bir önceki yıla ait
-  const prevLabels=qtrs.map(q=>{
-    const _m=parseInt(q.ay);
-    const _y = _m <= _lastMonth ? latY : latY-1;
-    return (_y-1)+'/'+q.ay;
-  });
-  const currLabels=qtrs.map(q=>{
-    const _m=parseInt(q.ay);
-    const _y = _m <= _lastMonth ? latY : latY-1;
-    return _y+'/'+q.ay;
-  });
+
 
     const zeroLinePlugin = {
       id:'zeroLine',
@@ -3977,26 +3964,24 @@ function yoyHtml(curr,prev){
 function renderCharts(){
   CHS.forEach(c=>c.destroy());CHS=[];
 
-  // latY: 4 çeyreği tam olan en son yılı bul
-  const _p0year = parseInt(D.periods[0].split('/')[0]);
-  const _p0month = parseInt(D.periods[0].split('/')[1]);
-  // Eğer son dönem yılında 4 çeyrek yoksa (örn sadece 1.çeyrek), bir önceki yılı kullan
-  const _latYFull = D.periods.filter(p=>p.startsWith(_p0year+'/')).length;
-  const latY = (_latYFull >= 4 || _p0month === 12) ? _p0year : _p0year - 1;
+  // Son 4 dönemi al (en yeni en sağda)
+  const _sorted = [...D.periods].sort((a,b)=>{
+    const [ay,am]=a.split('/'); const [by,bm]=b.split('/');
+    return (parseInt(ay)*100+parseInt(am))-(parseInt(by)*100+parseInt(bm));
+  });
+  const _last4 = _sorted.slice(-4);
+  const currLabels = _last4;
+  const prevLabels = _last4.map(p=>{
+    const [y,m]=p.split('/'); return (parseInt(y)-1)+'/'+m;
+  });
+  const qtrs = _last4.map(p=>{
+    const _m=parseInt(p.split('/')[1]);
+    const _monthOrder=[3,6,9,12];
+    const _q=_monthOrder.indexOf(_m)+1;
+    return {ay:String(_m), lbl:_q+'.Çeyrek', period:p};
+  });
+  const latY=parseInt(_last4[3].split('/')[0]);
   const prevY=latY-1;
-
-
-  // Son dönem en sağda olacak şekilde son 4 çeyreği bul
-  const _lastMonth = parseInt(D.periods[0].split('/')[1]);
-  const _monthOrder = [3,6,9,12];
-  const _lastIdx = _monthOrder.indexOf(_lastMonth);
-  const _qtrsRaw = [];
-  for(let _i=0; _i<4; _i++){
-    const _m = _monthOrder[(_lastIdx - 3 + _i + 4) % 4];
-    const _q = _monthOrder.indexOf(_m) + 1;
-    _qtrsRaw.push({ay:String(_m), lbl:_q+'.Çeyrek'});
-  }
-  const qtrs = _qtrsRaw;
 
   // Her grafik için renk çifti: [geçenYıl, buYıl]
   // colors: [prevFill, currFill, prevBorder, currBorder]
@@ -4018,18 +4003,7 @@ function renderCharts(){
   const grid=document.getElementById('cgrid');
   grid.innerHTML='';
 
-  // Her çeyrek için doğru yılı hesapla
-  // Son dönemin ayından büyük aylar bir önceki yıla ait
-  const prevLabels=qtrs.map(q=>{
-    const _m=parseInt(q.ay);
-    const _y = _m <= _lastMonth ? latY : latY-1;
-    return (_y-1)+'/'+q.ay;
-  });
-  const currLabels=qtrs.map(q=>{
-    const _m=parseInt(q.ay);
-    const _y = _m <= _lastMonth ? latY : latY-1;
-    return _y+'/'+q.ay;
-  });
+
 
     const zeroLinePlugin = {
       id:'zeroLine',
