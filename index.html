@@ -278,7 +278,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .rtbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.6rem;margin-bottom:0;table-layout:fixed}
 .rtbl th{padding:.35rem .2rem;text-align:right;color:var(--muted);font-size:.65rem;font-weight:500;border-bottom:1px solid var(--border);white-space:nowrap}
 .rtbl th:first-child,.rtbl th:nth-child(2){text-align:left}
-.rtbl td{padding:.3rem .15rem;border-bottom:1px solid rgba(37,40,37,.4);color:var(--text);white-space:nowrap;text-align:right;font-weight:500;overflow:hidden;text-overflow:ellipsis;font-size:.68rem}
+.rtbl td{padding:.3rem .15rem;border-bottom:1px solid rgba(37,40,37,.4);color:#1a1a1a;white-space:nowrap;text-align:right;font-weight:600;overflow:hidden;text-overflow:ellipsis;font-size:.68rem}
 .rtbl tr:hover td{background:rgba(255,255,255,.015)}
 .rt-name-hd{text-align:left!important}
 .rt-simge{width:10px;text-align:center!important;padding:.4rem .05rem!important;overflow:visible}
@@ -2130,9 +2130,14 @@ function renderRasyo(){
     let t=(v-mn)/(mx-mn);
     if (dir==='hiGood') t=1-t;
     let r,g,b;
-    if (t<0.5){const s=t*2;r=Math.round(20+s*(210-20));g=Math.round(140+s*(180-140));b=Math.round(40+s*(20-40));}
-    else{const s=(t-0.5)*2;r=Math.round(210+s*(180-210));g=Math.round(180+s*(25-180));b=Math.round(20+s*(25-20));}
-    const alpha=0.12+Math.abs(t-0.5)*2*0.35;
+    if (t<0.5){
+      // yeşil taraf
+      const s=t*2;r=Math.round(20+s*(180-20));g=Math.round(140+s*(190-140));b=Math.round(40+s*(20-40));
+    } else {
+      // kırmızı/pembe taraf — solgun pembe
+      const s=(t-0.5)*2;r=Math.round(220+s*(240-220));g=Math.round(160+s*(80-160));b=Math.round(160+s*(120-160));
+    }
+    const alpha=0.25+Math.abs(t-0.5)*2*0.35;
     return `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
   }
 
