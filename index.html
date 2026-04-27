@@ -1145,12 +1145,14 @@ async function loadEmbeddedData(){
 
     // Logo verisini arka planda yükle
     decompress('LDATA').then(txt=>{
-      LOGOS=JSON.parse(txt);
-      // localStorage'daki ek logoları ekle
+      const _logosFromFile=JSON.parse(txt);
+      // Önce localStorage'dakini al, sonra logos.js üzerine yaz (logos.js öncelikli)
       try{
         const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-        Object.assign(LOGOS, extra);
-      }catch(e){}
+        LOGOS=Object.assign({}, extra, _logosFromFile);
+      }catch(e){
+        LOGOS=_logosFromFile;
+      }
       // Logolar gelince tabloyu ve sektör panelini yenile
       injectTableLogos();
       const aktifBtn=document.querySelector('.sektor-btn.active');
