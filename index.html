@@ -772,7 +772,9 @@ var VERI={};  // tüm hisse verileri
 // ════════════════════════════════════════════
 // VERİ YÜKLE — gömülü base64/gzip JSON
 // ════════════════════════════════════════════
-var LOGOS={};
+// logos.js dosyasından gelen logolar varsa onları koru, yoksa boş obje oluştur
+if(!window.LOGOS) window.LOGOS={};
+var LOGOS=window.LOGOS;
 
 async function decompress(id){
   const b64=document.getElementById(id).textContent.trim();
@@ -1145,7 +1147,13 @@ async function loadEmbeddedData(){
 
     // Logo verisini arka planda yükle
     decompress('LDATA').then(txt=>{
-      LOGOS=JSON.parse(txt);
+      // LDATA'dan gelen logolar ESKİ olabilir. logos.js'deki logolar GÜNCEL.
+      // O yüzden sadece logos.js'de OLMAYAN tickerlar için LDATA'dan dolduruyoruz.
+      var oldLogos=JSON.parse(txt);
+      Object.keys(oldLogos).forEach(function(t){
+        if(!LOGOS[t]) LOGOS[t]=oldLogos[t];
+      });
+      window.LOGOS=LOGOS;
       // Logolar gelince tabloyu ve sektör panelini yenile
       injectTableLogos();
       const aktifBtn=document.querySelector('.sektor-btn.active');
