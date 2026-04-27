@@ -993,24 +993,12 @@ async function loadEmbeddedData(){
 
     // Logo verisini arka planda yükle
     decompress('LDATA').then(txt=>{
-      const _logosFromFile=JSON.parse(txt);
-      // Önce localStorage'dakini al, sonra logos.js üzerine yaz (logos.js öncelikli)
-      try{
-        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-        LOGOS=Object.assign({}, extra, _logosFromFile);
-      }catch(e){
-        LOGOS=_logosFromFile;
-      }
+      LOGOS=JSON.parse(txt);
       // Logolar gelince tabloyu ve sektör panelini yenile
       injectTableLogos();
       const aktifBtn=document.querySelector('.sektor-btn.active');
       if(aktifBtn) aktifBtn.click();
-    }).catch(()=>{
-      try{
-        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-        if(Object.keys(extra).length) LOGOS=extra;
-      }catch(e){}
-    });
+    }).catch(()=>{});
     initSearch(); setTimeout(injectTableLogos, 500);
     // URL'de ?hisse=TICKER varsa direkt aç
     const urlParams = new URLSearchParams(window.location.search);
@@ -3211,24 +3199,12 @@ async function loadEmbeddedData(){
 
     // Logo verisini arka planda yükle
     decompress('LDATA').then(txt=>{
-      const _logosFromFile=JSON.parse(txt);
-      // Önce localStorage'dakini al, sonra logos.js üzerine yaz (logos.js öncelikli)
-      try{
-        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-        LOGOS=Object.assign({}, extra, _logosFromFile);
-      }catch(e){
-        LOGOS=_logosFromFile;
-      }
+      LOGOS=JSON.parse(txt);
       // Logolar gelince tabloyu ve sektör panelini yenile
       injectTableLogos();
       const aktifBtn=document.querySelector('.sektor-btn.active');
       if(aktifBtn) aktifBtn.click();
-    }).catch(()=>{
-      try{
-        const extra=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-        if(Object.keys(extra).length) LOGOS=extra;
-      }catch(e){}
-    });
+    }).catch(()=>{});
     initSearch(); setTimeout(injectTableLogos, 500);
     // URL'de ?hisse=TICKER varsa direkt aç
     const urlParams = new URLSearchParams(window.location.search);
