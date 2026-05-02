@@ -1832,62 +1832,33 @@ var PORTFOY_DATA = null;
 var PORTFOY_CHART = null;
 
 function showPortfoy(){
+  // Tüm panelleri gizle
   var us=document.getElementById('upload-screen');
   var ds=document.getElementById('dash');
   var pw=document.getElementById('portfoy-wrap');
   if(us) us.style.display='none';
   if(ds) ds.style.display='none';
   if(pw){ pw.style.display='block'; buildPortfoy(); }
-  history.pushState({page:'portfoy'},'','/?portfoy=1');
+  // Butonlar
+  ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
+  ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+  history.pushState({},'','/?portfoy=1');
   document.title='Model Portföy | BilancoAnaliz34';
 }
 
 function buildPortfoy(){
   var wrap=document.getElementById('portfoy-wrap');
   if(!wrap) return;
-  if(wrap._built) return; // zaten doldurulmuşsa tekrar fetch etme, sadece göster
-  wrap._built=true;
 
-  // Topbar + yükleniyor
-  wrap.innerHTML=
-    '<div class="topbar" style="position:sticky;top:0;z-index:99;background:var(--bg)">'
-      +'<div class="brand" onclick="goHome()" style="cursor:pointer">BilancoAnaliz34</div>'
-      +'<div class="topbar-r">'
-        +'<div class="nav-menu-wrap">'
-          +'<button class="btn-sm btn-nav" onclick="toggleBlogMenu(event)">📚 Blog ▾</button>'
-          +'<div class="blog-dropdown" id="blog-dropdown-portfoy"><a href="/blog.html">📋 Tüm Makaleler</a></div>'
-        +'</div>'
-        +'<button class="btn-sm" onclick="goHome()">← Ana Sayfa</button>'
-      +'</div>'
-    +'</div>'
-    +'<div id="portfoy-icerik" style="max-width:1100px;margin:0 auto;padding:1.5rem 1rem 3rem">'
-      +'<div style="display:flex;align-items:center;gap:.8rem;padding:2rem 0;font-family:var(--mono);font-size:.8rem;color:var(--muted)">'
-        +'<div class="spinner"></div> Portföy verisi yükleniyor…'
-      +'</div>'
-    +'</div>';
-
-  function applyPortfoy(csv){
-    var inner=document.getElementById('portfoy-icerik');
-    if(!inner) return;
+  // Sheets'ten portföy çek
+  var url='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
+  fetch(url).then(function(r){return r.text();}).then(function(csv){
     var portfoy=parsePortfoyCSV(csv);
-    renderPortfoy(inner, portfoy);
-  }
-
-  // Her iki sheet adını dene (büyük/küçük P)
-  var u1='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=Portf%C3%B6y';
-  var u2='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
-  fetch(u1).then(function(r){
-    if(!r.ok) throw 0;
-    return r.text();
-  }).then(function(csv){
-    if(!csv||csv.trim().startsWith('<')) throw 0;
-    applyPortfoy(csv);
+    renderPortfoy(wrap, portfoy);
   }).catch(function(){
-    fetch(u2).then(function(r){return r.text();}).then(applyPortfoy).catch(function(){
-      var inner=document.getElementById('portfoy-icerik');
-      if(inner) inner.innerHTML='<p style="color:var(--muted);font-family:var(--mono);font-size:.8rem;padding:1rem">Portföy verisi yüklenemedi. Sheets\'te <strong style="color:var(--gold)">Portföy</strong> sayfası mevcut olmalı.</p>';
-      wrap._built=false; // retry allowed
-    });
+    // Fallback: gömülü statik veri
+    if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
+    else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
   });
 }
 
@@ -2225,25 +2196,27 @@ function buildDash(){
   }
   buildFiyatBoxes();
   buildHissePuani();
-  // Logo — sadece logos.js ve localStorage (CDN yok)
+  // Logo
   const logoWrap=document.getElementById('d-logo');
-  (function(){
-    // 1. logos.js
-    if(window.LOGOS && LOGOS[D.ticker]){
-      logoWrap.innerHTML='<img src="'+LOGOS[D.ticker]+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain">';
-      return;
+  function applyDashLogo(){
+    const src=window.LOGOS&&LOGOS[D.ticker]?LOGOS[D.ticker]:null;
+    if(src){
+      logoWrap.innerHTML='<img src="'+src+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain">';
+      return true;
     }
-    // 2. localStorage (admin paneli)
-    try{
-      var saved=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+    return false;
+  }
+  if(!applyDashLogo()){
+    // localStorage (admin paneli)
+    try {
+      const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
       if(saved[D.ticker]){
-        logoWrap.innerHTML='<img src="'+saved[D.ticker]+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain;border-radius:4px">';
-        return;
+        logoWrap.innerHTML=`<img src="${saved[D.ticker]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      } else {
+        logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
       }
-    }catch(e){}
-    // 3. Placeholder
-    logoWrap.innerHTML='<div class="logo-placeholder">'+D.ticker+'</div>';
-  })();
+    } catch(e){ logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`; }
+  }
 
   // Dönem butonları (son 8)
   activePeriod=D.periods[0];
@@ -2932,7 +2905,6 @@ async function xPaylas(){
     const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
     const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
 
-    // Logo artık sadece logos.js/localStorage — CORS sorunu yok
     const logoEl = document.getElementById('d-logo');
 
     const canvas = await html2canvas(pageEl, {
@@ -2948,7 +2920,7 @@ async function xPaylas(){
       windowWidth: pageEl.offsetWidth
     });
 
-    // (logo gizleme kaldırıldı)
+
 
     // Siyah kenarları kırp
     const trimmed = trimCanvas(canvas);
@@ -3017,21 +2989,10 @@ document.addEventListener('DOMContentLoaded',function(){
 
 // Tarayıcı geri/ileri tuşu desteği
 window.addEventListener('popstate', function(e){
-  var pw=document.getElementById('portfoy-wrap');
-  // Portföy sayfasındaysa
-  if(window.location.search.includes('portfoy=1')){
-    var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
-    document.getElementById('dash').style.display='none';
-    if(pw){pw.style.display='block'; buildPortfoy();}
-    document.title='Model Portföy | BilancoAnaliz34';
-    return;
-  }
-  // Portföy'den çıkıyorsa gizle
-  if(pw) pw.style.display='none';
-
   const params = new URLSearchParams(window.location.search);
   const hisse  = params.get('hisse');
   if(hisse && VERI[hisse.toUpperCase()]){
+    // URL'i tekrar push etmeden sadece göster
     const info = VERI[hisse.toUpperCase()];
     const sorted = [...info.periods].sort((a,b)=>{
       const[ay,am]=a.split('/');const[by,bm]=b.split('/');
@@ -3106,9 +3067,9 @@ function goHome(){
   var ds=document.getElementById('dash');
   if(ds) ds.style.display='none';
   var us=document.getElementById('upload-screen');
-  if(us) us.style.display='flex';
+  if(us) us.style.display='block';
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
-  history.pushState({page:'home'},'','/');
+  history.pushState({},'','/');
   document.title='BilancoAnaliz34 | BIST Finansal Analiz';
 }
 
@@ -4563,62 +4524,33 @@ var PORTFOY_DATA = null;
 var PORTFOY_CHART = null;
 
 function showPortfoy(){
+  // Tüm panelleri gizle
   var us=document.getElementById('upload-screen');
   var ds=document.getElementById('dash');
   var pw=document.getElementById('portfoy-wrap');
   if(us) us.style.display='none';
   if(ds) ds.style.display='none';
   if(pw){ pw.style.display='block'; buildPortfoy(); }
-  history.pushState({page:'portfoy'},'','/?portfoy=1');
+  // Butonlar
+  ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
+  ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+  history.pushState({},'','/?portfoy=1');
   document.title='Model Portföy | BilancoAnaliz34';
 }
 
 function buildPortfoy(){
   var wrap=document.getElementById('portfoy-wrap');
   if(!wrap) return;
-  if(wrap._built) return; // zaten doldurulmuşsa tekrar fetch etme, sadece göster
-  wrap._built=true;
 
-  // Topbar + yükleniyor
-  wrap.innerHTML=
-    '<div class="topbar" style="position:sticky;top:0;z-index:99;background:var(--bg)">'
-      +'<div class="brand" onclick="goHome()" style="cursor:pointer">BilancoAnaliz34</div>'
-      +'<div class="topbar-r">'
-        +'<div class="nav-menu-wrap">'
-          +'<button class="btn-sm btn-nav" onclick="toggleBlogMenu(event)">📚 Blog ▾</button>'
-          +'<div class="blog-dropdown" id="blog-dropdown-portfoy"><a href="/blog.html">📋 Tüm Makaleler</a></div>'
-        +'</div>'
-        +'<button class="btn-sm" onclick="goHome()">← Ana Sayfa</button>'
-      +'</div>'
-    +'</div>'
-    +'<div id="portfoy-icerik" style="max-width:1100px;margin:0 auto;padding:1.5rem 1rem 3rem">'
-      +'<div style="display:flex;align-items:center;gap:.8rem;padding:2rem 0;font-family:var(--mono);font-size:.8rem;color:var(--muted)">'
-        +'<div class="spinner"></div> Portföy verisi yükleniyor…'
-      +'</div>'
-    +'</div>';
-
-  function applyPortfoy(csv){
-    var inner=document.getElementById('portfoy-icerik');
-    if(!inner) return;
+  // Sheets'ten portföy çek
+  var url='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
+  fetch(url).then(function(r){return r.text();}).then(function(csv){
     var portfoy=parsePortfoyCSV(csv);
-    renderPortfoy(inner, portfoy);
-  }
-
-  // Her iki sheet adını dene (büyük/küçük P)
-  var u1='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=Portf%C3%B6y';
-  var u2='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
-  fetch(u1).then(function(r){
-    if(!r.ok) throw 0;
-    return r.text();
-  }).then(function(csv){
-    if(!csv||csv.trim().startsWith('<')) throw 0;
-    applyPortfoy(csv);
+    renderPortfoy(wrap, portfoy);
   }).catch(function(){
-    fetch(u2).then(function(r){return r.text();}).then(applyPortfoy).catch(function(){
-      var inner=document.getElementById('portfoy-icerik');
-      if(inner) inner.innerHTML='<p style="color:var(--muted);font-family:var(--mono);font-size:.8rem;padding:1rem">Portföy verisi yüklenemedi. Sheets\'te <strong style="color:var(--gold)">Portföy</strong> sayfası mevcut olmalı.</p>';
-      wrap._built=false; // retry allowed
-    });
+    // Fallback: gömülü statik veri
+    if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
+    else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
   });
 }
 
@@ -4956,25 +4888,27 @@ function buildDash(){
   }
   buildFiyatBoxes();
   buildHissePuani();
-  // Logo — sadece logos.js ve localStorage (CDN yok)
+  // Logo
   const logoWrap=document.getElementById('d-logo');
-  (function(){
-    // 1. logos.js
-    if(window.LOGOS && LOGOS[D.ticker]){
-      logoWrap.innerHTML='<img src="'+LOGOS[D.ticker]+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain">';
-      return;
+  function applyDashLogo(){
+    const src=window.LOGOS&&LOGOS[D.ticker]?LOGOS[D.ticker]:null;
+    if(src){
+      logoWrap.innerHTML='<img src="'+src+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain">';
+      return true;
     }
-    // 2. localStorage (admin paneli)
-    try{
-      var saved=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+    return false;
+  }
+  if(!applyDashLogo()){
+    // localStorage (admin paneli)
+    try {
+      const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
       if(saved[D.ticker]){
-        logoWrap.innerHTML='<img src="'+saved[D.ticker]+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain;border-radius:4px">';
-        return;
+        logoWrap.innerHTML=`<img src="${saved[D.ticker]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+      } else {
+        logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
       }
-    }catch(e){}
-    // 3. Placeholder
-    logoWrap.innerHTML='<div class="logo-placeholder">'+D.ticker+'</div>';
-  })();
+    } catch(e){ logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`; }
+  }
 
   // Dönem butonları (son 8)
   activePeriod=D.periods[0];
