@@ -1878,21 +1878,23 @@ function parsePortfoyCSV(csv){
     return result;
   }
   var aktif=[],tarihce=[],grafik=[],toplam=null;
+  // i=1: ilk satır başlık, atla
   for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
-    // A-I → Aktif pozisyonlar (col 0-8)
+    // A-I: Aktif pozisyonlar (col 0-8)
     if(row[0]&&row[1]){
       aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
     }
-    // K-U → İşlem tarihçesi (col 10-20)
+    // K-U: İşlem tarihçesi (col 10-20)
     if(row[10]&&row[11]){
       tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
     }
-    // V-Z → Grafik verileri (col 21-25)
+    // V-Z: Grafik verileri (col 21-25)
     if(row[21]&&row[22]){
       grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
     }
   }
+  // Son dolu grafik satırı = toplam
   var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
   if(grafikDolu.length){
     var son=grafikDolu[grafikDolu.length-1];
@@ -3002,7 +3004,6 @@ window.addEventListener('popstate', function(e){
     if(pw){ pw.style.display='block'; buildPortfoy(); }
     ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   } else if(hisse && VERI[hisse.toUpperCase()]){
-    // URL'i tekrar push etmeden sadece göster
     const info = VERI[hisse.toUpperCase()];
     const sorted = [...info.periods].sort((a,b)=>{
       const[ay,am]=a.split('/');const[by,bm]=b.split('/');
@@ -3012,6 +3013,7 @@ window.addEventListener('popstate', function(e){
     var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
     const adHomeP = document.getElementById('ad-home-bottom');
     if(adHomeP) adHomeP.style.display='none';
+    var pw=document.getElementById('portfoy-wrap');if(pw)pw.style.display='none';
     document.getElementById('dash').style.display='block';
     buildDash();
   } else {
@@ -3091,11 +3093,8 @@ loadEmbeddedData();
 
 // URL'de ?portfoy=1 varsa direkt portföy sayfasını aç
 (function(){
-  var params=new URLSearchParams(window.location.search);
-  if(params.get('portfoy')==='1'){
-    document.addEventListener('DOMContentLoaded',function(){
-      showPortfoy();
-    });
+  if(new URLSearchParams(window.location.search).get('portfoy')==='1'){
+    document.addEventListener('DOMContentLoaded',function(){ showPortfoy(); });
   }
 })();
 </script>
@@ -4591,21 +4590,23 @@ function parsePortfoyCSV(csv){
     return result;
   }
   var aktif=[],tarihce=[],grafik=[],toplam=null;
+  // i=1: ilk satır başlık, atla
   for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
-    // A-I → Aktif pozisyonlar (col 0-8)
+    // A-I: Aktif pozisyonlar (col 0-8)
     if(row[0]&&row[1]){
       aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
     }
-    // K-U → İşlem tarihçesi (col 10-20)
+    // K-U: İşlem tarihçesi (col 10-20)
     if(row[10]&&row[11]){
       tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
     }
-    // V-Z → Grafik verileri (col 21-25)
+    // V-Z: Grafik verileri (col 21-25)
     if(row[21]&&row[22]){
       grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
     }
   }
+  // Son dolu grafik satırı = toplam
   var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
   if(grafikDolu.length){
     var son=grafikDolu[grafikDolu.length-1];
