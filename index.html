@@ -196,6 +196,54 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 .logo-wrap{width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:.2rem}
 .logo-wrap img{width:100%;height:100%;object-fit:contain}
 .logo-wrap .logo-placeholder{font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center;padding:3px}
+/* KE Rozeti */
+.ke-badge{display:inline-block;background:rgba(76,175,125,.18);color:#4caf7d;border:1px solid rgba(76,175,125,.45);border-radius:3px;font-family:var(--mono);font-size:.58rem;font-weight:700;letter-spacing:.05em;padding:1px 4px;margin-left:4px;vertical-align:middle;line-height:1.4}
+.ke-badge-dash{display:inline-block;background:rgba(76,175,125,.15);color:#4caf7d;border:1px solid rgba(76,175,125,.4);border-radius:4px;font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.06em;padding:2px 7px;margin-top:.3rem}
+.ke-dash-label{font-family:var(--mono);font-size:.68rem;color:#4caf7d;font-weight:700;letter-spacing:.04em;margin-top:.25rem}
+/* Sektör Çarpan Tablosu */
+.sektor-carpan-wrap{margin-top:1.5rem}
+.sektor-carpan-title{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--border)}
+.sc-tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sc-tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.6rem;table-layout:fixed}
+.sc-tbl th{padding:.45rem .7rem;text-align:right;color:var(--gold);font-size:.65rem;font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap}
+.sc-tbl th:first-child{text-align:left;color:var(--gold)}
+.sc-tbl td{padding:.55rem .7rem;border-bottom:1px solid rgba(37,40,37,.45);color:#000000;font-weight:600;white-space:nowrap;text-align:right;overflow:hidden;text-overflow:ellipsis;font-size:.68rem}
+.sc-tbl td:first-child{text-align:left;color:var(--text);font-size:.68rem;font-weight:600}
+.sc-tbl tr:hover td{background:rgba(255,255,255,.015)}
+/* Sektör Çarpan Dropdown Seçimi */
+.sc-sektor-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;flex-wrap:wrap}
+.sc-sektor-lbl{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;flex-shrink:0}
+.sc-sektor-select-wrap{position:relative;display:inline-flex;align-items:center}
+.sc-sektor-select{font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--gold);background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.32rem .7rem .32rem .7rem;padding-right:1.8rem;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;transition:border-color .15s,background .15s;letter-spacing:.04em;min-width:120px;max-width:260px}
+.sc-sektor-select:hover,.sc-sektor-select:focus{border-color:var(--gold);background:rgba(154,111,26,.07)}
+.sc-sektor-select-arrow{position:absolute;right:.5rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gold);font-size:.6rem;line-height:1}
+/* Portföy Sayfası */
+.portfoy-wrap{display:none;padding:1.5rem 1rem 3rem;max-width:900px;margin:0 auto}
+.portfoy-title{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--gold);padding:.5rem 0 .8rem;letter-spacing:.05em;text-transform:uppercase;border-bottom:2px solid var(--gold);margin-bottom:1.2rem}
+.portfoy-tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:2rem}
+.portfoy-tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.72rem;min-width:600px}
+.portfoy-tbl th{background:var(--bg2);color:var(--muted);font-weight:600;padding:.45rem .6rem;text-align:right;white-space:nowrap;border-bottom:2px solid var(--border)}
+.portfoy-tbl th:first-child,.portfoy-tbl th:nth-child(2),.portfoy-tbl th:nth-child(3){text-align:left}
+.portfoy-tbl td{padding:.4rem .6rem;text-align:right;border-bottom:1px solid rgba(255,255,255,.05);color:var(--text);white-space:nowrap}
+.portfoy-tbl td:first-child{text-align:left;font-weight:700;color:var(--gold2);cursor:pointer}
+.portfoy-tbl td:first-child:hover{text-decoration:underline}
+.portfoy-tbl td:nth-child(2),.portfoy-tbl td:nth-child(3){text-align:left;color:var(--muted)}
+.portfoy-tbl tr:hover td{background:rgba(255,255,255,.03)}
+.portfoy-tbl .perf-pos{color:#4caf7d;font-weight:700}
+.portfoy-tbl .perf-neg{color:#e05252;font-weight:700}
+.portfoy-tbl .perf-neut{color:var(--muted)}
+.portfoy-grafik-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:2rem}
+.portfoy-grafik-title{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem}
+.portfoy-canvas-wrap{position:relative;height:280px}
+.portfoy-legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.6rem}
+.portfoy-legend-item{display:flex;align-items:center;gap:.35rem;font-family:var(--mono);font-size:.62rem;color:var(--text2)}
+.portfoy-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.portfoy-ozet-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.portfoy-ozet-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.7rem 1rem;flex:1;min-width:120px}
+.portfoy-ozet-lbl{font-family:var(--mono);font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
+.portfoy-ozet-val{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--text)}
+.btn-portfoy{background:transparent;border:1px solid var(--border);border-radius:var(--r);padding:.4rem .9rem;font-family:var(--mono);font-size:.72rem;color:var(--text2);cursor:pointer;transition:.15s}
+.btn-portfoy:hover,.btn-portfoy.active{background:var(--gold);color:#1a1612;border-color:var(--gold);font-weight:700}
 .h-col2{display:flex;flex-direction:column;gap:.6rem;flex-shrink:0}
 .h-col3{flex:1;min-width:0;overflow:hidden}
 
@@ -490,8 +538,9 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
           <a href="/temettu-analizi.html">Temettü Analizi Rehberi</a>
         </div>
       </div>
+      <button class="btn-sm" onclick="showPortfoy()" id="btn-portfoy-nav" style="color:var(--gold);border-color:rgba(201,168,76,.4)">📊 Portföy</button>
       <a href="/hakkimizda.html" class="btn-sm" style="text-decoration:none">Hakkımızda</a>
-      <button class="btn-sm" onclick="window.location.href='/'" id="btn-anasayfa-home" style="display:none">← Ana Sayfa</button>
+      <button class="btn-sm" onclick="goHome()" id="btn-anasayfa-home" style="display:none">← Ana Sayfa</button>
       <button class="btn-sm btn-x" id="btn-paylas-home" onclick="xPaylas()" style="display:none">𝕏 Paylaş</button>
     </div>
   </div>
@@ -521,6 +570,8 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 
   <!-- Alt kısım: listeler -->
   <div class="home-lists" id="home-lists"></div>
+  <!-- Portföy Sayfası -->
+  <div class="portfoy-wrap" id="portfoy-wrap"></div>
   <!-- Reklam: ana sayfa alt -->
   <div class="ad-wrap" style="margin-top:1.5rem;width:100%;max-width:500px">
     <div class="ad-placeholder" id="ad-home-bottom">
@@ -602,6 +653,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
           <div class="company" id="d-comp"></div>
           <div class="sector-tag" id="d-sect"></div>
           <div class="donem-big" id="d-donem">—</div>
+          <div id="d-ke-badge" class="ke-badge-dash" style="display:none">✦ KATILIM ENDEKSİNE UYGUNDUR</div>
         </div>
         <!-- COL2: Fiyat kutuları -->
         <div class="h-col2" id="fiyat-boxes"></div>
@@ -775,6 +827,9 @@ var VERI={};  // tüm hisse verileri
 // logos.js dosyasından gelen logolar varsa onları koru, yoksa boş obje oluştur
 if(!window.LOGOS) window.LOGOS={};
 var LOGOS=window.LOGOS;
+
+// Katılım Endeksi — gömülü liste (Google Sheets'ten canlı güncellenir)
+var KATILIM_SET = new Set(["AAGYO","ACSEL","AHSGY","AKFYE","AKHAN","AKSA","AKYHO","ALBRK","ALCTL","ALKA","ALKIM","ALKLC","ALTNY","ALVES","ANGEN","ARASE","ARDYZ","ARFYE","ASELS","ATAKP","ATATP","AVPGY","AYEN","BAHKM","BAKAB","BANVT","BASGZ","BEGYO","BERA","BESTE","BIENY","BIMAS","BINBN","BINHO","BMSTL","BNTAS","BORSK","BOSSA","BRISA","BRKSN","BRLSM","BSOKE","BURCE","BURVA","CANTE","CATES","CELHA","CEMTS","CEMZY","CIMSA","CMBTN","COSMO","CVKMD","CWENE","DAPGM","DARDL","DCTTR","DENGE","DESPC","DGATE","DGNMO","DMSAS","DOFER","DOFRB","DOGUB","DYOBY","EBEBK","EDATA","EDIP","EFOR","EGEPO","EGGUB","EGPRO","EKGYO","EKSUN","ELITE","EMPAE","ENJSA","EREGL","ESCOM","EUPWR","EYGYO","FADE","FONET","FORMT","FORTE","FRMPL","FZLGY","GEDZA","GENIL","GENKM","GENTS","GEREL","GESAN","GLRMK","GOKNR","GOLTS","GOODY","GRSEL","GRTHO","GUBRF","GUNDG","HATSN","HKTM","HOROZ","HRKET","IDGYO","IHEVA","IHLAS","IHLGM","IHYAY","IMASM","INTEM","ISDMR","ISSEN","IZFAS","IZINV","JANTS","KARSN","KATMR","KBORU","KCAER","KIMMR","KLSYN","KNFRT","KOCMT","KONKA","KONTR","KONYA","KOPOL","KOTON","KRDMA","KRDMB","KRDMD","KRGYO","KRONT","KRPLS","KRSTL","KRVGD","KTLEV","KUTPO","KUYAS","KZBGY","LKMNH","LMKDC","LOGO","LXGYO","MAGEN","MAKIM","MARBL","MAVI","MCARD","MEDTR","MEKAG","MERCN","MEYSU","MNDRS","MNDTR","MOBTL","MPARK","NETAS","NTGAZ","OBAMS","OBASE","OFSYM","ONCSM","ORGE","OSTIM","OZRDN","OZYSR","PAGYO","PARSN","PASEU","PENGD","PENTA","PETKM","PETUN","PKART","PLTUR","PNLSN","POLHO","QUAGR","RGYAS","RNPOL","RODRG","RUBNS","SAFKR","SAMAT","SANEL","SANKO","SARKY","SAYAS","SEKUR","SELEC","SELVA","SILVR","SMART","SMRTG","SNGYO","SNICA","SOKE","SRVGY","SUNTK","SURGY","SUWEN","TARKM","TDGYO","TEZOL","TKNSA","TMSN","TNZTP","TUCLK","TUKAS","TUPRS","TUREX","UCAYM","ULAS","ULUSE","USAK","VAKKO","VANGD","VESBE","VRGYO","YATAS","YEOTK","YUNSA","ZEDUR","ZERGY"]);
 
 async function decompress(id){
   const b64=document.getElementById(id).textContent.trim();
@@ -1127,11 +1182,12 @@ async function loadEmbeddedData(){
       VERI=JSON.parse(await decompress('VDATA'));
     }
 
-    // Güncel endeks değerini endeks sayfasından çek
+    // Güncel endeks değerini + katılım listesini endeks sayfasından çek
     fetch('https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=endeks')
       .then(r2=>r2.text())
       .then(csv2=>{
         const lines2=csv2.trim().split('\n').filter(l=>l.trim());
+        // Endeks değeri güncelle
         for(let i=lines2.length-1;i>=1;i--){
           const cols=lines2[i].split(',');
           const raw=cols[2]?cols[2].replace(/['"]/g,'').trim():'';
@@ -1142,18 +1198,32 @@ async function loadEmbeddedData(){
             break;
           }
         }
+        // Katılım endeksi listesini güncelle (J sütunu = index 9)
+        const yeniKatilim = new Set();
+        lines2.forEach((line,idx)=>{
+          if(idx<2) return; // başlık satırları
+          // CSV'deki J sütunu: virgülle split ederken tırnak içindeki virgüllere dikkat
+          let cols=[], cur='', inQ=false;
+          for(let c of line){ if(c==='"'){inQ=!inQ;} else if(c===','&&!inQ){cols.push(cur.trim());cur='';} else cur+=c; }
+          cols.push(cur.trim());
+          const val=(cols[9]||'').replace(/['"]/g,'').trim();
+          if(val && /^[A-Z]{3,6}$/.test(val)) yeniKatilim.add(val);
+        });
+        if(yeniKatilim.size>50){
+          window.KATILIM_SET=yeniKatilim;
+          console.log('✓ Katılım endeksi güncellendi:', yeniKatilim.size, 'hisse');
+          // Açık hisse sayfasında rozeti yenile
+          if(window.D && D.ticker){
+            const keEl=document.getElementById('d-ke-badge');
+            if(keEl) keEl.style.display=KATILIM_SET.has(D.ticker)?'inline-block':'none';
+          }
+        }
         if(typeof buildHomeLists === 'function') buildHomeLists();
       }).catch(()=>{});
 
     // Logo verisini arka planda yükle
     decompress('LDATA').then(txt=>{
-      // LDATA'dan gelen logolar ESKİ olabilir. logos.js'deki logolar GÜNCEL.
-      // O yüzden sadece logos.js'de OLMAYAN tickerlar için LDATA'dan dolduruyoruz.
-      var oldLogos=JSON.parse(txt);
-      Object.keys(oldLogos).forEach(function(t){
-        if(!LOGOS[t]) LOGOS[t]=oldLogos[t];
-      });
-      window.LOGOS=LOGOS;
+      LOGOS=JSON.parse(txt);
       // Logolar gelince tabloyu ve sektör panelini yenile
       injectTableLogos();
       const aktifBtn=document.querySelector('.sektor-btn.active');
@@ -1554,9 +1624,10 @@ function buildHomeLists(){
       const puanTxt = yo !== null ? '%'+yo : '%'+(info.puan??0);
       const puanCls = puanVal>=60?'high':puanVal>=40?'mid':'low';
       const sekt    = (info.sector||'').split('-')[0].trim();
+      const keBadge = (window.KATILIM_SET && KATILIM_SET.has(ticker)) ? '<span class="ke-badge">KE</span>' : '';
       return '<tr onclick="window.location.href=\'/hisse/'+ticker.toLowerCase()+'.html\'">'
         + '<td class="hl-rank">'+(i+1)+'</td>'
-        + '<td class="hl-tick" style="text-align:left" data-ticker="'+ticker+'"><span class="tbl-logo"></span>'+ticker+'</td>'
+        + '<td class="hl-tick" style="text-align:left" data-ticker="'+ticker+'"><span class="tbl-logo"></span>'+ticker+keBadge+'</td>'
         + '<td class="hl-sect" style="text-align:left">'+sekt+'</td>'
         + '<td class="hl-puan '+puanCls+'">'+puanTxt+'</td>'
         + perfCell(r0.guncelFiyat, r0.fiyat)
@@ -1613,9 +1684,14 @@ function buildHomeLists(){
     +'<div class="sektor-liste">'+btnHTML+'</div>'
     +'<div class="sektor-icerik" id="sektor-icerik"></div>'
     +'</div>'
+    +'</div>'
+    +'<div class="home-list-section">'
+    +'<div class="home-list-title">Sektör Çarpan Ortalamaları</div>'
+    +'<div id="sektor-carpan-container"></div>'
     +'</div>';
 
   if(sektorList.length>0) sekorRender(sektorList[0]);
+  renderSektorCarpan();
   // Tablo logoları
   setTimeout(injectTableLogos, 300);
 }
@@ -1648,9 +1724,10 @@ function sekorRender(sd){
     var col=puan>=60?'var(--green)':puan>=40?'var(--gold2)':'var(--red)';
     var logoSrc=(window.LOGOS&&LOGOS[ticker])?LOGOS[ticker]:'';
     var logoEl=logoSrc?'<img class="sh-logo" src="'+logoSrc+'" alt="">':'<div class="sh-logo"></div>';
+    var keStr=(window.KATILIM_SET&&KATILIM_SET.has(ticker))?'<span class="ke-badge">KE</span>':'';
     hHTML+='<div class="sektor-hisse-row" onclick="window.location.href=\'/hisse/'+ticker.toLowerCase()+'.html\'">'
       +logoEl
-      +'<span class="sh-tick">'+ticker+'</span>'
+      +'<span class="sh-tick">'+ticker+keStr+'</span>'
       +'<span class="sh-name">'+(info.company||ticker)+'</span>'
       +'<div class="sh-ono">'
         +'<span class="sh-ol">'+ol+'</span>'
@@ -1710,6 +1787,460 @@ function sekorSec(btn,enc){
   });
   hisseler.sort(function(a,b){return b[2]-a[2];});
   sekorRender({sekt:sektAdi,hisseler:hisseler,sayi:hisseler.length});
+}
+
+function renderSektorCarpan(){
+  var container=document.getElementById('sektor-carpan-container');
+  if(!container||!window.VERI) return;
+
+  // Son 8 dönemi al
+  var allPeriods=new Set();
+  Object.values(VERI).forEach(function(info){
+    (info.periods||[]).forEach(function(p){ if(/^\d+\/\d+$/.test(p)) allPeriods.add(p); });
+  });
+  function sortKey(d){var m=d.match(/(\d+)\/(\d+)/);return m?parseInt(m[1])*100+parseInt(m[2]):0;}
+  var periods=Array.from(allPeriods).sort(function(a,b){return sortKey(a)-sortKey(b);}).slice(-8);
+
+  // Çarpan alan isimleri (VERI objesindeki key'ler)
+  var carpanlar=[
+    {n:'PD/DD',k:'pddd'},{n:'F/K',k:'fk'},{n:'FD/FAVÖK',k:'fdFavok'},
+    {n:'PD/NFK',k:'pdNfk'},{n:'FD/NS',k:'fdNs'},{n:'NFK/PD',k:'nfkPd'},
+    {n:'NET BORÇ/FAVÖK',k:'nbFavok'},{n:'EFK',k:'efk'},{n:'HBK',k:'hbk'}
+  ];
+
+  // Sektörleri topla
+  var sektorMap={};
+  Object.entries(VERI).forEach(function(e){
+    var info=e[1];
+    var sekt=(info.sector||'Diğer').trim();
+    if(!sektorMap[sekt]) sektorMap[sekt]=[];
+    sektorMap[sekt].push(info);
+  });
+  var sektorler=Object.keys(sektorMap).sort(function(a,b){return a.localeCompare(b,'tr');});
+
+  // Her sektör/dönem/çarpan için ortalama hesapla
+  function sektorOrtalama(sektInfos, period, key){
+    var vals=[];
+    sektInfos.forEach(function(info){
+      var r=info.rows&&info.rows[period];
+      if(!r) return;
+      var v=r[key];
+      if(v===null||v===undefined||isNaN(v)) return;
+      var f=parseFloat(v);
+      if(!isNaN(f) && Math.abs(f)<500) vals.push(f);
+    });
+    if(!vals.length) return null;
+    return vals.reduce(function(s,x){return s+x;},0)/vals.length;
+  }
+
+  // Sektör seçimi state
+  var activeSekt = sektorler[0]||'';
+
+  // Renk skalası: hisse sayfasıyla aynı mantık
+  function scScaleColor(v, allVals, dir){
+    var valid=allVals.filter(function(x){return x!==null&&!isNaN(x);});
+    if(!valid.length||v===null||isNaN(v)) return 'transparent';
+    var mn=Math.min.apply(null,valid), mx=Math.max.apply(null,valid);
+    if(mx===mn) return 'transparent';
+    var t=(v-mn)/(mx-mn);
+    if(dir==='loGood') t=1-t;
+    var r,g,b;
+    if(t<0.5){var s=t*2;r=Math.round(20+s*(180-20));g=Math.round(140+s*(190-140));b=Math.round(40+s*(20-40));}
+    else{var s=(t-0.5)*2;r=Math.round(220+s*(240-220));g=Math.round(160+s*(80-160));b=Math.round(160+s*(120-160));}
+    var alpha=(0.25+Math.abs(t-0.5)*2*0.35).toFixed(2);
+    return 'rgba('+r+','+g+','+b+','+alpha+')';
+  }
+
+  // loGood = düşük değer iyi (PD/DD, F/K vb), hiGood = yüksek değer iyi (EFK, HBK vb)
+  var carpanDir={pddd:'loGood',fk:'loGood',fdFavok:'loGood',pdNfk:'loGood',fdNs:'loGood',nfkPd:'hiGood',nbFavok:'loGood',efk:'hiGood',hbk:'hiGood'};
+
+  function buildScTable(infos, perds, cols){
+    // Tüm dönemler için ham değerleri hesapla
+    var rowData=cols.map(function(c){
+      var vals=perds.map(function(p){return sektorOrtalama(infos,p,c.k);});
+      return {n:c.n, k:c.k, vals:vals};
+    });
+    var colgroup='<colgroup><col style="width:110px">'+perds.map(function(){return '<col style="width:64px">';}).join('')+'</colgroup>';
+    var thead='<tr><th>Rasyo</th>'+perds.map(function(p){return '<th>'+p+'</th>';}).join('')+'</tr>';
+    var tbody=rowData.map(function(r){
+      var dir=carpanDir[r.k]||'loGood';
+      var cells=r.vals.map(function(v,i){
+        if(v===null) return '<td style="color:var(--muted);font-weight:400">—</td>';
+        var bg=scScaleColor(v,r.vals,dir);
+        return '<td style="background:'+bg+'">'+v.toFixed(2)+'</td>';
+      }).join('');
+      return '<tr><td>'+r.n+'</td>'+cells+'</tr>';
+    }).join('');
+    return '<div class="sc-tbl-wrap"><table class="sc-tbl">'+colgroup+'<thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></div>';
+  }
+
+  function renderTable(sektAdi){
+    return buildScTable(sektorMap[sektAdi]||[], periods, carpanlar);
+  }
+
+  // Dropdown + tablo
+  var optHtml=sektorler.map(function(s){
+    return '<option value="'+encodeURIComponent(s)+'"'+(s===activeSekt?' selected':'')+'>'+s+'</option>';
+  }).join('');
+
+  container.innerHTML=
+    '<div class="sc-sektor-row">'
+    +'<span class="sc-sektor-lbl">Sektör</span>'
+    +'<span style="font-family:var(--mono);font-size:.62rem;color:var(--border)">:</span>'
+    +'<div class="sc-sektor-select-wrap">'
+    +'<select class="sc-sektor-select" id="sc-sektor-select" onchange="sekorCarpanSecDrop(this)">'
+    +optHtml
+    +'</select>'
+    +'<span class="sc-sektor-select-arrow">▾</span>'
+    +'</div>'
+    +'</div>'
+    +'<div id="sc-tbl-content">'+renderTable(activeSekt)+'</div>';
+
+  window._sektorCarpanMap=sektorMap;
+  window._sektorCarpanPeriods=periods;
+  window._sektorCarpanCols=carpanlar;
+}
+
+function sekorCarpanSecDrop(sel){
+  var sektAdi=decodeURIComponent(sel.value);
+  var infos=window._sektorCarpanMap&&window._sektorCarpanMap[sektAdi]||[];
+  var periods=window._sektorCarpanPeriods||[];
+  var carpanlar=window._sektorCarpanCols||[];
+  var carpanDir={pddd:'loGood',fk:'loGood',fdFavok:'loGood',pdNfk:'loGood',fdNs:'loGood',nfkPd:'hiGood',nbFavok:'loGood',efk:'hiGood',hbk:'hiGood'};
+
+  function avg(sektInfos,period,key){
+    var vals=[];
+    sektInfos.forEach(function(info){
+      var r=info.rows&&info.rows[period];if(!r)return;
+      var v=r[key];if(v===null||v===undefined||isNaN(v))return;
+      var f=parseFloat(v);if(!isNaN(f)&&Math.abs(f)<500)vals.push(f);
+    });
+    return vals.length?vals.reduce(function(s,x){return s+x;},0)/vals.length:null;
+  }
+
+  function scaleCol(v,allVals,dir){
+    var valid=allVals.filter(function(x){return x!==null&&!isNaN(x);});
+    if(!valid.length||v===null||isNaN(v)) return 'transparent';
+    var mn=Math.min.apply(null,valid),mx=Math.max.apply(null,valid);
+    if(mx===mn) return 'transparent';
+    var t=(v-mn)/(mx-mn);
+    if(dir==='loGood') t=1-t;
+    var r,g,b;
+    if(t<0.5){var s=t*2;r=Math.round(20+s*160);g=Math.round(140+s*50);b=Math.round(40-s*20);}
+    else{var s=(t-0.5)*2;r=Math.round(180+s*60);g=Math.round(190-s*110);b=Math.round(20+s*100);}
+    var alpha=(0.25+Math.abs(t-0.5)*0.7).toFixed(2);
+    return 'rgba('+r+','+g+','+b+','+alpha+')';
+  }
+
+  var rowData=carpanlar.map(function(c){
+    var vals=periods.map(function(p){return avg(infos,p,c.k);});
+    return {n:c.n,k:c.k,vals:vals};
+  });
+  var colgroup='<colgroup><col style="width:110px">'+periods.map(function(){return '<col style="width:64px">';}).join('')+'</colgroup>';
+  var thead='<tr><th>Rasyo</th>'+periods.map(function(p){return '<th>'+p+'</th>';}).join('')+'</tr>';
+  var tbody=rowData.map(function(r){
+    var dir=carpanDir[r.k]||'loGood';
+    var cells=r.vals.map(function(v){
+      if(v===null) return '<td style="color:var(--muted);font-weight:400">—</td>';
+      return '<td style="background:'+scaleCol(v,r.vals,dir)+'">'+v.toFixed(2)+'</td>';
+    }).join('');
+    return '<tr><td>'+r.n+'</td>'+cells+'</tr>';
+  }).join('');
+  document.getElementById('sc-tbl-content').innerHTML=
+    '<div class="sc-tbl-wrap"><table class="sc-tbl">'+colgroup+'<thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></div>';
+}
+
+function sekorCarpanSec(btn,enc){
+  document.querySelectorAll('#sektor-carpan-container .btn-portfoy').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var sektAdi=decodeURIComponent(enc);
+  var infos=window._sektorCarpanMap&&window._sektorCarpanMap[sektAdi]||[];
+  var periods=window._sektorCarpanPeriods||[];
+  var carpanlar=window._sektorCarpanCols||[];
+  function avg(sektInfos,period,key){
+    var vals=[];
+    sektInfos.forEach(function(info){
+      var r=info.rows&&info.rows[period];if(!r)return;
+      var v=r[key];if(v===null||v===undefined||isNaN(v))return;
+      var f=parseFloat(v);if(!isNaN(f)&&Math.abs(f)<500)vals.push(f);
+    });
+    return vals.length?vals.reduce(function(s,x){return s+x;},0)/vals.length:null;
+  }
+  var rows=carpanlar.map(function(c){
+    var cells=periods.map(function(p){var v=avg(infos,p,c.k);return v!==null?v.toFixed(2):'—';});
+    return {n:c.n,cells:cells};
+  });
+  var thead='<tr><th style="text-align:left">Rasyo</th>'+periods.map(function(p){return '<th>'+p+'</th>';}).join('')+'</tr>';
+  var tbody=rows.map(function(r){
+    return '<tr><td>'+r.n+'</td>'+r.cells.map(function(c){
+      return '<td style="color:'+(c==='—'?'var(--muted)':'var(--text)')+'">'+c+'</td>';
+    }).join('')+'</tr>';
+  }).join('');
+  document.getElementById('sc-tbl-content').innerHTML=
+    '<div class="sc-tbl-wrap"><table class="sc-tbl"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></div>';
+}
+
+// ════════════════════════════════════════════
+// PORTFÖY SAYFASI
+// ════════════════════════════════════════════
+var PORTFOY_DATA = null;
+var PORTFOY_CHART = null;
+
+function showPortfoy(){
+  // Tüm panelleri gizle
+  var us=document.getElementById('upload-screen');
+  var ds=document.getElementById('dash');
+  var pw=document.getElementById('portfoy-wrap');
+  if(us) us.style.display='none';
+  if(ds) ds.style.display='none';
+  if(pw){ pw.style.display='block'; buildPortfoy(); }
+  // Butonlar
+  ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
+  ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+  history.pushState({},'','/?portfoy=1');
+  document.title='Model Portföy | BilancoAnaliz34';
+}
+
+function buildPortfoy(){
+  var wrap=document.getElementById('portfoy-wrap');
+  if(!wrap) return;
+
+  // Sheets'ten portföy çek
+  var url='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
+  fetch(url).then(function(r){return r.text();}).then(function(csv){
+    var portfoy=parsePortfoyCSV(csv);
+    renderPortfoy(wrap, portfoy);
+  }).catch(function(){
+    // Fallback: gömülü statik veri
+    if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
+    else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
+  });
+}
+
+function parsePortfoyCSV(csv){
+  var lines=csv.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
+  function parseRow(line){
+    var result=[],cur='',inQ=false;
+    for(var i=0;i<line.length;i++){
+      var c=line[i];
+      if(c==='"'){inQ=!inQ;}
+      else if(c===','&&!inQ){result.push(cur.trim());cur='';}
+      else cur+=c;
+    }
+    result.push(cur.trim());
+    return result;
+  }
+  var aktif=[],tarihce=[];
+  var section=0; // 0=aktif, 1=tarihce
+  for(var i=0;i<lines.length;i++){
+    var row=parseRow(lines[i]);
+    if(row[0]==='Hisse Adı'&&row[2]==='Bilanço Dönemi') {section=0;continue;}
+    if(row[0]==='Hisse Adı'&&row[2]==='Çıkış Tarihi') {section=1;continue;}
+    if(!row[0]||row[0]==='Hisse Adı') continue;
+    if(section===0&&row[0]&&row[1]){
+      aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
+    } else if(section===1&&row[0]&&row[1]){
+      tarihce.push({hisse:row[0],giris:row[1],cikis:row[2],girisF:row[3],cikisF:row[4],girisTutar:row[5],kar:row[6],toplamTutar:row[7],endeksT:row[8],usdT:row[9],altinT:row[10]});
+    }
+  }
+  // Son satır toplam mı kontrol et
+  var son=tarihce[tarihce.length-1];
+  var toplam=null;
+  if(son&&!son.giris&&son.girisTutar){
+    toplam={girisTutar:son.girisTutar,kar:son.kar,toplamTutar:son.toplamTutar,endeksT:son.endeksT,usdT:son.usdT,altinT:son.altinT};
+    tarihce.pop();
+  }
+  return {aktif:aktif,tarihce:tarihce,toplam:toplam};
+}
+
+function perfClass(s){
+  if(!s||s==='—') return 'perf-neut';
+  var v=parseFloat(s.replace('%','').replace(',','.'));
+  if(isNaN(v)) return 'perf-neut';
+  return v>0?'perf-pos':v<0?'perf-neg':'perf-neut';
+}
+function perfSign(s){
+  if(!s||s==='—') return s||'—';
+  var v=parseFloat(s.replace('%','').replace(',','.'));
+  if(isNaN(v)) return s;
+  return (v>0?'+':'')+s;
+}
+function fmtTL(s){
+  if(!s||s==='') return '—';
+  return s.replace('.',',')+'';
+}
+
+function renderPortfoy(wrap, data){
+  if(PORTFOY_CHART){try{PORTFOY_CHART.destroy();}catch(e){} PORTFOY_CHART=null;}
+
+  // Özet kartlar (tarihçeden hesapla)
+  var toplamKar=0, toplamTutar=0, islemSayisi=0;
+  if(data.toplam){
+    var k=parseFloat((data.toplam.kar||'0').replace(/\./g,'').replace(',','.'));
+    var t=parseFloat((data.toplam.toplamTutar||'0').replace(/\./g,'').replace(',','.'));
+    if(!isNaN(k)) toplamKar=k;
+    if(!isNaN(t)) toplamTutar=t;
+  }
+  islemSayisi=(data.tarihce||[]).length+(data.aktif||[]).length;
+  var perfOzet=toplamTutar>0?((toplamTutar-islemSayisi*10000)/(islemSayisi*10000)*100):0;
+
+  // Aktif portföy tablosu
+  var aktifRows=(data.aktif||[]).map(function(h){
+    var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
+    return '<tr>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
+      +'<td>'+h.giris+'</td>'
+      +'<td>'+h.donem+'</td>'
+      +'<td>'+h.girisF+' ₺</td>'
+      +'<td>'+h.guncelF+' ₺</td>'
+      +'<td class="'+perfClass(h.perf)+'">'+perfSign(h.perf)+'</td>'
+      +'<td class="'+perfClass(h.endeksPerf)+'">'+perfSign(h.endeksPerf)+'</td>'
+      +'</tr>';
+  }).join('');
+
+  // Tarihçe tablosu
+  var tarihceRows=(data.tarihce||[]).map(function(h){
+    var karNum=parseFloat((h.kar||'0').replace(/\./g,'').replace(',','.'));
+    var karCls=isNaN(karNum)?'perf-neut':karNum>0?'perf-pos':karNum<0?'perf-neg':'perf-neut';
+    var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
+    return '<tr>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
+      +'<td>'+h.giris+'</td>'
+      +'<td style="color:'+(h.cikis==='Devam Ediyor'?'#4caf7d':'var(--text2)')+'">'+h.cikis+'</td>'
+      +'<td>'+h.girisF+' ₺</td>'
+      +'<td>'+(h.cikisF?h.cikisF+' ₺':'—')+'</td>'
+      +'<td>'+fmtTL(h.girisTutar)+' ₺</td>'
+      +'<td class="'+karCls+'">'+(karNum>0?'+':'')+fmtTL(h.kar)+' ₺</td>'
+      +'<td>'+fmtTL(h.toplamTutar)+' ₺</td>'
+      +'<td class="'+perfClass(h.endeksT?((parseFloat((h.endeksT||'10000').replace(/\./g,'').replace(',','.'))-10000)/10000*100).toFixed(2)+'%':'—')+'">'+fmtTL(h.endeksT)+' ₺</td>'
+      +'</tr>';
+  }).join('');
+
+  // Grafik verisi — tarihçeden kümülatif hesapla (100.000 TL başlangıç)
+  var baslangic=100000;
+  var grafRows=[];
+  // Girişler kronolojik sıralı olsun
+  var allRows=[].concat(data.tarihce||[]);
+  allRows.sort(function(a,b){
+    function td(s){if(!s||s==='Devam Ediyor')return 9999999;var p=s.split('.');return parseInt(p[2])*10000+parseInt(p[1])*100+parseInt(p[0]);}
+    return td(a.giris)-td(b.giris);
+  });
+  // Her işlemin tutarını topla (10.000 TL birim)
+  var portfoyBirikimli=baslangic, endeksBirikimli=baslangic, usdBirikimli=baslangic, altinBirikimli=baslangic;
+  var labels=['Başlangıç'];
+  var portfoySerisi=[baslangic], endeksSerisi=[baslangic], usdSerisi=[baslangic], altinSerisi=[baslangic];
+  allRows.forEach(function(h){
+    var tutar=parseFloat((h.toplamTutar||'10000').replace(/\./g,'').replace(',','.'));
+    var et=parseFloat((h.endeksT||'10000').replace(/\./g,'').replace(',','.'));
+    var ut=parseFloat((h.usdT||'10000').replace(/\./g,'').replace(',','.'));
+    var at=parseFloat((h.altinT||'10000').replace(/\./g,'').replace(',','.'));
+    if(isNaN(tutar)) return;
+    var getiriPct=(tutar-10000)/10000;
+    var endeksPct=isNaN(et)?(et-10000)/10000:(et-10000)/10000;
+    var usdPct=isNaN(ut)?0:(ut-10000)/10000;
+    var altinPct=isNaN(at)?0:(at-10000)/10000;
+    portfoyBirikimli+=portfoyBirikimli/allRows.length*getiriPct*allRows.length;
+    endeksBirikimli+=endeksBirikimli/allRows.length*endeksPct*allRows.length;
+    usdBirikimli+=usdBirikimli/allRows.length*usdPct*allRows.length;
+    altinBirikimli+=altinBirikimli/allRows.length*altinPct*allRows.length;
+    portfoyBirikimli=tutar/10000*baslangic;
+    endeksBirikimli=et/10000*baslangic;
+    usdBirikimli=ut/10000*baslangic;
+    altinBirikimli=at/10000*baslangic;
+    labels.push(h.hisse+(h.cikis&&h.cikis!=='Devam Ediyor'?' ✓':''));
+    portfoySerisi.push(Math.round(portfoyBirikimli));
+    endeksSerisi.push(Math.round(endeksBirikimli));
+    usdSerisi.push(Math.round(usdBirikimli));
+    altinSerisi.push(Math.round(altinBirikimli));
+  });
+
+  // Toplam tutar data.toplam'dan al
+  var toplamTL='—', toplamEndeks='—', toplamUsd='—', toplamAltin='—';
+  if(data.toplam){
+    toplamTL=fmtTL(data.toplam.toplamTutar)+' ₺';
+    toplamEndeks=fmtTL(data.toplam.endeksT)+' ₺';
+    toplamUsd=fmtTL(data.toplam.usdT)+' ₺';
+    toplamAltin=fmtTL(data.toplam.altinT)+' ₺';
+  }
+
+  wrap.innerHTML=
+    '<div class="portfoy-title">📊 Model Portföy</div>'
+
+    // Özet kartlar
+    +'<div class="portfoy-ozet-row">'
+      +'<div class="portfoy-ozet-card"><div class="portfoy-ozet-lbl">Portföy Değeri</div><div class="portfoy-ozet-val" style="font-size:.85rem">'+toplamTL+'</div></div>'
+      +'<div class="portfoy-ozet-card"><div class="portfoy-ozet-lbl">Endeks Olsaydı</div><div class="portfoy-ozet-val" style="font-size:.85rem;color:var(--muted)">'+toplamEndeks+'</div></div>'
+      +'<div class="portfoy-ozet-card"><div class="portfoy-ozet-lbl">USD Olsaydı</div><div class="portfoy-ozet-val" style="font-size:.85rem;color:var(--muted)">'+toplamUsd+'</div></div>'
+      +'<div class="portfoy-ozet-card"><div class="portfoy-ozet-lbl">Altın Olsaydı</div><div class="portfoy-ozet-val" style="font-size:.85rem;color:var(--muted)">'+toplamAltin+'</div></div>'
+    +'</div>'
+
+    // Aktif portföy tablosu
+    +'<div class="portfoy-title" style="font-size:.85rem;margin-top:.5rem">Aktif Pozisyonlar</div>'
+    +'<div class="portfoy-tbl-wrap"><table class="portfoy-tbl">'
+    +'<thead><tr><th>Hisse</th><th>Giriş Tarihi</th><th>Bilanço Dönemi</th><th>Giriş Fiyatı</th><th>Güncel Fiyat</th><th>Performans</th><th>Endeks Perf.</th></tr></thead>'
+    +'<tbody>'+aktifRows+'</tbody>'
+    +'</table></div>'
+
+    // Kümülatif performans grafiği
+    +'<div class="portfoy-grafik-wrap">'
+      +'<div class="portfoy-grafik-title">Kümülatif Performans (100.000 ₺ Başlangıç)</div>'
+      +'<div class="portfoy-canvas-wrap"><canvas id="portfoy-chart-canvas"></canvas></div>'
+      +'<div class="portfoy-legend">'
+        +'<div class="portfoy-legend-item"><div class="portfoy-legend-dot" style="background:#4caf7d"></div>Model Portföy</div>'
+        +'<div class="portfoy-legend-item"><div class="portfoy-legend-dot" style="background:#3b9fd4"></div>BIST100 Endeksi</div>'
+        +'<div class="portfoy-legend-item"><div class="portfoy-legend-dot" style="background:#c9a84c"></div>USD/TRY</div>'
+        +'<div class="portfoy-legend-item"><div class="portfoy-legend-dot" style="background:#e8c96e"></div>Altın</div>'
+      +'</div>'
+    +'</div>'
+
+    // Tarihçe tablosu
+    +'<div class="portfoy-title" style="font-size:.85rem">İşlem Tarihçesi</div>'
+    +'<div class="portfoy-tbl-wrap"><table class="portfoy-tbl">'
+    +'<thead><tr><th>Hisse</th><th>Giriş</th><th>Çıkış</th><th>Giriş F.</th><th>Çıkış F.</th><th>Tutar</th><th>Kar/Zarar</th><th>Toplam</th><th>Endeks Olsaydı</th></tr></thead>'
+    +'<tbody>'+tarihceRows+'</tbody>'
+    +'</table></div>';
+
+  // Chart.js ile grafik çiz
+  setTimeout(function(){
+    var canvas=document.getElementById('portfoy-chart-canvas');
+    if(!canvas||typeof Chart==='undefined') return;
+    if(PORTFOY_CHART){try{PORTFOY_CHART.destroy();}catch(e){}}
+    var ctx=canvas.getContext('2d');
+    PORTFOY_CHART=new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:labels,
+        datasets:[
+          {label:'Model Portföy',data:portfoySerisi,borderColor:'#4caf7d',backgroundColor:'rgba(76,175,125,.08)',pointRadius:4,pointBackgroundColor:'#4caf7d',tension:.3,fill:true},
+          {label:'BIST100',data:endeksSerisi,borderColor:'#3b9fd4',backgroundColor:'transparent',pointRadius:3,tension:.3,borderDash:[5,3]},
+          {label:'USD/TRY',data:usdSerisi,borderColor:'#c9a84c',backgroundColor:'transparent',pointRadius:2,tension:.3,borderDash:[3,3]},
+          {label:'Altın',data:altinSerisi,borderColor:'#e8c96e',backgroundColor:'transparent',pointRadius:2,tension:.3,borderDash:[2,4]},
+        ]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        interaction:{mode:'index',intersect:false},
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            backgroundColor:'#1a1e1a',borderColor:'#252825',borderWidth:1,
+            titleColor:'#e8c96e',bodyColor:'#e8e6df',
+            titleFont:{family:"'IBM Plex Mono'",size:11},
+            bodyFont:{family:"'IBM Plex Mono'",size:11},
+            callbacks:{
+              label:function(ctx){
+                return ctx.dataset.label+': '+ctx.parsed.y.toLocaleString('tr-TR')+' ₺';
+              }
+            }
+          }
+        },
+        scales:{
+          x:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},maxRotation:45},grid:{color:'rgba(140,122,94,.1)'}},
+          y:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K ₺':v;}},grid:{color:'rgba(140,122,94,.1)'},border:{display:false}}
+        }
+      }
+    });
+  }, 100);
 }
 
 function injectTableLogos(){
@@ -1809,6 +2340,15 @@ function buildDash(){
   document.getElementById('pols-num').style.color='#e05252';
   document.getElementById('d-sect').textContent=D.sector||'';
   document.getElementById('d-donem').textContent=D.periods[0]||'';
+  // Katılım Endeksi rozeti
+  const keEl = document.getElementById('d-ke-badge');
+  if(keEl){
+    if(window.KATILIM_SET && KATILIM_SET.has(D.ticker)){
+      keEl.style.display='inline-block';
+    } else {
+      keEl.style.display='none';
+    }
+  }
   buildFiyatBoxes();
   buildHissePuani();
   // Logo
@@ -2698,6 +3238,18 @@ function showPolicy(type){
   modal.style.display = 'flex';
 }
 function hideErr(){const e=document.getElementById('err');e.style.display='none';e.textContent=''}
+function goHome(){
+  var pw=document.getElementById('portfoy-wrap');
+  if(pw) pw.style.display='none';
+  var ds=document.getElementById('dash');
+  if(ds) ds.style.display='none';
+  var us=document.getElementById('upload-screen');
+  if(us) us.style.display='block';
+  ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+  history.pushState({},'','/');
+  document.title='BilancoAnaliz34 | BIST Finansal Analiz';
+}
+
 function showErr(m){const e=document.getElementById('err');if(e){e.style.display='block';e.textContent='⚠ '+m;}else{console.warn('showErr:',m);}}
 
 // Sayfa yüklenince veriyi başlat
