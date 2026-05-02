@@ -570,9 +570,12 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 
   <!-- Alt kısım: listeler -->
   <div class="home-lists" id="home-lists"></div>
-  <!-- Portföy Sayfası -->
-  <div class="portfoy-wrap" id="portfoy-wrap"></div>
-  <!-- Reklam: ana sayfa alt -->
+</div><!-- /upload-screen -->
+
+<!-- PORTFÖY SAYFASI - upload-screen dışında bağımsız -->
+<div id="portfoy-wrap" style="display:none;min-height:100vh;background:var(--bg)"></div>
+
+<!-- Reklam: ana sayfa alt -->
   <div class="ad-wrap" style="margin-top:1.5rem;width:100%;max-width:500px">
     <div class="ad-placeholder" id="ad-home-bottom">
     <ins class="adsbygoogle"
@@ -603,8 +606,6 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
     <a href="/kullanim-kosullari.html" class="footer-link">Kullanım Koşulları</a> ·
     <a href="https://x.com/BilancoAnaliz34" target="_blank" class="footer-link">@bilancoanaliz34</a>
   </div>
-
-</div>
 
 </div>
 
@@ -1987,41 +1988,65 @@ var PORTFOY_DATA = null;
 var PORTFOY_CHART = null;
 
 function showPortfoy(){
-  // Tüm panelleri gizle
   var us=document.getElementById('upload-screen');
   var ds=document.getElementById('dash');
   var pw=document.getElementById('portfoy-wrap');
   if(us) us.style.display='none';
   if(ds) ds.style.display='none';
   if(pw){ pw.style.display='block'; buildPortfoy(); }
-  // Butonlar
-  ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
-  ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
-  history.pushState({},'','/?portfoy=1');
+  history.pushState({page:'portfoy'},'','/?portfoy=1');
   document.title='Model Portföy | BilancoAnaliz34';
 }
 
 function buildPortfoy(){
   var wrap=document.getElementById('portfoy-wrap');
   if(!wrap) return;
+  if(wrap._built) return; // zaten doldurulmuşsa tekrar fetch etme, sadece göster
+  wrap._built=true;
 
-  // Sheets'ten portföy çek
-  var url='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
-  fetch(url).then(function(r){return r.text();}).then(function(csv){
+  // Topbar + yükleniyor
+  wrap.innerHTML=
+    '<div class="topbar" style="position:sticky;top:0;z-index:99;background:var(--bg)">'
+      +'<div class="brand" onclick="goHome()" style="cursor:pointer">BilancoAnaliz34</div>'
+      +'<div class="topbar-r">'
+        +'<div class="nav-menu-wrap">'
+          +'<button class="btn-sm btn-nav" onclick="toggleBlogMenu(event)">📚 Blog ▾</button>'
+          +'<div class="blog-dropdown" id="blog-dropdown-portfoy"><a href="/blog.html">📋 Tüm Makaleler</a></div>'
+        +'</div>'
+        +'<button class="btn-sm" onclick="goHome()">← Ana Sayfa</button>'
+      +'</div>'
+    +'</div>'
+    +'<div id="portfoy-icerik" style="max-width:1100px;margin:0 auto;padding:1.5rem 1rem 3rem">'
+      +'<div style="display:flex;align-items:center;gap:.8rem;padding:2rem 0;font-family:var(--mono);font-size:.8rem;color:var(--muted)">'
+        +'<div class="spinner"></div> Portföy verisi yükleniyor…'
+      +'</div>'
+    +'</div>';
+
+  function applyPortfoy(csv){
+    var inner=document.getElementById('portfoy-icerik');
+    if(!inner) return;
     var portfoy=parsePortfoyCSV(csv);
-    renderPortfoy(wrap, portfoy);
+    renderPortfoy(inner, portfoy);
+  }
+
+  // Her iki sheet adını dene (büyük/küçük P)
+  var u1='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=Portf%C3%B6y';
+  var u2='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
+  fetch(u1).then(function(r){
+    if(!r.ok) throw 0;
+    return r.text();
+  }).then(function(csv){
+    if(!csv||csv.trim().startsWith('<')) throw 0;
+    applyPortfoy(csv);
   }).catch(function(){
-    // Fallback: gömülü statik veri
-    if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
-    else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
+    fetch(u2).then(function(r){return r.text();}).then(applyPortfoy).catch(function(){
+      var inner=document.getElementById('portfoy-icerik');
+      if(inner) inner.innerHTML='<p style="color:var(--muted);font-family:var(--mono);font-size:.8rem;padding:1rem">Portföy verisi yüklenemedi. Sheets\'te <strong style="color:var(--gold)">Portföy</strong> sayfası mevcut olmalı.</p>';
+      wrap._built=false; // retry allowed
+    });
   });
 }
 
-// ── CSV PARSE ──
-// Sheets kolonları:
-// Tablo2 (aktif): A=0 Hisse, B=1 GirişTar, C=2 BilanÇoDön, D=3 GirişF, E=4 GüncelF, F=5 Perf, G=6 EndeksPerf, H=7 UsdPerf, I=8 AltınPerf
-// Tablo1 (tarihçe): K=10 Hisse, L=11 GirişTar, M=12 ÇıkışTar, N=13 GirişF, O=14 ÇıkışF, P=15 GirişTutar, Q=16 Kar, R=17 ToplamTutar, S=18 EndeksPerf, T=19 UsdPerf, U=20 AltınPerf
-// Grafik (aylık): V=21 Ay, W=22 Portföy, X=23 Endeks, Y=24 USD, Z=25 Altın
 function parsePortfoyCSV(csv){
   var lines=csv.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
   function parseRow(line){
@@ -2035,52 +2060,27 @@ function parsePortfoyCSV(csv){
     result.push(cur.trim());
     return result;
   }
-  var aktif=[],tarihce=[],aylik=[],toplam=null;
-  var baslikAtlandi=false;
+  var aktif=[],tarihce=[];
+  var section=0; // 0=aktif, 1=tarihce
   for(var i=0;i<lines.length;i++){
     var row=parseRow(lines[i]);
-    // Başlık satırını atla
-    if(row[0]==='Hisse Adı'||row[0]==='Hisse Adi'){baslikAtlandi=true;continue;}
-    if(!baslikAtlandi) continue;
-    // Tamamen boş satır → atla
-    var rowJoined=row.join('').replace(/\s/g,'');
-    if(!rowJoined) continue;
-
-    // Toplam satırı: A boş ama P(15) veya R(17) dolu
-    if(!row[0]){
-      var pVal=row[15]||'', rVal=row[17]||'';
-      if(pVal||rVal){
-        toplam={girisTutar:pVal, kar:row[16]||'', toplamTutar:row[17]||'',
-                endeksT:row[18]||'', usdT:row[19]||'', altinT:row[20]||''};
-      }
-      continue;
-    }
-    // A sütununda hisse kodu → aktif portföy (Tablo2)
-    aktif.push({
-      hisse:     row[0]||'', giris:row[1]||'', donem:row[2]||'',
-      girisF:    row[3]||'', guncelF:row[4]||'',
-      perf:      row[5]||'', endeksPerf:row[6]||'',
-      usdPerf:   row[7]||'', altinPerf:row[8]||''
-    });
-    // K(10) sütununda hisse kodu → tarihçe (Tablo1)
-    if(row[10]){
-      tarihce.push({
-        hisse:      row[10]||'', giris:row[11]||'', cikis:row[12]||'',
-        girisF:     row[13]||'', cikisF:row[14]||'',
-        girisTutar: row[15]||'', kar:row[16]||'',
-        toplamTutar:row[17]||'', endeksT:row[18]||'',
-        usdT:       row[19]||'', altinT:row[20]||''
-      });
-    }
-    // V(21) sütununda ay etiketi → aylık grafik (V-Z)
-    if(row[21]&&row[22]){
-      var grafVal=parseFloat((row[22]||'').replace(/\./g,'').replace(',','.'));
-      if(!isNaN(grafVal)&&grafVal>1000){
-        aylik.push({ay:row[21], portfoy:row[22], endeks:row[23]||'', usd:row[24]||'', altin:row[25]||''});
-      }
+    if(row[0]==='Hisse Adı'&&row[2]==='Bilanço Dönemi') {section=0;continue;}
+    if(row[0]==='Hisse Adı'&&row[2]==='Çıkış Tarihi') {section=1;continue;}
+    if(!row[0]||row[0]==='Hisse Adı') continue;
+    if(section===0&&row[0]&&row[1]){
+      aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
+    } else if(section===1&&row[0]&&row[1]){
+      tarihce.push({hisse:row[0],giris:row[1],cikis:row[2],girisF:row[3],cikisF:row[4],girisTutar:row[5],kar:row[6],toplamTutar:row[7],endeksT:row[8],usdT:row[9],altinT:row[10]});
     }
   }
-  return {aktif:aktif, tarihce:tarihce, toplam:toplam, aylik:aylik};
+  // Son satır toplam mı kontrol et
+  var son=tarihce[tarihce.length-1];
+  var toplam=null;
+  if(son&&!son.giris&&son.girisTutar){
+    toplam={girisTutar:son.girisTutar,kar:son.kar,toplamTutar:son.toplamTutar,endeksT:son.endeksT,usdT:son.usdT,altinT:son.altinT};
+    tarihce.pop();
+  }
+  return {aktif:aktif,tarihce:tarihce,toplam:toplam};
 }
 
 function perfClass(s){
@@ -2097,29 +2097,24 @@ function perfSign(s){
 }
 function fmtTL(s){
   if(!s||s==='') return '—';
-  return s;
+  return s.replace('.',',')+'';
 }
 
 function renderPortfoy(wrap, data){
   if(PORTFOY_CHART){try{PORTFOY_CHART.destroy();}catch(e){} PORTFOY_CHART=null;}
 
-  var baslangic=100000;
-  function pv(s){var v=parseFloat((s||'').replace(/\./g,'').replace(',','.'));return isNaN(v)?null:v;}
-
-  // ── Özet kartlar ──
-  var toplamTL='—',toplamEndeks='—',toplamUsd='—',toplamAltin='—',kumKarTxt='—',kumKarNum=0;
+  // Özet kartlar (tarihçeden hesapla)
+  var toplamKar=0, toplamTutar=0, islemSayisi=0;
   if(data.toplam){
-    var _k=pv(data.toplam.kar);
-    var _t=pv(data.toplam.toplamTutar);
-    if(_k!==null){kumKarNum=_k; kumKarTxt=(_k>=0?'+':'')+fmtTL(data.toplam.kar)+' ₺';}
-    if(_t!==null) toplamTL=fmtTL(data.toplam.toplamTutar)+' ₺';
-    if(data.toplam.endeksT) toplamEndeks=fmtTL(data.toplam.endeksT)+' ₺';
-    if(data.toplam.usdT)    toplamUsd   =fmtTL(data.toplam.usdT)+' ₺';
-    if(data.toplam.altinT)  toplamAltin =fmtTL(data.toplam.altinT)+' ₺';
+    var k=parseFloat((data.toplam.kar||'0').replace(/\./g,'').replace(',','.'));
+    var t=parseFloat((data.toplam.toplamTutar||'0').replace(/\./g,'').replace(',','.'));
+    if(!isNaN(k)) toplamKar=k;
+    if(!isNaN(t)) toplamTutar=t;
   }
-  var kumKarCls=kumKarNum>=0?'#4caf7d':'#e05252';
+  islemSayisi=(data.tarihce||[]).length+(data.aktif||[]).length;
+  var perfOzet=toplamTutar>0?((toplamTutar-islemSayisi*10000)/(islemSayisi*10000)*100):0;
 
-  // ── Aktif portföy tablosu (A-I = Tablo2) ──
+  // Aktif portföy tablosu
   var aktifRows=(data.aktif||[]).map(function(h){
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
     return '<tr>'
@@ -2130,84 +2125,96 @@ function renderPortfoy(wrap, data){
       +'<td>'+h.guncelF+' ₺</td>'
       +'<td class="'+perfClass(h.perf)+'">'+perfSign(h.perf)+'</td>'
       +'<td class="'+perfClass(h.endeksPerf)+'">'+perfSign(h.endeksPerf)+'</td>'
-      +'<td class="'+perfClass(h.usdPerf)+'">'+perfSign(h.usdPerf)+'</td>'
-      +'<td class="'+perfClass(h.altinPerf)+'">'+perfSign(h.altinPerf)+'</td>'
       +'</tr>';
   }).join('');
-  if(!aktifRows) aktifRows='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:1.2rem">Aktif pozisyon bulunmuyor</td></tr>';
 
-  // ── Tarihçe tablosu (K-U = Tablo1) + kümülatif kar ──
-  var kumBirikimli=0;
+  // Tarihçe tablosu
   var tarihceRows=(data.tarihce||[]).map(function(h){
-    var karNum=pv(h.kar)||0;
-    kumBirikimli+=karNum;
-    var karCls=karNum>0?'perf-pos':karNum<0?'perf-neg':'perf-neut';
-    var kumCls=kumBirikimli>=0?'perf-pos':'perf-neg';
+    var karNum=parseFloat((h.kar||'0').replace(/\./g,'').replace(',','.'));
+    var karCls=isNaN(karNum)?'perf-neut':karNum>0?'perf-pos':karNum<0?'perf-neg':'perf-neut';
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
-    var devam=(h.cikis==='Devam Ediyor'||!h.cikis||h.cikis==='');
-    var durumHtml=devam
-      ?'<span style="color:#4caf7d;font-weight:700">Devam Ediyor</span>'
-      :'<span style="color:var(--text2)">'+h.cikis+'</span>';
     return '<tr>'
       +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
       +'<td>'+h.giris+'</td>'
-      +'<td>'+durumHtml+'</td>'
+      +'<td style="color:'+(h.cikis==='Devam Ediyor'?'#4caf7d':'var(--text2)')+'">'+h.cikis+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
       +'<td>'+(h.cikisF?h.cikisF+' ₺':'—')+'</td>'
       +'<td>'+fmtTL(h.girisTutar)+' ₺</td>'
       +'<td class="'+karCls+'">'+(karNum>0?'+':'')+fmtTL(h.kar)+' ₺</td>'
       +'<td>'+fmtTL(h.toplamTutar)+' ₺</td>'
-      +'<td>'+fmtTL(h.endeksT)+' ₺</td>'
-      +'<td>'+fmtTL(h.usdT)+' ₺</td>'
-      +'<td>'+fmtTL(h.altinT)+' ₺</td>'
-      +'<td class="'+kumCls+'">'+(kumBirikimli>=0?'+':'')+Math.round(kumBirikimli).toLocaleString('tr-TR')+' ₺</td>'
+      +'<td class="'+perfClass(h.endeksT?((parseFloat((h.endeksT||'10000').replace(/\./g,'').replace(',','.'))-10000)/10000*100).toFixed(2)+'%':'—')+'">'+fmtTL(h.endeksT)+' ₺</td>'
       +'</tr>';
   }).join('');
-  if(!tarihceRows) tarihceRows='<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:1.2rem">Henüz işlem yok</td></tr>';
 
-  // ── Grafik verisi: V-Z sütunları (aylık, Şub 2026 başlangıç) ──
-  var grafLabels,grafPortfoy,grafEndeks,grafUsd,grafAltin;
-  if(data.aylik&&data.aylik.length>0){
-    grafLabels  =['Şub 2026'].concat(data.aylik.map(function(r){return r.ay;}));
-    grafPortfoy =[baslangic].concat(data.aylik.map(function(r){return pv(r.portfoy)??baslangic;}));
-    grafEndeks  =[baslangic].concat(data.aylik.map(function(r){return pv(r.endeks)??baslangic;}));
-    grafUsd     =[baslangic].concat(data.aylik.map(function(r){return pv(r.usd)??baslangic;}));
-    grafAltin   =[baslangic].concat(data.aylik.map(function(r){return pv(r.altin)??baslangic;}));
-  } else {
-    // Sheets'te grafik verisi yoksa 24 aylık iskelet oluştur (Şub2026–Oca2028)
-    var _ayAdi=['Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara','Oca'];
-    grafLabels=[];
-    for(var _y=2026,_m=1;grafLabels.length<25;_m++){
-      if(_m>12){_m=1;_y++;}
-      grafLabels.push(_ayAdi[_m-1]+' '+_y);
-    }
-    var _sonP=pv(data.toplam&&data.toplam.toplamTutar)||baslangic;
-    var _sonE=pv(data.toplam&&data.toplam.endeksT)||baslangic;
-    var _sonU=pv(data.toplam&&data.toplam.usdT)||baslangic;
-    var _sonA=pv(data.toplam&&data.toplam.altinT)||baslangic;
-    grafPortfoy=grafLabels.map(function(_,i){return i===0?baslangic:i===1?_sonP:null;});
-    grafEndeks =grafLabels.map(function(_,i){return i===0?baslangic:i===1?_sonE:null;});
-    grafUsd    =grafLabels.map(function(_,i){return i===0?baslangic:i===1?_sonU:null;});
-    grafAltin  =grafLabels.map(function(_,i){return i===0?baslangic:i===1?_sonA:null;});
+  // Grafik verisi — tarihçeden kümülatif hesapla (100.000 TL başlangıç)
+  var baslangic=100000;
+  var grafRows=[];
+  // Girişler kronolojik sıralı olsun
+  var allRows=[].concat(data.tarihce||[]);
+  allRows.sort(function(a,b){
+    function td(s){if(!s||s==='Devam Ediyor')return 9999999;var p=s.split('.');return parseInt(p[2])*10000+parseInt(p[1])*100+parseInt(p[0]);}
+    return td(a.giris)-td(b.giris);
+  });
+  // Her işlemin tutarını topla (10.000 TL birim)
+  var portfoyBirikimli=baslangic, endeksBirikimli=baslangic, usdBirikimli=baslangic, altinBirikimli=baslangic;
+  var labels=['Başlangıç'];
+  var portfoySerisi=[baslangic], endeksSerisi=[baslangic], usdSerisi=[baslangic], altinSerisi=[baslangic];
+  allRows.forEach(function(h){
+    var tutar=parseFloat((h.toplamTutar||'10000').replace(/\./g,'').replace(',','.'));
+    var et=parseFloat((h.endeksT||'10000').replace(/\./g,'').replace(',','.'));
+    var ut=parseFloat((h.usdT||'10000').replace(/\./g,'').replace(',','.'));
+    var at=parseFloat((h.altinT||'10000').replace(/\./g,'').replace(',','.'));
+    if(isNaN(tutar)) return;
+    var getiriPct=(tutar-10000)/10000;
+    var endeksPct=isNaN(et)?(et-10000)/10000:(et-10000)/10000;
+    var usdPct=isNaN(ut)?0:(ut-10000)/10000;
+    var altinPct=isNaN(at)?0:(at-10000)/10000;
+    portfoyBirikimli+=portfoyBirikimli/allRows.length*getiriPct*allRows.length;
+    endeksBirikimli+=endeksBirikimli/allRows.length*endeksPct*allRows.length;
+    usdBirikimli+=usdBirikimli/allRows.length*usdPct*allRows.length;
+    altinBirikimli+=altinBirikimli/allRows.length*altinPct*allRows.length;
+    portfoyBirikimli=tutar/10000*baslangic;
+    endeksBirikimli=et/10000*baslangic;
+    usdBirikimli=ut/10000*baslangic;
+    altinBirikimli=at/10000*baslangic;
+    labels.push(h.hisse+(h.cikis&&h.cikis!=='Devam Ediyor'?' ✓':''));
+    portfoySerisi.push(Math.round(portfoyBirikimli));
+    endeksSerisi.push(Math.round(endeksBirikimli));
+    usdSerisi.push(Math.round(usdBirikimli));
+    altinSerisi.push(Math.round(altinBirikimli));
+  });
+
+  // Toplam tutar data.toplam'dan al
+  var toplamTL='—', toplamEndeks='—', toplamUsd='—', toplamAltin='—';
+  if(data.toplam){
+    toplamTL=fmtTL(data.toplam.toplamTutar)+' ₺';
+    toplamEndeks=fmtTL(data.toplam.endeksT)+' ₺';
+    toplamUsd=fmtTL(data.toplam.usdT)+' ₺';
+    toplamAltin=fmtTL(data.toplam.altinT)+' ₺';
   }
 
-  // ── HTML ──
   wrap.innerHTML=
     '<div class="portfoy-title">📊 Model Portföy</div>'
 
     // Özet kartlar
     +'<div class="portfoy-ozet-row">'
       +'<div class="portfoy-ozet-card"><div class="portfoy-ozet-lbl">Portföy Değeri</div><div class="portfoy-ozet-val" style="font-size:.85rem">'+toplamTL+'</div></div>'
-      +'<div class="portfoy-ozet-card"><div class="portfoy-ozet-lbl">Kümülatif Kar</div><div class="portfoy-ozet-val" style="font-size:.85rem;color:'+kumKarCls+'">'+kumKarTxt+'</div></div>'
       +'<div class="portfoy-ozet-card"><div class="portfoy-ozet-lbl">Endeks Olsaydı</div><div class="portfoy-ozet-val" style="font-size:.85rem;color:var(--muted)">'+toplamEndeks+'</div></div>'
       +'<div class="portfoy-ozet-card"><div class="portfoy-ozet-lbl">USD Olsaydı</div><div class="portfoy-ozet-val" style="font-size:.85rem;color:var(--muted)">'+toplamUsd+'</div></div>'
       +'<div class="portfoy-ozet-card"><div class="portfoy-ozet-lbl">Altın Olsaydı</div><div class="portfoy-ozet-val" style="font-size:.85rem;color:var(--muted)">'+toplamAltin+'</div></div>'
     +'</div>'
 
-    // ── GRAFİK (tablolardan önce) ──
+    // Aktif portföy tablosu
+    +'<div class="portfoy-title" style="font-size:.85rem;margin-top:.5rem">Aktif Pozisyonlar</div>'
+    +'<div class="portfoy-tbl-wrap"><table class="portfoy-tbl">'
+    +'<thead><tr><th>Hisse</th><th>Giriş Tarihi</th><th>Bilanço Dönemi</th><th>Giriş Fiyatı</th><th>Güncel Fiyat</th><th>Performans</th><th>Endeks Perf.</th></tr></thead>'
+    +'<tbody>'+aktifRows+'</tbody>'
+    +'</table></div>'
+
+    // Kümülatif performans grafiği
     +'<div class="portfoy-grafik-wrap">'
-      +'<div class="portfoy-grafik-title">Kümülatif Performans — Aylık · 100.000 ₺ Başlangıç · Şubat 2026</div>'
-      +'<div class="portfoy-canvas-wrap" style="height:300px"><canvas id="portfoy-chart-canvas"></canvas></div>'
+      +'<div class="portfoy-grafik-title">Kümülatif Performans (100.000 ₺ Başlangıç)</div>'
+      +'<div class="portfoy-canvas-wrap"><canvas id="portfoy-chart-canvas"></canvas></div>'
       +'<div class="portfoy-legend">'
         +'<div class="portfoy-legend-item"><div class="portfoy-legend-dot" style="background:#4caf7d"></div>Model Portföy</div>'
         +'<div class="portfoy-legend-item"><div class="portfoy-legend-dot" style="background:#3b9fd4"></div>BIST100 Endeksi</div>'
@@ -2216,44 +2223,14 @@ function renderPortfoy(wrap, data){
       +'</div>'
     +'</div>'
 
-    // ── AKTİF POZİSYONLAR ──
-    +'<div class="portfoy-title" style="font-size:.85rem;margin-top:1rem">Aktif Pozisyonlar</div>'
-    +'<div class="portfoy-tbl-wrap"><table class="portfoy-tbl" style="min-width:820px">'
-    +'<thead><tr>'
-      +'<th style="text-align:left">Hisse Adı</th>'
-      +'<th style="text-align:left">Giriş Tarihi</th>'
-      +'<th style="text-align:left">Bilanço Dönemi</th>'
-      +'<th>Giriş Fiyatı</th>'
-      +'<th>Güncel Fiyat</th>'
-      +'<th>Performans</th>'
-      +'<th>Endeks Performansı</th>'
-      +'<th>USD Performansı</th>'
-      +'<th>Altın Performansı</th>'
-    +'</tr></thead>'
-    +'<tbody>'+aktifRows+'</tbody>'
-    +'</table></div>'
-
-    // ── TARIHÇE + KÜMÜLATİF KAR ──
-    +'<div class="portfoy-title" style="font-size:.85rem;margin-top:1.5rem">İşlem Tarihçesi &amp; Kümülatif Kar Takibi</div>'
-    +'<div class="portfoy-tbl-wrap"><table class="portfoy-tbl" style="min-width:1100px">'
-    +'<thead><tr>'
-      +'<th style="text-align:left">Hisse Adı</th>'
-      +'<th style="text-align:left">Giriş Tarihi</th>'
-      +'<th style="text-align:left">Çıkış Tarihi</th>'
-      +'<th>Giriş Fiyatı</th>'
-      +'<th>Çıkış Fiyatı</th>'
-      +'<th>Giriş Tutarı</th>'
-      +'<th>Kar</th>'
-      +'<th>Toplam Tutar</th>'
-      +'<th>Endeks Perf.</th>'
-      +'<th>USD Perf.</th>'
-      +'<th>Altın Perf.</th>'
-      +'<th>Kümülatif Kar</th>'
-    +'</tr></thead>'
+    // Tarihçe tablosu
+    +'<div class="portfoy-title" style="font-size:.85rem">İşlem Tarihçesi</div>'
+    +'<div class="portfoy-tbl-wrap"><table class="portfoy-tbl">'
+    +'<thead><tr><th>Hisse</th><th>Giriş</th><th>Çıkış</th><th>Giriş F.</th><th>Çıkış F.</th><th>Tutar</th><th>Kar/Zarar</th><th>Toplam</th><th>Endeks Olsaydı</th></tr></thead>'
     +'<tbody>'+tarihceRows+'</tbody>'
     +'</table></div>';
 
-  // ── Chart.js ──
+  // Chart.js ile grafik çiz
   setTimeout(function(){
     var canvas=document.getElementById('portfoy-chart-canvas');
     if(!canvas||typeof Chart==='undefined') return;
@@ -2262,12 +2239,12 @@ function renderPortfoy(wrap, data){
     PORTFOY_CHART=new Chart(ctx,{
       type:'line',
       data:{
-        labels:grafLabels,
+        labels:labels,
         datasets:[
-          {label:'Model Portföy',data:grafPortfoy,borderColor:'#4caf7d',backgroundColor:'rgba(76,175,125,.07)',pointRadius:3,pointBackgroundColor:'#4caf7d',borderWidth:2.5,tension:.35,fill:true,spanGaps:false},
-          {label:'BIST100',data:grafEndeks,borderColor:'#3b9fd4',backgroundColor:'transparent',pointRadius:2,borderWidth:2,tension:.35,borderDash:[6,3],spanGaps:false},
-          {label:'USD/TRY',data:grafUsd,borderColor:'#c9a84c',backgroundColor:'transparent',pointRadius:2,borderWidth:1.5,tension:.35,borderDash:[4,3],spanGaps:false},
-          {label:'Altin',data:grafAltin,borderColor:'#e8c96e',backgroundColor:'transparent',pointRadius:2,borderWidth:1.5,tension:.35,borderDash:[2,4],spanGaps:false}
+          {label:'Model Portföy',data:portfoySerisi,borderColor:'#4caf7d',backgroundColor:'rgba(76,175,125,.08)',pointRadius:4,pointBackgroundColor:'#4caf7d',tension:.3,fill:true},
+          {label:'BIST100',data:endeksSerisi,borderColor:'#3b9fd4',backgroundColor:'transparent',pointRadius:3,tension:.3,borderDash:[5,3]},
+          {label:'USD/TRY',data:usdSerisi,borderColor:'#c9a84c',backgroundColor:'transparent',pointRadius:2,tension:.3,borderDash:[3,3]},
+          {label:'Altın',data:altinSerisi,borderColor:'#e8c96e',backgroundColor:'transparent',pointRadius:2,tension:.3,borderDash:[2,4]},
         ]
       },
       options:{
@@ -2276,28 +2253,24 @@ function renderPortfoy(wrap, data){
         plugins:{
           legend:{display:false},
           tooltip:{
-            backgroundColor:'rgba(20,22,20,.97)',borderColor:'#3a3d3a',borderWidth:1,
+            backgroundColor:'#1a1e1a',borderColor:'#252825',borderWidth:1,
             titleColor:'#e8c96e',bodyColor:'#e8e6df',
-            titleFont:{family:"'IBM Plex Mono'",size:11,weight:'700'},
+            titleFont:{family:"'IBM Plex Mono'",size:11},
             bodyFont:{family:"'IBM Plex Mono'",size:11},
-            padding:10,
             callbacks:{
-              label:function(c){
-                var v=c.parsed.y;
-                if(v===null) return null;
-                var d=v-baslangic,s=d>=0?'+':'';
-                return c.dataset.label+': '+v.toLocaleString('tr-TR')+' \u20ba  ('+s+((d/baslangic)*100).toFixed(1)+'%)';
+              label:function(ctx){
+                return ctx.dataset.label+': '+ctx.parsed.y.toLocaleString('tr-TR')+' ₺';
               }
             }
           }
         },
         scales:{
-          x:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:9},maxRotation:45,maxTicksLimit:24},grid:{color:'rgba(140,122,94,.08)'}},
-          y:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K \u20ba':v;}},grid:{color:'rgba(140,122,94,.1)'},border:{display:false}}
+          x:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},maxRotation:45},grid:{color:'rgba(140,122,94,.1)'}},
+          y:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K ₺':v;}},grid:{color:'rgba(140,122,94,.1)'},border:{display:false}}
         }
       }
     });
-  },100);
+  }, 100);
 }
 
 function injectTableLogos(){
@@ -2408,26 +2381,25 @@ function buildDash(){
   }
   buildFiyatBoxes();
   buildHissePuani();
-  // Logo
+  // Logo — sadece logos.js ve localStorage (CDN yok)
   const logoWrap=document.getElementById('d-logo');
-  function applyDashLogo(){
-    const src=window.LOGOS&&LOGOS[D.ticker]?LOGOS[D.ticker]:null;
-    if(src){
-      logoWrap.innerHTML='<img src="'+src+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain">';
-      return true;
+  (function(){
+    // 1. logos.js
+    if(window.LOGOS && LOGOS[D.ticker]){
+      logoWrap.innerHTML='<img src="'+LOGOS[D.ticker]+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain">';
+      return;
     }
-    return false;
-  }
-  if(!applyDashLogo()){
-    try {
-      var _saved=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-      if(_saved[D.ticker]){
-        logoWrap.innerHTML='<img src="'+_saved[D.ticker]+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain;border-radius:4px">';
-      } else {
-        logoWrap.innerHTML='<div class="logo-placeholder">'+D.ticker+'</div>';
+    // 2. localStorage (admin paneli)
+    try{
+      var saved=JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+      if(saved[D.ticker]){
+        logoWrap.innerHTML='<img src="'+saved[D.ticker]+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain;border-radius:4px">';
+        return;
       }
-    } catch(e){ logoWrap.innerHTML='<div class="logo-placeholder">'+D.ticker+'</div>'; }
-  }
+    }catch(e){}
+    // 3. Placeholder
+    logoWrap.innerHTML='<div class="logo-placeholder">'+D.ticker+'</div>';
+  })();
 
   // Dönem butonları (son 8)
   activePeriod=D.periods[0];
@@ -3116,6 +3088,7 @@ async function xPaylas(){
     const captureY = basEl.getBoundingClientRect().top + window.scrollY - pageOffsetTop - 20;
     const captureH = sonEl.getBoundingClientRect().bottom + window.scrollY - pageOffsetTop - captureY + 40;
 
+    // Logo artık sadece logos.js/localStorage — CORS sorunu yok
     const logoEl = document.getElementById('d-logo');
 
     const canvas = await html2canvas(pageEl, {
@@ -3131,7 +3104,7 @@ async function xPaylas(){
       windowWidth: pageEl.offsetWidth
     });
 
-    // logo gizleme kaldırıldı
+    // (logo gizleme kaldırıldı)
 
     // Siyah kenarları kırp
     const trimmed = trimCanvas(canvas);
@@ -3200,10 +3173,21 @@ document.addEventListener('DOMContentLoaded',function(){
 
 // Tarayıcı geri/ileri tuşu desteği
 window.addEventListener('popstate', function(e){
+  var pw=document.getElementById('portfoy-wrap');
+  // Portföy sayfasındaysa
+  if(window.location.search.includes('portfoy=1')){
+    var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
+    document.getElementById('dash').style.display='none';
+    if(pw){pw.style.display='block'; buildPortfoy();}
+    document.title='Model Portföy | BilancoAnaliz34';
+    return;
+  }
+  // Portföy'den çıkıyorsa gizle
+  if(pw) pw.style.display='none';
+
   const params = new URLSearchParams(window.location.search);
   const hisse  = params.get('hisse');
   if(hisse && VERI[hisse.toUpperCase()]){
-    // URL'i tekrar push etmeden sadece göster
     const info = VERI[hisse.toUpperCase()];
     const sorted = [...info.periods].sort((a,b)=>{
       const[ay,am]=a.split('/');const[by,bm]=b.split('/');
@@ -3278,9 +3262,9 @@ function goHome(){
   var ds=document.getElementById('dash');
   if(ds) ds.style.display='none';
   var us=document.getElementById('upload-screen');
-  if(us) us.style.display='block';
+  if(us) us.style.display='flex';
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
-  history.pushState({},'','/');
+  history.pushState({page:'home'},'','/');
   document.title='BilancoAnaliz34 | BIST Finansal Analiz';
 }
 
