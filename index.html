@@ -2006,14 +2006,17 @@ function buildPortfoy(){
 
   // Sheets'ten portföy çek
   var url='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
-  fetch(url).then(function(r){return r.text();}).then(function(csv){
-    var portfoy=parsePortfoyCSV(csv);
-    renderPortfoy(wrap, portfoy);
-  }).catch(function(){
-    // Fallback: gömülü statik veri
-    if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
-    else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
-  });
+  fetch(url)
+    .then(function(r){ return r.arrayBuffer(); })
+    .then(function(buf){
+      var csv=new TextDecoder('utf-8').decode(buf);
+      var portfoy=parsePortfoyCSV(csv);
+      renderPortfoy(wrap, portfoy);
+    }).catch(function(){
+      // Fallback: gömülü statik veri
+      if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
+      else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
+    });
 }
 
 function parsePortfoyCSV(csv){
@@ -2029,27 +2032,30 @@ function parsePortfoyCSV(csv){
     result.push(cur.trim());
     return result;
   }
-  var aktif=[],tarihce=[];
-  var section=0; // 0=aktif, 1=tarihce
-  for(var i=0;i<lines.length;i++){
+  var aktif=[],tarihce=[],grafik=[],toplam=null;
+  // i=1: başlık satırını atla
+  for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
-    if(row[0]==='Hisse Adı'&&row[2]==='Bilanço Dönemi') {section=0;continue;}
-    if(row[0]==='Hisse Adı'&&row[2]==='Çıkış Tarihi') {section=1;continue;}
-    if(!row[0]||row[0]==='Hisse Adı') continue;
-    if(section===0&&row[0]&&row[1]){
+    // A-I → Aktif pozisyonlar (col 0-8)
+    if(row[0]&&row[1]){
       aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
-    } else if(section===1&&row[0]&&row[1]){
-      tarihce.push({hisse:row[0],giris:row[1],cikis:row[2],girisF:row[3],cikisF:row[4],girisTutar:row[5],kar:row[6],toplamTutar:row[7],endeksT:row[8],usdT:row[9],altinT:row[10]});
+    }
+    // K-U → İşlem tarihçesi (col 10-20)
+    if(row[10]&&row[11]){
+      tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
+    }
+    // V-Z → Grafik verileri (col 21-25)
+    if(row[21]&&row[22]){
+      grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
     }
   }
-  // Son satır toplam mı kontrol et
-  var son=tarihce[tarihce.length-1];
-  var toplam=null;
-  if(son&&!son.giris&&son.girisTutar){
-    toplam={girisTutar:son.girisTutar,kar:son.kar,toplamTutar:son.toplamTutar,endeksT:son.endeksT,usdT:son.usdT,altinT:son.altinT};
-    tarihce.pop();
+  // Grafik dizisinin son dolu satırını toplam olarak al
+  var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
+  if(grafikDolu.length){
+    var son=grafikDolu[grafikDolu.length-1];
+    toplam={toplamTutar:son.portfoy,endeksT:son.endeks,usdT:son.usd,altinT:son.altin};
   }
-  return {aktif:aktif,tarihce:tarihce,toplam:toplam};
+  return {aktif:aktif,tarihce:tarihce,grafik:grafikDolu,toplam:toplam};
 }
 
 function perfClass(s){
