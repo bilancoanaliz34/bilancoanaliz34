@@ -1859,7 +1859,6 @@ function buildPortfoy(){
       var portfoy=parsePortfoyCSV(csv);
       renderPortfoy(wrap, portfoy);
     }).catch(function(){
-      // Fallback: gömülü statik veri
       if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
       else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
     });
@@ -1879,7 +1878,6 @@ function parsePortfoyCSV(csv){
     return result;
   }
   var aktif=[],tarihce=[],grafik=[],toplam=null;
-  // i=1: başlık satırını atla
   for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
     // A-I → Aktif pozisyonlar (col 0-8)
@@ -1895,7 +1893,6 @@ function parsePortfoyCSV(csv){
       grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
     }
   }
-  // Grafik dizisinin son dolu satırını toplam olarak al
   var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
   if(grafikDolu.length){
     var son=grafikDolu[grafikDolu.length-1];
@@ -2997,7 +2994,14 @@ document.addEventListener('DOMContentLoaded',function(){
 window.addEventListener('popstate', function(e){
   const params = new URLSearchParams(window.location.search);
   const hisse  = params.get('hisse');
-  if(hisse && VERI[hisse.toUpperCase()]){
+  const portfoy = params.get('portfoy');
+  if(portfoy==='1'){
+    var us=document.getElementById('upload-screen');if(us)us.style.display='none';
+    var ds=document.getElementById('dash');if(ds)ds.style.display='none';
+    var pw=document.getElementById('portfoy-wrap');
+    if(pw){ pw.style.display='block'; buildPortfoy(); }
+    ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
+  } else if(hisse && VERI[hisse.toUpperCase()]){
     // URL'i tekrar push etmeden sadece göster
     const info = VERI[hisse.toUpperCase()];
     const sorted = [...info.periods].sort((a,b)=>{
@@ -3013,6 +3017,7 @@ window.addEventListener('popstate', function(e){
   } else {
     D={};
     document.getElementById('dash').style.display='none';
+    var pw=document.getElementById('portfoy-wrap');if(pw)pw.style.display='none';
     var _us=document.getElementById('upload-screen');if(_us)_us.style.display='flex';
     document.getElementById('site-footer').style.display='flex';
   }
@@ -3083,6 +3088,16 @@ function showErr(m){const e=document.getElementById('err');if(e){e.style.display
 
 // Sayfa yüklenince veriyi başlat
 loadEmbeddedData();
+
+// URL'de ?portfoy=1 varsa direkt portföy sayfasını aç
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  if(params.get('portfoy')==='1'){
+    document.addEventListener('DOMContentLoaded',function(){
+      showPortfoy();
+    });
+  }
+})();
 </script>
 <script data-cfasync="false">
 function trimCanvas(canvas){
@@ -4557,7 +4572,6 @@ function buildPortfoy(){
       var portfoy=parsePortfoyCSV(csv);
       renderPortfoy(wrap, portfoy);
     }).catch(function(){
-      // Fallback: gömülü statik veri
       if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
       else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
     });
@@ -4577,7 +4591,6 @@ function parsePortfoyCSV(csv){
     return result;
   }
   var aktif=[],tarihce=[],grafik=[],toplam=null;
-  // i=1: başlık satırını atla
   for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
     // A-I → Aktif pozisyonlar (col 0-8)
@@ -4593,7 +4606,6 @@ function parsePortfoyCSV(csv){
       grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
     }
   }
-  // Grafik dizisinin son dolu satırını toplam olarak al
   var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
   if(grafikDolu.length){
     var son=grafikDolu[grafikDolu.length-1];
