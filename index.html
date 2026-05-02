@@ -2034,23 +2034,18 @@ function parsePortfoyCSV(csv){
     return result;
   }
   var aktif=[],tarihce=[],grafik=[],toplam=null;
-  // i=1: ilk satır başlık, atla
   for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
-    // A-I: Aktif pozisyonlar (col 0-8)
     if(row[0]&&row[1]){
       aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
     }
-    // K-U: İşlem tarihçesi (col 10-20)
     if(row[10]&&row[11]){
       tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
     }
-    // V-Z: Grafik verileri (col 21-25)
     if(row[21]&&row[22]){
       grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
     }
   }
-  // Son dolu grafik satırı = toplam
   var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
   if(grafikDolu.length){
     var son=grafikDolu[grafikDolu.length-1];
@@ -2123,42 +2118,14 @@ function renderPortfoy(wrap, data){
   }).join('');
 
   // Grafik verisi — tarihçeden kümülatif hesapla (100.000 TL başlangıç)
-  var baslangic=100000;
-  var grafRows=[];
-  // Girişler kronolojik sıralı olsun
-  var allRows=[].concat(data.tarihce||[]);
-  allRows.sort(function(a,b){
-    function td(s){if(!s||s==='Devam Ediyor')return 9999999;var p=s.split('.');return parseInt(p[2])*10000+parseInt(p[1])*100+parseInt(p[0]);}
-    return td(a.giris)-td(b.giris);
-  });
-  // Her işlemin tutarını topla (10.000 TL birim)
-  var portfoyBirikimli=baslangic, endeksBirikimli=baslangic, usdBirikimli=baslangic, altinBirikimli=baslangic;
-  var labels=['Başlangıç'];
-  var portfoySerisi=[baslangic], endeksSerisi=[baslangic], usdSerisi=[baslangic], altinSerisi=[baslangic];
-  allRows.forEach(function(h){
-    var tutar=parseFloat((h.toplamTutar||'10000').replace(/\./g,'').replace(',','.'));
-    var et=parseFloat((h.endeksT||'10000').replace(/\./g,'').replace(',','.'));
-    var ut=parseFloat((h.usdT||'10000').replace(/\./g,'').replace(',','.'));
-    var at=parseFloat((h.altinT||'10000').replace(/\./g,'').replace(',','.'));
-    if(isNaN(tutar)) return;
-    var getiriPct=(tutar-10000)/10000;
-    var endeksPct=isNaN(et)?(et-10000)/10000:(et-10000)/10000;
-    var usdPct=isNaN(ut)?0:(ut-10000)/10000;
-    var altinPct=isNaN(at)?0:(at-10000)/10000;
-    portfoyBirikimli+=portfoyBirikimli/allRows.length*getiriPct*allRows.length;
-    endeksBirikimli+=endeksBirikimli/allRows.length*endeksPct*allRows.length;
-    usdBirikimli+=usdBirikimli/allRows.length*usdPct*allRows.length;
-    altinBirikimli+=altinBirikimli/allRows.length*altinPct*allRows.length;
-    portfoyBirikimli=tutar/10000*baslangic;
-    endeksBirikimli=et/10000*baslangic;
-    usdBirikimli=ut/10000*baslangic;
-    altinBirikimli=at/10000*baslangic;
-    labels.push(h.hisse+(h.cikis&&h.cikis!=='Devam Ediyor'?' ✓':''));
-    portfoySerisi.push(Math.round(portfoyBirikimli));
-    endeksSerisi.push(Math.round(endeksBirikimli));
-    usdSerisi.push(Math.round(usdBirikimli));
-    altinSerisi.push(Math.round(altinBirikimli));
-  });
+  // Grafik verisini doğrudan data.grafik'ten al (x ekseni = aylar)
+  function parseNum(s){ return parseFloat((s||'0').replace(/\./g,'').replace(',','.')); }
+  var grafikRows=data.grafik||[];
+  var labels=grafikRows.map(function(g){return g.donem.trim();});
+  var portfoySerisi=grafikRows.map(function(g){return Math.round(parseNum(g.portfoy));});
+  var endeksSerisi=grafikRows.map(function(g){return Math.round(parseNum(g.endeks));});
+  var usdSerisi=grafikRows.map(function(g){return Math.round(parseNum(g.usd));});
+  var altinSerisi=grafikRows.map(function(g){return Math.round(parseNum(g.altin));});
 
   // Toplam tutar data.toplam'dan al
   var toplamTL='—', toplamEndeks='—', toplamUsd='—', toplamAltin='—';
