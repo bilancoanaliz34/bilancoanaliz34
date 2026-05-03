@@ -2032,14 +2032,11 @@ function buildPortfoy(){
   // Google Sheets ID - kendi ID'nizi buraya yazın
   var sheetId = '1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48';
   
-  // Farklı export formatlarını dene
+  // Portföy sayfasını çek — sekme adı: "Portföy" (büyük P, Türkçe ö)
   var urls = [
-    // Format 1: Doğrudan CSV export (en güvenilir)
-    'https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=csv&gid=0',
-    // Format 2: CSV export alternatif
-    'https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=csv',
-    // Format 3: gviz API
-    'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=out:csv'
+    'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=out:csv&sheet=Portf%C3%B6y',
+    'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=out:csv&sheet=Portf%26ouml%3By',
+    'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=out:csv&sheet=Portfoy'
   ];
   
   var tryUrl = function(index) {
