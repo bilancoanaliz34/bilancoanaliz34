@@ -1985,6 +1985,7 @@ function parsePortfoyCSV(csv){
     // Aktif portföy: A(0)-I(8)
     // A=Hisse, B=GirişTarihi, C=BilançoDönemi, D=GirişFiyatı, E=GüncelFiyat
     // F=Performans, G=EndeksPerf, H=UsdPerf, I=AltınPerf
+    // J(9) = BOŞ
     if(row[0] && row[0]!=='' && row[1] && row[1]!=='') {
       aktif.push({
         hisse:     row[0],
@@ -1999,9 +2000,9 @@ function parsePortfoyCSV(csv){
       });
     }
     
-    // Tarihçe: K(10)-U(20) — Q(16) "#" sütunu atlanıyor
+    // Tarihçe: K(10)-U(20) — boş sütun YOK, J tek boş sütun
     // K=Hisse, L=GirişTarihi, M=ÇıkışTarihi, N=GirişFiyatı, O=ÇıkışFiyatı
-    // P=GirişTutarı, Q(16)=# (atla), R=Kar, S=ToplamTutar, T=EndeksPerf, U=UsdPerf, V(21)=AltınPerf
+    // P=GirişTutarı, Q=Kar, R=ToplamTutar, S=EndeksPerf, T=UsdPerf, U=AltınPerf
     if(row[10] && row[10]!=='' && row[11] && row[11]!=='') {
       tarihce.push({
         hisse:       row[10],
@@ -2010,22 +2011,28 @@ function parsePortfoyCSV(csv){
         girisF:      row[13]||'',
         cikisF:      row[14]||'',
         girisTutar:  row[15]||'',
-        kar:         row[17]||'',
-        toplamTutar: row[18]||'',
-        endeksT:     row[19]||'',
-        usdT:        row[20]||'',
-        altinT:      row[21]||''
+        kar:         row[16]||'',
+        toplamTutar: row[17]||'',
+        endeksT:     row[18]||'',
+        usdT:        row[19]||'',
+        altinT:      row[20]||''
       });
     }
     
-    // Grafik: W(22)-Z(26) — Dönem, Model Portföy, Endeks, USD, Altın
-    if(row[22] && row[22]!=='' && row[23] && row[23]!=='') {
+    // Grafik: V(21)-Z(25) — Dönem, Model Portföy, Endeks, USD, Altın
+    // Dönem "Oca 2026", "Şub 2026" gibi ay formatında olmalı
+    var gDonem = row[21]||'';
+    var gPortfoy = row[22]||'';
+    // Sadece geçerli ay dönemlerini al (sayı değil, tarih metni)
+    var isGrafikSatir = gDonem && gDonem!=='' && gPortfoy && gPortfoy!=='' 
+      && isNaN(parseFloat(gDonem.replace(/[.,]/g,'')));
+    if(isGrafikSatir) {
       grafik.push({
-        donem:   row[22],
-        portfoy: row[23],
-        endeks:  row[24]||'',
-        usd:     row[25]||'',
-        altin:   row[26]||''
+        donem:   gDonem,
+        portfoy: gPortfoy,
+        endeks:  row[23]||'',
+        usd:     row[24]||'',
+        altin:   row[25]||''
       });
     }
   }
@@ -4826,6 +4833,7 @@ function parsePortfoyCSV(csv){
     // Aktif portföy: A(0)-I(8)
     // A=Hisse, B=GirişTarihi, C=BilançoDönemi, D=GirişFiyatı, E=GüncelFiyat
     // F=Performans, G=EndeksPerf, H=UsdPerf, I=AltınPerf
+    // J(9) = BOŞ
     if(row[0] && row[0]!=='' && row[1] && row[1]!=='') {
       aktif.push({
         hisse:     row[0],
@@ -4840,9 +4848,9 @@ function parsePortfoyCSV(csv){
       });
     }
     
-    // Tarihçe: K(10)-U(20) — Q(16) "#" sütunu atlanıyor
+    // Tarihçe: K(10)-U(20) — boş sütun YOK, J tek boş sütun
     // K=Hisse, L=GirişTarihi, M=ÇıkışTarihi, N=GirişFiyatı, O=ÇıkışFiyatı
-    // P=GirişTutarı, Q(16)=# (atla), R=Kar, S=ToplamTutar, T=EndeksPerf, U=UsdPerf, V(21)=AltınPerf
+    // P=GirişTutarı, Q=Kar, R=ToplamTutar, S=EndeksPerf, T=UsdPerf, U=AltınPerf
     if(row[10] && row[10]!=='' && row[11] && row[11]!=='') {
       tarihce.push({
         hisse:       row[10],
@@ -4851,22 +4859,28 @@ function parsePortfoyCSV(csv){
         girisF:      row[13]||'',
         cikisF:      row[14]||'',
         girisTutar:  row[15]||'',
-        kar:         row[17]||'',
-        toplamTutar: row[18]||'',
-        endeksT:     row[19]||'',
-        usdT:        row[20]||'',
-        altinT:      row[21]||''
+        kar:         row[16]||'',
+        toplamTutar: row[17]||'',
+        endeksT:     row[18]||'',
+        usdT:        row[19]||'',
+        altinT:      row[20]||''
       });
     }
     
-    // Grafik: W(22)-Z(26) — Dönem, Model Portföy, Endeks, USD, Altın
-    if(row[22] && row[22]!=='' && row[23] && row[23]!=='') {
+    // Grafik: V(21)-Z(25) — Dönem, Model Portföy, Endeks, USD, Altın
+    // Dönem "Oca 2026", "Şub 2026" gibi ay formatında olmalı
+    var gDonem = row[21]||'';
+    var gPortfoy = row[22]||'';
+    // Sadece geçerli ay dönemlerini al (sayı değil, tarih metni)
+    var isGrafikSatir = gDonem && gDonem!=='' && gPortfoy && gPortfoy!=='' 
+      && isNaN(parseFloat(gDonem.replace(/[.,]/g,'')));
+    if(isGrafikSatir) {
       grafik.push({
-        donem:   row[22],
-        portfoy: row[23],
-        endeks:  row[24]||'',
-        usd:     row[25]||'',
-        altin:   row[26]||''
+        donem:   gDonem,
+        portfoy: gPortfoy,
+        endeks:  row[23]||'',
+        usd:     row[24]||'',
+        altin:   row[25]||''
       });
     }
   }
