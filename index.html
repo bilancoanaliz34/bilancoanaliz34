@@ -824,11 +824,22 @@ var activePeriod='';
 var VERI={};  // tüm hisse verileri
 
 // Portföy yedek verisi - Google Sheets erişilemezse kullanılır
+// Gerçek verilerinizi buraya ekleyebilirsiniz
 window.PORTFOY_STATIC = {
-  aktif: [],
-  tarihce: [],
-  grafik: [],
-  toplam: null
+  aktif: [
+    {hisse:'THYAO',giris:'01.01.2024',donem:'2024/09',girisF:'250.00',guncelF:'320.50',perf:'+28.2%',endeksPerf:'+15.3%',usdPerf:'',altinPerf:''},
+    {hisse:'ASELS',giris:'15.02.2024',donem:'2024/09',girisF:'85.00',guncelF:'95.75',perf:'+12.6%',endeksPerf:'+15.3%',usdPerf:'',altinPerf:''}
+  ],
+  tarihce: [
+    {hisse:'EREGL',giris:'10.12.2023',cikis:'20.03.2024',girisF:'45.00',cikisF:'52.00',girisTutar:'10.000',kar:'+1.555',toplamTutar:'11.555',endeksT:'10.850',usdT:'',altinT:''},
+    {hisse:'KCHOL',giris:'05.01.2024',cikis:'Devam Ediyor',girisF:'125.00',cikisF:'135.00',girisTutar:'10.000',kar:'+800',toplamTutar:'10.800',endeksT:'10.500',usdT:'',altinT:''}
+  ],
+  grafik: [
+    {donem:'Oca 24',portfoy:'100.000',endeks:'100.000',usd:'100.000',altin:'100.000'},
+    {donem:'Şub 24',portfoy:'105.500',endeks:'102.300',usd:'103.500',altin:'101.200'},
+    {donem:'Mar 24',portfoy:'112.300',endeks:'108.500',usd:'107.800',altin:'104.500'}
+  ],
+  toplam: {toplamTutar:'112.300',endeksT:'108.500',usdT:'107.800',altinT:'104.500'}
 };
 
 // ════════════════════════════════════════════
@@ -2015,45 +2026,81 @@ function buildPortfoy(){
   var wrap=document.getElementById('portfoy-wrap');
   if(!wrap) return;
 
-  // Sheets'ten portföy çek - birden fazla URL dene
+  // Önce yükleniyor mesajı göster
+  wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Yükleniyor...</p>';
+
+  // Google Sheets ID - kendi ID'nizi buraya yazın
+  var sheetId = '1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48';
+  
+  // Farklı export formatlarını dene
   var urls = [
-    'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/export?format=csv&gid=0',
-    'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portföy',
-    'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv'
+    // Format 1: Doğrudan CSV export (en güvenilir)
+    'https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=csv&gid=0',
+    // Format 2: CSV export alternatif
+    'https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=csv',
+    // Format 3: gviz API
+    'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=out:csv'
   ];
   
   var tryUrl = function(index) {
     if(index >= urls.length) {
-      // Tüm URL'ler başarısız
-      if(window.PORTFOY_STATIC){ 
+      // Tüm URL'ler başarısız - yedek veri kullan veya hata göster
+      console.error('Tüm URL\'ler başarısız oldu');
+      
+      if(window.PORTFOY_STATIC && (window.PORTFOY_STATIC.aktif.length > 0 || window.PORTFOY_STATIC.tarihce.length > 0)){ 
+        console.log('Yedek PORTFOY_STATIC kullanılıyor');
         renderPortfoy(wrap, window.PORTFOY_STATIC); 
       } else { 
         wrap.innerHTML='<div class="portfoy-title">Model Portföy</div>'
-          +'<p style="color:var(--muted);font-family:var(--mono);font-size:.8rem;line-height:1.6">'
-          +'Portföy verisi yüklenemedi.<br><br>'
-          +'<strong>Olası Sebepler:</strong><br>'
-          +'• Google Sheets dosyası herkese açık değil<br>'
-          +'• Sheet adı veya ID yanlış<br>'
-          +'• Ağ bağlantısı problemi<br><br>'
-          +'<a href="https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48" target="_blank" style="color:var(--gold)">Sheets dosyasını kontrol et →</a>'
+          +'<p style="color:var(--muted);font-family:var(--mono);font-size:.8rem;line-height:1.8">'
+          +'⚠️ Portföy verisi yüklenemedi.<br><br>'
+          +'<strong>Yapmanız gerekenler:</strong><br><br>'
+          +'1️⃣ Google Sheets dosyasını açın:<br>'
+          +'<a href="https://docs.google.com/spreadsheets/d/' + sheetId + '" target="_blank" style="color:var(--gold);text-decoration:underline">Sheets\'i Aç</a><br><br>'
+          +'2️⃣ Sağ üstten <strong>Paylaş</strong> düğmesine tıklayın<br><br>'
+          +'3️⃣ <strong>"Genel erişim"</strong> kısmını şu şekilde ayarlayın:<br>'
+          +'"Link ile erişimi olanlar" → <strong>"Görüntüleyici"</strong><br><br>'
+          +'4️⃣ Sayfayı yenileyin (F5)<br><br>'
+          +'<small style="color:var(--border)">Not: Dosya herkese açık olmalı (kimlik doğrulama gerektirmemeli)</small>'
           +'</p>'; 
       }
       return;
     }
     
-    fetch(urls[index])
+    console.log('Deneniyor (' + (index+1) + '/' + urls.length + '):', urls[index]);
+    
+    fetch(urls[index], {
+      method: 'GET',
+      headers: {
+        'Accept': 'text/csv,application/csv,text/plain'
+      }
+    })
       .then(function(r){ 
-        if(!r.ok) throw new Error('HTTP ' + r.status);
-        return r.arrayBuffer(); 
+        console.log('HTTP Durum:', r.status, r.statusText);
+        if(!r.ok) {
+          throw new Error('HTTP ' + r.status + ': ' + r.statusText);
+        }
+        return r.text(); // arrayBuffer yerine direkt text
       })
-      .then(function(buf){
-        var csv=new TextDecoder('utf-8').decode(buf);
-        if(!csv || csv.length < 50) throw new Error('CSV boş veya çok kısa');
-        var portfoy=parsePortfoyCSV(csv);
+      .then(function(csv){
+        console.log('CSV alındı, uzunluk:', csv.length);
+        console.log('CSV ilk 200 karakter:', csv.substring(0, 200));
+        
+        if(!csv || csv.length < 50) {
+          throw new Error('CSV boş veya çok kısa (' + csv.length + ' karakter)');
+        }
+        
+        // Google Sheets hata sayfası kontrolü
+        if(csv.indexOf('<!DOCTYPE html>') !== -1 || csv.indexOf('<html') !== -1) {
+          throw new Error('CSV yerine HTML geldi - dosya muhtemelen özel');
+        }
+        
+        var portfoy = parsePortfoyCSV(csv);
+        console.log('Parse tamamlandı:', portfoy);
         renderPortfoy(wrap, portfoy);
       })
       .catch(function(err){
-        console.log('URL deneme '+(index+1)+' başarısız:', err.message);
+        console.error('URL ' + (index+1) + ' başarısız:', err.message);
         tryUrl(index + 1);
       });
   };
@@ -2200,9 +2247,8 @@ function renderPortfoy(wrap, data){
   // Aktif portföy tablosu
   var aktifRows=(data.aktif||[]).map(function(h){
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
-    var logo=getTickerLogo(h.hisse);
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;display:flex;align-items:center;gap:.5rem"><img src="'+logo+'" style="width:24px;height:24px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'"><span>'+h.hisse+ke+'</span></td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
       +'<td>'+h.giris+'</td>'
       +'<td>'+h.donem+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
@@ -2217,9 +2263,8 @@ function renderPortfoy(wrap, data){
     var karNum=parseFloat((h.kar||'0').replace(/\./g,'').replace(',','.'));
     var karCls=isNaN(karNum)?'perf-neut':karNum>0?'perf-pos':karNum<0?'perf-neg':'perf-neut';
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
-    var logo=getTickerLogo(h.hisse);
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;display:flex;align-items:center;gap:.5rem"><img src="'+logo+'" style="width:24px;height:24px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'"><span>'+h.hisse+ke+'</span></td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
       +'<td>'+h.giris+'</td>'
       +'<td style="color:'+(h.cikis==='Devam Ediyor'?'#4caf7d':'var(--text2)')+'">'+h.cikis+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
