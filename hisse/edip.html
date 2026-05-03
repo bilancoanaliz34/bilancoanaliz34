@@ -666,6 +666,14 @@ var CHS=[];
 var activePeriod='';
 var VERI={};  // tüm hisse verileri
 
+// Portföy yedek verisi - Google Sheets erişilemezse kullanılır
+window.PORTFOY_STATIC = {
+  aktif: [],
+  tarihce: [],
+  grafik: [],
+  toplam: null
+};
+
 // ════════════════════════════════════════════
 // VERİ YÜKLE — gömülü base64/gzip JSON
 // ════════════════════════════════════════════
@@ -1850,18 +1858,50 @@ function buildPortfoy(){
   var wrap=document.getElementById('portfoy-wrap');
   if(!wrap) return;
 
-  // Sheets'ten portföy çek
-  var url='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
-  fetch(url)
-    .then(function(r){ return r.arrayBuffer(); })
-    .then(function(buf){
-      var csv=new TextDecoder('utf-8').decode(buf);
-      var portfoy=parsePortfoyCSV(csv);
-      renderPortfoy(wrap, portfoy);
-    }).catch(function(){
-      if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
-      else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
-    });
+  // Sheets'ten portföy çek - birden fazla URL dene
+  var urls = [
+    'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/export?format=csv&gid=0',
+    'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portföy',
+    'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv'
+  ];
+  
+  var tryUrl = function(index) {
+    if(index >= urls.length) {
+      // Tüm URL'ler başarısız
+      if(window.PORTFOY_STATIC){ 
+        renderPortfoy(wrap, window.PORTFOY_STATIC); 
+      } else { 
+        wrap.innerHTML='<div class="portfoy-title">Model Portföy</div>'
+          +'<p style="color:var(--muted);font-family:var(--mono);font-size:.8rem;line-height:1.6">'
+          +'Portföy verisi yüklenemedi.<br><br>'
+          +'<strong>Olası Sebepler:</strong><br>'
+          +'• Google Sheets dosyası herkese açık değil<br>'
+          +'• Sheet adı veya ID yanlış<br>'
+          +'• Ağ bağlantısı problemi<br><br>'
+          +'<a href="https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48" target="_blank" style="color:var(--gold)">Sheets dosyasını kontrol et →</a>'
+          +'</p>'; 
+      }
+      return;
+    }
+    
+    fetch(urls[index])
+      .then(function(r){ 
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.arrayBuffer(); 
+      })
+      .then(function(buf){
+        var csv=new TextDecoder('utf-8').decode(buf);
+        if(!csv || csv.length < 50) throw new Error('CSV boş veya çok kısa');
+        var portfoy=parsePortfoyCSV(csv);
+        renderPortfoy(wrap, portfoy);
+      })
+      .catch(function(err){
+        console.log('URL deneme '+(index+1)+' başarısız:', err.message);
+        tryUrl(index + 1);
+      });
+  };
+  
+  tryUrl(0);
 }
 
 function parsePortfoyCSV(csv){
@@ -3341,6 +3381,14 @@ async function xPaylas(){
 
   // tüm hisse verileri
 
+// Portföy yedek verisi - Google Sheets erişilemezse kullanılır
+window.PORTFOY_STATIC = {
+  aktif: [],
+  tarihce: [],
+  grafik: [],
+  toplam: null
+};
+
 // ════════════════════════════════════════════
 // VERİ YÜKLE — gömülü base64/gzip JSON
 // ════════════════════════════════════════════
@@ -4525,18 +4573,50 @@ function buildPortfoy(){
   var wrap=document.getElementById('portfoy-wrap');
   if(!wrap) return;
 
-  // Sheets'ten portföy çek
-  var url='https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portf%C3%B6y';
-  fetch(url)
-    .then(function(r){ return r.arrayBuffer(); })
-    .then(function(buf){
-      var csv=new TextDecoder('utf-8').decode(buf);
-      var portfoy=parsePortfoyCSV(csv);
-      renderPortfoy(wrap, portfoy);
-    }).catch(function(){
-      if(window.PORTFOY_STATIC){ renderPortfoy(wrap, window.PORTFOY_STATIC); }
-      else { wrap.innerHTML='<div class="portfoy-title">Model Portföy</div><p style="color:var(--muted);font-family:var(--mono);font-size:.8rem">Portföy verisi yüklenemedi.</p>'; }
-    });
+  // Sheets'ten portföy çek - birden fazla URL dene
+  var urls = [
+    'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/export?format=csv&gid=0',
+    'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=portföy',
+    'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv'
+  ];
+  
+  var tryUrl = function(index) {
+    if(index >= urls.length) {
+      // Tüm URL'ler başarısız
+      if(window.PORTFOY_STATIC){ 
+        renderPortfoy(wrap, window.PORTFOY_STATIC); 
+      } else { 
+        wrap.innerHTML='<div class="portfoy-title">Model Portföy</div>'
+          +'<p style="color:var(--muted);font-family:var(--mono);font-size:.8rem;line-height:1.6">'
+          +'Portföy verisi yüklenemedi.<br><br>'
+          +'<strong>Olası Sebepler:</strong><br>'
+          +'• Google Sheets dosyası herkese açık değil<br>'
+          +'• Sheet adı veya ID yanlış<br>'
+          +'• Ağ bağlantısı problemi<br><br>'
+          +'<a href="https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48" target="_blank" style="color:var(--gold)">Sheets dosyasını kontrol et →</a>'
+          +'</p>'; 
+      }
+      return;
+    }
+    
+    fetch(urls[index])
+      .then(function(r){ 
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.arrayBuffer(); 
+      })
+      .then(function(buf){
+        var csv=new TextDecoder('utf-8').decode(buf);
+        if(!csv || csv.length < 50) throw new Error('CSV boş veya çok kısa');
+        var portfoy=parsePortfoyCSV(csv);
+        renderPortfoy(wrap, portfoy);
+      })
+      .catch(function(err){
+        console.log('URL deneme '+(index+1)+' başarısız:', err.message);
+        tryUrl(index + 1);
+      });
+  };
+  
+  tryUrl(0);
 }
 
 function parsePortfoyCSV(csv){
