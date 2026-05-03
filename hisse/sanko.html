@@ -1926,8 +1926,9 @@ function renderPortfoy(wrap, data){
   // Aktif portföy tablosu
   var aktifRows=(data.aktif||[]).map(function(h){
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
+    var logo=getTickerLogo(h.hisse);
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;display:flex;align-items:center;gap:.5rem"><img src="'+logo+'" style="width:24px;height:24px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'"><span>'+h.hisse+ke+'</span></td>'
       +'<td>'+h.giris+'</td>'
       +'<td>'+h.donem+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
@@ -1942,8 +1943,9 @@ function renderPortfoy(wrap, data){
     var karNum=parseFloat((h.kar||'0').replace(/\./g,'').replace(',','.'));
     var karCls=isNaN(karNum)?'perf-neut':karNum>0?'perf-pos':karNum<0?'perf-neg':'perf-neut';
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
+    var logo=getTickerLogo(h.hisse);
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;display:flex;align-items:center;gap:.5rem"><img src="'+logo+'" style="width:24px;height:24px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'"><span>'+h.hisse+ke+'</span></td>'
       +'<td>'+h.giris+'</td>'
       +'<td style="color:'+(h.cikis==='Devam Ediyor'?'#4caf7d':'var(--text2)')+'">'+h.cikis+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
@@ -4599,8 +4601,9 @@ function renderPortfoy(wrap, data){
   // Aktif portföy tablosu
   var aktifRows=(data.aktif||[]).map(function(h){
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
+    var logo=getTickerLogo(h.hisse);
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;display:flex;align-items:center;gap:.5rem"><img src="'+logo+'" style="width:24px;height:24px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'"><span>'+h.hisse+ke+'</span></td>'
       +'<td>'+h.giris+'</td>'
       +'<td>'+h.donem+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
@@ -4615,8 +4618,9 @@ function renderPortfoy(wrap, data){
     var karNum=parseFloat((h.kar||'0').replace(/\./g,'').replace(',','.'));
     var karCls=isNaN(karNum)?'perf-neut':karNum>0?'perf-pos':karNum<0?'perf-neg':'perf-neut';
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
+    var logo=getTickerLogo(h.hisse);
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;display:flex;align-items:center;gap:.5rem"><img src="'+logo+'" style="width:24px;height:24px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'"><span>'+h.hisse+ke+'</span></td>'
       +'<td>'+h.giris+'</td>'
       +'<td style="color:'+(h.cikis==='Devam Ediyor'?'#4caf7d':'var(--text2)')+'">'+h.cikis+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
