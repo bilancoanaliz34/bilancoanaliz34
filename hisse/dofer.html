@@ -1880,15 +1880,9 @@ function parsePortfoyCSV(csv){
   var aktif=[],tarihce=[],grafik=[],toplam=null;
   for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
-    if(row[0]&&row[1]){
-      aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
-    }
-    if(row[10]&&row[11]){
-      tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
-    }
-    if(row[21]&&row[22]){
-      grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
-    }
+    if(row[0]&&row[1]) aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
+    if(row[10]&&row[11]) tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
+    if(row[21]&&row[22]) grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
   }
   var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
   if(grafikDolu.length){
@@ -1933,7 +1927,7 @@ function renderPortfoy(wrap, data){
   var aktifRows=(data.aktif||[]).map(function(h){
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;white-space:nowrap" data-ticker="'+h.hisse+'"><span class="tbl-logo"></span>'+h.hisse+ke+'</td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
       +'<td>'+h.giris+'</td>'
       +'<td>'+h.donem+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
@@ -1949,7 +1943,7 @@ function renderPortfoy(wrap, data){
     var karCls=isNaN(karNum)?'perf-neut':karNum>0?'perf-pos':karNum<0?'perf-neg':'perf-neut';
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;white-space:nowrap" data-ticker="'+h.hisse+'"><span class="tbl-logo"></span>'+h.hisse+ke+'</td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
       +'<td>'+h.giris+'</td>'
       +'<td style="color:'+(h.cikis==='Devam Ediyor'?'#4caf7d':'var(--text2)')+'">'+h.cikis+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
@@ -2015,9 +2009,6 @@ function renderPortfoy(wrap, data){
     +'<thead><tr><th>Hisse</th><th>Giriş</th><th>Çıkış</th><th>Giriş F.</th><th>Çıkış F.</th><th>Tutar</th><th>Kar/Zarar</th><th>Toplam</th><th>Endeks Olsaydı</th></tr></thead>'
     +'<tbody>'+tarihceRows+'</tbody>'
     +'</table></div>';
-
-  // Portföy tablolarına logo enjekte et
-  setTimeout(injectTableLogos, 100);
 
   // Chart.js ile grafik çiz
   setTimeout(function(){
@@ -2090,6 +2081,7 @@ function selectTicker(ticker){
     puan:info.puan,
   };
   var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
+  var _pw=document.getElementById('portfoy-wrap');if(_pw)_pw.style.display='none';
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   document.getElementById('dash').style.display='block';
@@ -2973,7 +2965,6 @@ window.addEventListener('popstate', function(e){
     if(pw){ pw.style.display='block'; buildPortfoy(); }
     ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   } else if(hisse && VERI[hisse.toUpperCase()]){
-    // URL'i tekrar push etmeden sadece göster
     const info = VERI[hisse.toUpperCase()];
     const sorted = [...info.periods].sort((a,b)=>{
       const[ay,am]=a.split('/');const[by,bm]=b.split('/');
@@ -2981,6 +2972,7 @@ window.addEventListener('popstate', function(e){
     });
     D={ticker:hisse.toUpperCase(),periods:sorted,rows:info.rows,sector:info.sector,company:info.company,puan:info.puan};
     var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
+    var _pw=document.getElementById('portfoy-wrap');if(_pw)_pw.style.display='none';
     const adHomeP = document.getElementById('ad-home-bottom');
     if(adHomeP) adHomeP.style.display='none';
     document.getElementById('dash').style.display='block';
@@ -4561,15 +4553,9 @@ function parsePortfoyCSV(csv){
   var aktif=[],tarihce=[],grafik=[],toplam=null;
   for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
-    if(row[0]&&row[1]){
-      aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
-    }
-    if(row[10]&&row[11]){
-      tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
-    }
-    if(row[21]&&row[22]){
-      grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
-    }
+    if(row[0]&&row[1]) aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
+    if(row[10]&&row[11]) tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
+    if(row[21]&&row[22]) grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
   }
   var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
   if(grafikDolu.length){
@@ -4614,7 +4600,7 @@ function renderPortfoy(wrap, data){
   var aktifRows=(data.aktif||[]).map(function(h){
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;white-space:nowrap" data-ticker="'+h.hisse+'"><span class="tbl-logo"></span>'+h.hisse+ke+'</td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
       +'<td>'+h.giris+'</td>'
       +'<td>'+h.donem+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
@@ -4630,7 +4616,7 @@ function renderPortfoy(wrap, data){
     var karCls=isNaN(karNum)?'perf-neut':karNum>0?'perf-pos':karNum<0?'perf-neg':'perf-neut';
     var ke=(window.KATILIM_SET&&KATILIM_SET.has(h.hisse))?'<span class="ke-badge">KE</span>':'';
     return '<tr>'
-      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer;white-space:nowrap" data-ticker="'+h.hisse+'"><span class="tbl-logo"></span>'+h.hisse+ke+'</td>'
+      +'<td onclick="selectTicker(\''+h.hisse+'\')" style="cursor:pointer">'+h.hisse+ke+'</td>'
       +'<td>'+h.giris+'</td>'
       +'<td style="color:'+(h.cikis==='Devam Ediyor'?'#4caf7d':'var(--text2)')+'">'+h.cikis+'</td>'
       +'<td>'+h.girisF+' ₺</td>'
@@ -4696,9 +4682,6 @@ function renderPortfoy(wrap, data){
     +'<thead><tr><th>Hisse</th><th>Giriş</th><th>Çıkış</th><th>Giriş F.</th><th>Çıkış F.</th><th>Tutar</th><th>Kar/Zarar</th><th>Toplam</th><th>Endeks Olsaydı</th></tr></thead>'
     +'<tbody>'+tarihceRows+'</tbody>'
     +'</table></div>';
-
-  // Portföy tablolarına logo enjekte et
-  setTimeout(injectTableLogos, 100);
 
   // Chart.js ile grafik çiz
   setTimeout(function(){
@@ -4771,6 +4754,7 @@ function selectTicker(ticker){
     puan:info.puan,
   };
   var _us=document.getElementById('upload-screen');if(_us)_us.style.display='none';
+  var _pw=document.getElementById('portfoy-wrap');if(_pw)_pw.style.display='none';
   ['btn-anasayfa','btn-anasayfa-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   ['btn-paylas','btn-paylas-home'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='inline-flex';});
   document.getElementById('dash').style.display='block';
