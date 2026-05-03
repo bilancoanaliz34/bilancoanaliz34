@@ -1961,8 +1961,7 @@ function renderPortfoy(wrap, data){
       +'</tr>';
   }).join('');
 
-  // Grafik verisi — tarihçeden kümülatif hesapla (100.000 TL başlangıç)
-  // Grafik verisini doğrudan data.grafik'ten al (x ekseni = aylar)
+  // Grafik verisi — doğrudan data.grafik'ten (x ekseni = aylar)
   function parseNum(s){ return parseFloat((s||'0').replace(/\./g,'').replace(',','.')); }
   var grafikRows=data.grafik||[];
   var labels=grafikRows.map(function(g){return g.donem.trim();});
@@ -2053,7 +2052,7 @@ function renderPortfoy(wrap, data){
         },
         scales:{
           x:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},maxRotation:45},grid:{color:'rgba(140,122,94,.1)'}},
-          y:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K ₺':v;}},grid:{color:'rgba(140,122,94,.1)'},border:{display:false}}
+          y:{min:0,ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},stepSize:20000,callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K ₺':v;}},grid:{color:'rgba(140,122,94,.1)'},border:{display:false}}
         }
       }
     });
@@ -4640,8 +4639,7 @@ function renderPortfoy(wrap, data){
       +'</tr>';
   }).join('');
 
-  // Grafik verisi — tarihçeden kümülatif hesapla (100.000 TL başlangıç)
-  // Grafik verisini doğrudan data.grafik'ten al (x ekseni = aylar)
+  // Grafik verisi — doğrudan data.grafik'ten (x ekseni = aylar)
   function parseNum(s){ return parseFloat((s||'0').replace(/\./g,'').replace(',','.')); }
   var grafikRows=data.grafik||[];
   var labels=grafikRows.map(function(g){return g.donem.trim();});
@@ -4732,7 +4730,7 @@ function renderPortfoy(wrap, data){
         },
         scales:{
           x:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},maxRotation:45},grid:{color:'rgba(140,122,94,.1)'}},
-          y:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K ₺':v;}},grid:{color:'rgba(140,122,94,.1)'},border:{display:false}}
+          y:{min:0,ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},stepSize:20000,callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K ₺':v;}},grid:{color:'rgba(140,122,94,.1)'},border:{display:false}}
         }
       }
     });
