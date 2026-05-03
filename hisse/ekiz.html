@@ -1982,46 +1982,50 @@ function parsePortfoyCSV(csv){
       console.log('Satır '+ i + ' içeriği:', row.slice(0, 10));
     }
     
-    // Aktif portföy: sütun 0-8
+    // Aktif portföy: A(0)-I(8)
+    // A=Hisse, B=GirişTarihi, C=BilançoDönemi, D=GirişFiyatı, E=GüncelFiyat
+    // F=Performans, G=EndeksPerf, H=UsdPerf, I=AltınPerf
     if(row[0] && row[0]!=='' && row[1] && row[1]!=='') {
       aktif.push({
-        hisse:row[0],
-        giris:row[1],
-        donem:row[2]||'',
-        girisF:row[3]||'',
-        guncelF:row[4]||'',
-        perf:row[5]||'',
+        hisse:     row[0],
+        giris:     row[1],
+        donem:     row[2]||'',
+        girisF:    row[3]||'',
+        guncelF:   row[4]||'',
+        perf:      row[5]||'',
         endeksPerf:row[6]||'',
-        usdPerf:row[7]||'',
-        altinPerf:row[8]||''
+        usdPerf:   row[7]||'',
+        altinPerf: row[8]||''
       });
     }
     
-    // Tarihçe: sütun 10-20
+    // Tarihçe: K(10)-U(20) — Q(16) "#" sütunu atlanıyor
+    // K=Hisse, L=GirişTarihi, M=ÇıkışTarihi, N=GirişFiyatı, O=ÇıkışFiyatı
+    // P=GirişTutarı, Q(16)=# (atla), R=Kar, S=ToplamTutar, T=EndeksPerf, U=UsdPerf, V(21)=AltınPerf
     if(row[10] && row[10]!=='' && row[11] && row[11]!=='') {
       tarihce.push({
-        hisse:row[10],
-        giris:row[11],
-        cikis:row[12]||'',
-        girisF:row[13]||'',
-        cikisF:row[14]||'',
-        girisTutar:row[15]||'',
-        kar:row[16]||'',
-        toplamTutar:row[17]||'',
-        endeksT:row[18]||'',
-        usdT:row[19]||'',
-        altinT:row[20]||''
+        hisse:       row[10],
+        giris:       row[11],
+        cikis:       row[12]||'',
+        girisF:      row[13]||'',
+        cikisF:      row[14]||'',
+        girisTutar:  row[15]||'',
+        kar:         row[17]||'',
+        toplamTutar: row[18]||'',
+        endeksT:     row[19]||'',
+        usdT:        row[20]||'',
+        altinT:      row[21]||''
       });
     }
     
-    // Grafik: sütun 21-25
-    if(row[21] && row[21]!=='' && row[22] && row[22]!=='') {
+    // Grafik: W(22)-Z(26) — Dönem, Model Portföy, Endeks, USD, Altın
+    if(row[22] && row[22]!=='' && row[23] && row[23]!=='') {
       grafik.push({
-        donem:row[21],
-        portfoy:row[22],
-        endeks:row[23]||'',
-        usd:row[24]||'',
-        altin:row[25]||''
+        donem:   row[22],
+        portfoy: row[23],
+        endeks:  row[24]||'',
+        usd:     row[25]||'',
+        altin:   row[26]||''
       });
     }
   }
@@ -4819,46 +4823,50 @@ function parsePortfoyCSV(csv){
       console.log('Satır '+ i + ' içeriği:', row.slice(0, 10));
     }
     
-    // Aktif portföy: sütun 0-8
+    // Aktif portföy: A(0)-I(8)
+    // A=Hisse, B=GirişTarihi, C=BilançoDönemi, D=GirişFiyatı, E=GüncelFiyat
+    // F=Performans, G=EndeksPerf, H=UsdPerf, I=AltınPerf
     if(row[0] && row[0]!=='' && row[1] && row[1]!=='') {
       aktif.push({
-        hisse:row[0],
-        giris:row[1],
-        donem:row[2]||'',
-        girisF:row[3]||'',
-        guncelF:row[4]||'',
-        perf:row[5]||'',
+        hisse:     row[0],
+        giris:     row[1],
+        donem:     row[2]||'',
+        girisF:    row[3]||'',
+        guncelF:   row[4]||'',
+        perf:      row[5]||'',
         endeksPerf:row[6]||'',
-        usdPerf:row[7]||'',
-        altinPerf:row[8]||''
+        usdPerf:   row[7]||'',
+        altinPerf: row[8]||''
       });
     }
     
-    // Tarihçe: sütun 10-20
+    // Tarihçe: K(10)-U(20) — Q(16) "#" sütunu atlanıyor
+    // K=Hisse, L=GirişTarihi, M=ÇıkışTarihi, N=GirişFiyatı, O=ÇıkışFiyatı
+    // P=GirişTutarı, Q(16)=# (atla), R=Kar, S=ToplamTutar, T=EndeksPerf, U=UsdPerf, V(21)=AltınPerf
     if(row[10] && row[10]!=='' && row[11] && row[11]!=='') {
       tarihce.push({
-        hisse:row[10],
-        giris:row[11],
-        cikis:row[12]||'',
-        girisF:row[13]||'',
-        cikisF:row[14]||'',
-        girisTutar:row[15]||'',
-        kar:row[16]||'',
-        toplamTutar:row[17]||'',
-        endeksT:row[18]||'',
-        usdT:row[19]||'',
-        altinT:row[20]||''
+        hisse:       row[10],
+        giris:       row[11],
+        cikis:       row[12]||'',
+        girisF:      row[13]||'',
+        cikisF:      row[14]||'',
+        girisTutar:  row[15]||'',
+        kar:         row[17]||'',
+        toplamTutar: row[18]||'',
+        endeksT:     row[19]||'',
+        usdT:        row[20]||'',
+        altinT:      row[21]||''
       });
     }
     
-    // Grafik: sütun 21-25
-    if(row[21] && row[21]!=='' && row[22] && row[22]!=='') {
+    // Grafik: W(22)-Z(26) — Dönem, Model Portföy, Endeks, USD, Altın
+    if(row[22] && row[22]!=='' && row[23] && row[23]!=='') {
       grafik.push({
-        donem:row[21],
-        portfoy:row[22],
-        endeks:row[23]||'',
-        usd:row[24]||'',
-        altin:row[25]||''
+        donem:   row[22],
+        portfoy: row[23],
+        endeks:  row[24]||'',
+        usd:     row[25]||'',
+        altin:   row[26]||''
       });
     }
   }
