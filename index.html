@@ -519,30 +519,31 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 </head>
 <body>
 
+<!-- GLOBAL TOPBAR -->
+<div class="topbar" id="global-topbar" style="width:100%;position:fixed;top:0;left:0;right:0;z-index:999">
+  <div class="brand">BilancoAnaliz34</div>
+  <div class="topbar-r">
+    <div class="nav-menu-wrap">
+      <button class="btn-sm btn-nav" onclick="toggleBlogMenu(event)">📚 Blog ▾</button>
+      <div class="blog-dropdown" id="blog-dropdown-home">
+        <a href="/blog.html">📋 Tüm Makaleler</a>
+        <a href="/bilanco-analiz-skoru-nedir.html">Bilanço Analiz Skoru Nedir?</a>
+        <a href="/finansal-oranlar-rehberi.html">Finansal Oranlar Rehberi</a>
+        <a href="/bilanco-nasil-okunur.html">Bilanço Nasıl Okunur?</a>
+        <a href="/favok-nedir.html">FAVÖK (EBITDA) Nedir?</a>
+        <a href="/net-borc-nedir.html">Net Borç Nedir?</a>
+        <a href="/temettu-analizi.html">Temettü Analizi Rehberi</a>
+      </div>
+    </div>
+    <button class="btn-sm" onclick="showPortfoy()" id="btn-portfoy-nav" style="color:var(--gold);border-color:rgba(201,168,76,.4)">📊 Portföy</button>
+    <a href="/hakkimizda.html" class="btn-sm" style="text-decoration:none">Hakkımızda</a>
+    <button class="btn-sm" onclick="goHome()" id="btn-anasayfa-home" style="display:none">← Ana Sayfa</button>
+    <button class="btn-sm btn-x" id="btn-paylas-home" onclick="xPaylas()" style="display:none">𝕏 Paylaş</button>
+  </div>
+</div>
+
 <!-- ANA EKRAN -->
 <div id="upload-screen">
-  <!-- Ana sayfa topbar -->
-  <div class="topbar" style="width:100%;position:fixed;top:0;left:0;right:0">
-    <div class="brand">BilancoAnaliz34</div>
-    <div class="topbar-r">
-      <div class="nav-menu-wrap">
-        <button class="btn-sm btn-nav" onclick="toggleBlogMenu(event)">📚 Blog ▾</button>
-        <div class="blog-dropdown" id="blog-dropdown-home">
-          <a href="/blog.html">📋 Tüm Makaleler</a>
-          <a href="/bilanco-analiz-skoru-nedir.html">Bilanço Analiz Skoru Nedir?</a>
-          <a href="/finansal-oranlar-rehberi.html">Finansal Oranlar Rehberi</a>
-          <a href="/bilanco-nasil-okunur.html">Bilanço Nasıl Okunur?</a>
-          <a href="/favok-nedir.html">FAVÖK (EBITDA) Nedir?</a>
-          <a href="/net-borc-nedir.html">Net Borç Nedir?</a>
-          <a href="/temettu-analizi.html">Temettü Analizi Rehberi</a>
-        </div>
-      </div>
-      <button class="btn-sm" onclick="showPortfoy()" id="btn-portfoy-nav" style="color:var(--gold);border-color:rgba(201,168,76,.4)">📊 Portföy</button>
-      <a href="/hakkimizda.html" class="btn-sm" style="text-decoration:none">Hakkımızda</a>
-      <button class="btn-sm" onclick="goHome()" id="btn-anasayfa-home" style="display:none">← Ana Sayfa</button>
-      <button class="btn-sm btn-x" id="btn-paylas-home" onclick="xPaylas()" style="display:none">𝕏 Paylaş</button>
-    </div>
-  </div>
   <!-- Üst kısım: logo + arama -->
   <div class="home-top" style="margin-top:3.5rem">
     <div class="logo-text"><h1 style="display:inline;font:inherit;margin:0;padding:0">BilancoAnaliz34</h1></div>
@@ -607,7 +608,7 @@ h1.logo-text,div.logo-text{font-family:var(--serif);font-size:2.4rem;font-weight
 </div>
 
 <!-- PORTFÖY SAYFASI -->
-<div class="portfoy-wrap" id="portfoy-wrap" style="display:none"></div>
+<div class="portfoy-wrap" id="portfoy-wrap" style="display:none;margin-top:52px"></div>
 
 <!-- DASHBOARD -->
 <div id="dash">
@@ -2117,8 +2118,7 @@ function renderPortfoy(wrap, data){
       +'</tr>';
   }).join('');
 
-  // Grafik verisi — tarihçeden kümülatif hesapla (100.000 TL başlangıç)
-  // Grafik verisini doğrudan data.grafik'ten al (x ekseni = aylar)
+  // Grafik verisi — doğrudan data.grafik'ten (x ekseni = aylar)
   function parseNum(s){ return parseFloat((s||'0').replace(/\./g,'').replace(',','.')); }
   var grafikRows=data.grafik||[];
   var labels=grafikRows.map(function(g){return g.donem.trim();});
@@ -2209,7 +2209,7 @@ function renderPortfoy(wrap, data){
         },
         scales:{
           x:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},maxRotation:45},grid:{color:'rgba(140,122,94,.1)'}},
-          y:{ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K ₺':v;}},grid:{color:'rgba(140,122,94,.1)'},border:{display:false}}
+          y:{min:0,ticks:{color:'#8C7A5E',font:{family:"'IBM Plex Mono'",size:10},stepSize:20000,callback:function(v){return v>=1000?(v/1000).toFixed(0)+'K ₺':v;}},grid:{color:'rgba(140,122,94,.1)'},border:{display:false}}
         }
       }
     });
