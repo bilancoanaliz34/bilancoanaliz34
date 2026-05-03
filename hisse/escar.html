@@ -1905,31 +1905,92 @@ function buildPortfoy(){
 }
 
 function parsePortfoyCSV(csv){
+  console.log('CSV uzunluğu:', csv.length);
+  console.log('CSV ilk 500 karakter:', csv.substring(0, 500));
+  
   var lines=csv.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
+  console.log('Toplam satır sayısı:', lines.length);
+  
   function parseRow(line){
     var result=[],cur='',inQ=false;
     for(var i=0;i<line.length;i++){
       var c=line[i];
       if(c==='"'){inQ=!inQ;}
-      else if(c===','&&!inQ){result.push(cur.trim());cur='';}
+      else if(c===','&&!inQ){result.push(cur.trim().replace(/^"|"$/g,''));cur='';}
       else cur+=c;
     }
-    result.push(cur.trim());
+    result.push(cur.trim().replace(/^"|"$/g,''));
     return result;
   }
+  
   var aktif=[],tarihce=[],grafik=[],toplam=null;
+  
+  // İlk satırı header olarak atla, sonraki satırları parse et
   for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
-    if(row[0]&&row[1]) aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
-    if(row[10]&&row[11]) tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
-    if(row[21]&&row[22]) grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
+    
+    // Debug: ilk 3 satırı göster
+    if(i <= 3) {
+      console.log('Satır '+ i + ' sütun sayısı:', row.length);
+      console.log('Satır '+ i + ' içeriği:', row.slice(0, 10));
+    }
+    
+    // Aktif portföy: sütun 0-8
+    if(row[0] && row[0]!=='' && row[1] && row[1]!=='') {
+      aktif.push({
+        hisse:row[0],
+        giris:row[1],
+        donem:row[2]||'',
+        girisF:row[3]||'',
+        guncelF:row[4]||'',
+        perf:row[5]||'',
+        endeksPerf:row[6]||'',
+        usdPerf:row[7]||'',
+        altinPerf:row[8]||''
+      });
+    }
+    
+    // Tarihçe: sütun 10-20
+    if(row[10] && row[10]!=='' && row[11] && row[11]!=='') {
+      tarihce.push({
+        hisse:row[10],
+        giris:row[11],
+        cikis:row[12]||'',
+        girisF:row[13]||'',
+        cikisF:row[14]||'',
+        girisTutar:row[15]||'',
+        kar:row[16]||'',
+        toplamTutar:row[17]||'',
+        endeksT:row[18]||'',
+        usdT:row[19]||'',
+        altinT:row[20]||''
+      });
+    }
+    
+    // Grafik: sütun 21-25
+    if(row[21] && row[21]!=='' && row[22] && row[22]!=='') {
+      grafik.push({
+        donem:row[21],
+        portfoy:row[22],
+        endeks:row[23]||'',
+        usd:row[24]||'',
+        altin:row[25]||''
+      });
+    }
   }
+  
+  console.log('Parse sonucu - Aktif:', aktif.length, 'Tarihçe:', tarihce.length, 'Grafik:', grafik.length);
+  
   var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
   if(grafikDolu.length){
     var son=grafikDolu[grafikDolu.length-1];
     toplam={toplamTutar:son.portfoy,endeksT:son.endeks,usdT:son.usd,altinT:son.altin};
   }
-  return {aktif:aktif,tarihce:tarihce,grafik:grafikDolu,toplam:toplam};
+  
+  var result = {aktif:aktif,tarihce:tarihce,grafik:grafikDolu,toplam:toplam};
+  console.log('Final portföy objesi:', result);
+  
+  return result;
 }
 
 function perfClass(s){
@@ -1950,7 +2011,23 @@ function fmtTL(s){
 }
 
 function renderPortfoy(wrap, data){
+  console.log('renderPortfoy çağrıldı, data:', data);
+  console.log('Aktif sayısı:', (data.aktif||[]).length);
+  console.log('Tarihçe sayısı:', (data.tarihce||[]).length);
+  console.log('Grafik sayısı:', (data.grafik||[]).length);
+  
   if(PORTFOY_CHART){try{PORTFOY_CHART.destroy();}catch(e){} PORTFOY_CHART=null;}
+
+  // Eğer hiç veri yoksa uyarı göster
+  if((!data.aktif || data.aktif.length===0) && (!data.tarihce || data.tarihce.length===0)){
+    wrap.innerHTML='<div class="portfoy-title">Model Portföy</div>'
+      +'<p style="color:var(--muted);font-family:var(--mono);font-size:.8rem;line-height:1.6">'
+      +'⚠️ Portföy verisi boş geldi.<br><br>'
+      +'Google Sheets dosyanızda veri olduğundan emin olun.<br>'
+      +'Console\'u (F12) açıp hata mesajlarını kontrol edin.'
+      +'</p>';
+    return;
+  }
 
   // Özet kartlar (tarihçeden hesapla)
   var toplamKar=0, toplamTutar=0, islemSayisi=0;
@@ -4620,31 +4697,92 @@ function buildPortfoy(){
 }
 
 function parsePortfoyCSV(csv){
+  console.log('CSV uzunluğu:', csv.length);
+  console.log('CSV ilk 500 karakter:', csv.substring(0, 500));
+  
   var lines=csv.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
+  console.log('Toplam satır sayısı:', lines.length);
+  
   function parseRow(line){
     var result=[],cur='',inQ=false;
     for(var i=0;i<line.length;i++){
       var c=line[i];
       if(c==='"'){inQ=!inQ;}
-      else if(c===','&&!inQ){result.push(cur.trim());cur='';}
+      else if(c===','&&!inQ){result.push(cur.trim().replace(/^"|"$/g,''));cur='';}
       else cur+=c;
     }
-    result.push(cur.trim());
+    result.push(cur.trim().replace(/^"|"$/g,''));
     return result;
   }
+  
   var aktif=[],tarihce=[],grafik=[],toplam=null;
+  
+  // İlk satırı header olarak atla, sonraki satırları parse et
   for(var i=1;i<lines.length;i++){
     var row=parseRow(lines[i]);
-    if(row[0]&&row[1]) aktif.push({hisse:row[0],giris:row[1],donem:row[2],girisF:row[3],guncelF:row[4],perf:row[5],endeksPerf:row[6],usdPerf:row[7],altinPerf:row[8]});
-    if(row[10]&&row[11]) tarihce.push({hisse:row[10],giris:row[11],cikis:row[12],girisF:row[13],cikisF:row[14],girisTutar:row[15],kar:row[16],toplamTutar:row[17],endeksT:row[18],usdT:row[19],altinT:row[20]});
-    if(row[21]&&row[22]) grafik.push({donem:row[21],portfoy:row[22],endeks:row[23],usd:row[24],altin:row[25]});
+    
+    // Debug: ilk 3 satırı göster
+    if(i <= 3) {
+      console.log('Satır '+ i + ' sütun sayısı:', row.length);
+      console.log('Satır '+ i + ' içeriği:', row.slice(0, 10));
+    }
+    
+    // Aktif portföy: sütun 0-8
+    if(row[0] && row[0]!=='' && row[1] && row[1]!=='') {
+      aktif.push({
+        hisse:row[0],
+        giris:row[1],
+        donem:row[2]||'',
+        girisF:row[3]||'',
+        guncelF:row[4]||'',
+        perf:row[5]||'',
+        endeksPerf:row[6]||'',
+        usdPerf:row[7]||'',
+        altinPerf:row[8]||''
+      });
+    }
+    
+    // Tarihçe: sütun 10-20
+    if(row[10] && row[10]!=='' && row[11] && row[11]!=='') {
+      tarihce.push({
+        hisse:row[10],
+        giris:row[11],
+        cikis:row[12]||'',
+        girisF:row[13]||'',
+        cikisF:row[14]||'',
+        girisTutar:row[15]||'',
+        kar:row[16]||'',
+        toplamTutar:row[17]||'',
+        endeksT:row[18]||'',
+        usdT:row[19]||'',
+        altinT:row[20]||''
+      });
+    }
+    
+    // Grafik: sütun 21-25
+    if(row[21] && row[21]!=='' && row[22] && row[22]!=='') {
+      grafik.push({
+        donem:row[21],
+        portfoy:row[22],
+        endeks:row[23]||'',
+        usd:row[24]||'',
+        altin:row[25]||''
+      });
+    }
   }
+  
+  console.log('Parse sonucu - Aktif:', aktif.length, 'Tarihçe:', tarihce.length, 'Grafik:', grafik.length);
+  
   var grafikDolu=grafik.filter(function(g){return g.portfoy&&g.portfoy!=='';});
   if(grafikDolu.length){
     var son=grafikDolu[grafikDolu.length-1];
     toplam={toplamTutar:son.portfoy,endeksT:son.endeks,usdT:son.usd,altinT:son.altin};
   }
-  return {aktif:aktif,tarihce:tarihce,grafik:grafikDolu,toplam:toplam};
+  
+  var result = {aktif:aktif,tarihce:tarihce,grafik:grafikDolu,toplam:toplam};
+  console.log('Final portföy objesi:', result);
+  
+  return result;
 }
 
 function perfClass(s){
@@ -4665,7 +4803,23 @@ function fmtTL(s){
 }
 
 function renderPortfoy(wrap, data){
+  console.log('renderPortfoy çağrıldı, data:', data);
+  console.log('Aktif sayısı:', (data.aktif||[]).length);
+  console.log('Tarihçe sayısı:', (data.tarihce||[]).length);
+  console.log('Grafik sayısı:', (data.grafik||[]).length);
+  
   if(PORTFOY_CHART){try{PORTFOY_CHART.destroy();}catch(e){} PORTFOY_CHART=null;}
+
+  // Eğer hiç veri yoksa uyarı göster
+  if((!data.aktif || data.aktif.length===0) && (!data.tarihce || data.tarihce.length===0)){
+    wrap.innerHTML='<div class="portfoy-title">Model Portföy</div>'
+      +'<p style="color:var(--muted);font-family:var(--mono);font-size:.8rem;line-height:1.6">'
+      +'⚠️ Portföy verisi boş geldi.<br><br>'
+      +'Google Sheets dosyanızda veri olduğundan emin olun.<br>'
+      +'Console\'u (F12) açıp hata mesajlarını kontrol edin.'
+      +'</p>';
+    return;
+  }
 
   // Özet kartlar (tarihçeden hesapla)
   var toplamKar=0, toplamTutar=0, islemSayisi=0;
