@@ -849,14 +849,61 @@ window.PORTFOY_STATIC = {
 if(!window.LOGOS) window.LOGOS={};
 var LOGOS=window.LOGOS;
 
-// localStorage'daki logolar (admin panelinden eklenenler) LOGOS objesine aktar
-// Bu sayede logos.js sunucuya yüklenmese bile logolar çalışır
-(function(){
+// ── IndexedDB Logo Deposu (localStorage 5MB limitini aşar) ──
+var _logoDB = null;
+function _openLogoDB(){
+  return new Promise(function(resolve, reject){
+    if(_logoDB){ resolve(_logoDB); return; }
+    var req = indexedDB.open('ba34_logos_db', 1);
+    req.onupgradeneeded = function(e){
+      e.target.result.createObjectStore('logos', {keyPath:'ticker'});
+    };
+    req.onsuccess = function(e){ _logoDB = e.target.result; resolve(_logoDB); };
+    req.onerror   = function(e){ reject(e.target.error); };
+  });
+}
+function _idbPut(ticker, data){
+  return _openLogoDB().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx  = db.transaction('logos','readwrite');
+      var req = tx.objectStore('logos').put({ticker:ticker, data:data});
+      req.onsuccess = resolve;
+      req.onerror   = function(e){ reject(e.target.error); };
+    });
+  });
+}
+function _idbGetAll(){
+  return _openLogoDB().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx  = db.transaction('logos','readonly');
+      var req = tx.objectStore('logos').getAll();
+      req.onsuccess = function(e){ resolve(e.target.result); };
+      req.onerror   = function(e){ reject(e.target.error); };
+    });
+  });
+}
+
+// Sayfa açılışında IndexedDB logolarını LOGOS objesine yükle
+_idbGetAll().then(function(rows){
+  rows.forEach(function(r){ if(!LOGOS[r.ticker]) LOGOS[r.ticker]=r.data; });
+  // Eski localStorage logolarını IndexedDB'ye taşı (bir kerelik migrasyon)
   try{
-    var saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-    Object.keys(saved).forEach(function(t){ if(!LOGOS[t]) LOGOS[t]=saved[t]; });
+    var old = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+    var keys = Object.keys(old);
+    if(keys.length){
+      keys.forEach(function(t){
+        if(!LOGOS[t]){ LOGOS[t]=old[t]; _idbPut(t,old[t]); }
+      });
+      localStorage.removeItem('ba34_logos');
+    }
   }catch(e){}
-})();
+  if(typeof injectTableLogos === 'function') injectTableLogos();
+}).catch(function(){
+  try{
+    var s = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+    Object.keys(s).forEach(function(t){ if(!LOGOS[t]) LOGOS[t]=s[t]; });
+  }catch(e){}
+});
 
 // Katılım Endeksi — gömülü liste (Google Sheets'ten canlı güncellenir)
 var KATILIM_SET = new Set(["AAGYO","ACSEL","AHSGY","AKFYE","AKHAN","AKSA","AKYHO","ALBRK","ALCTL","ALKA","ALKIM","ALKLC","ALTNY","ALVES","ANGEN","ARASE","ARDYZ","ARFYE","ASELS","ATAKP","ATATP","AVPGY","AYEN","BAHKM","BAKAB","BANVT","BASGZ","BEGYO","BERA","BESTE","BIENY","BIMAS","BINBN","BINHO","BMSTL","BNTAS","BORSK","BOSSA","BRISA","BRKSN","BRLSM","BSOKE","BURCE","BURVA","CANTE","CATES","CELHA","CEMTS","CEMZY","CIMSA","CMBTN","COSMO","CVKMD","CWENE","DAPGM","DARDL","DCTTR","DENGE","DESPC","DGATE","DGNMO","DMSAS","DOFER","DOFRB","DOGUB","DYOBY","EBEBK","EDATA","EDIP","EFOR","EGEPO","EGGUB","EGPRO","EKGYO","EKSUN","ELITE","EMPAE","ENJSA","EREGL","ESCOM","EUPWR","EYGYO","FADE","FONET","FORMT","FORTE","FRMPL","FZLGY","GEDZA","GENIL","GENKM","GENTS","GEREL","GESAN","GLRMK","GOKNR","GOLTS","GOODY","GRSEL","GRTHO","GUBRF","GUNDG","HATSN","HKTM","HOROZ","HRKET","IDGYO","IHEVA","IHLAS","IHLGM","IHYAY","IMASM","INTEM","ISDMR","ISSEN","IZFAS","IZINV","JANTS","KARSN","KATMR","KBORU","KCAER","KIMMR","KLSYN","KNFRT","KOCMT","KONKA","KONTR","KONYA","KOPOL","KOTON","KRDMA","KRDMB","KRDMD","KRGYO","KRONT","KRPLS","KRSTL","KRVGD","KTLEV","KUTPO","KUYAS","KZBGY","LKMNH","LMKDC","LOGO","LXGYO","MAGEN","MAKIM","MARBL","MAVI","MCARD","MEDTR","MEKAG","MERCN","MEYSU","MNDRS","MNDTR","MOBTL","MPARK","NETAS","NTGAZ","OBAMS","OBASE","OFSYM","ONCSM","ORGE","OSTIM","OZRDN","OZYSR","PAGYO","PARSN","PASEU","PENGD","PENTA","PETKM","PETUN","PKART","PLTUR","PNLSN","POLHO","QUAGR","RGYAS","RNPOL","RODRG","RUBNS","SAFKR","SAMAT","SANEL","SANKO","SARKY","SAYAS","SEKUR","SELEC","SELVA","SILVR","SMART","SMRTG","SNGYO","SNICA","SOKE","SRVGY","SUNTK","SURGY","SUWEN","TARKM","TDGYO","TEZOL","TKNSA","TMSN","TNZTP","TUCLK","TUKAS","TUPRS","TUREX","UCAYM","ULAS","ULUSE","USAK","VAKKO","VANGD","VESBE","VRGYO","YATAS","YEOTK","YUNSA","ZEDUR","ZERGY"]);
@@ -888,7 +935,29 @@ function oneDriveToDownload(shareUrl){
   } catch(e){ return null; }
 }
 
-function exportLogos(){try{var s=JSON.parse(localStorage.getItem("ba34_logos")||"{}");var k=Object.keys(s);if(!k.length){alert("Henüz logo eklenmemiş. Önce hisse kodu girip logo seçin.");return;}var j="// BilancoAnaliz34 Logo Dosyası — "+k.length+" logo\n// Bu dosyayı sitenizin kök dizinine /logos.js olarak yükleyin.\nif(!window.LOGOS)window.LOGOS={};\nvar LOGOS=window.LOGOS;\n";k.forEach(function(t){j+="LOGOS['"+t+"']='"+s[t]+"';\n";});var b=new Blob([j],{type:"text/javascript"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download="logos.js";a.click();URL.revokeObjectURL(u);var el=document.getElementById("logo-status");if(el){el.className="onedrive-status ok";el.textContent="✓ logos.js indirildi ("+k.length+" logo) — sunucunuza /logos.js olarak yükleyin";}}catch(e){alert(e.message);}}
+function exportLogos(){
+  _idbGetAll().then(function(rows){
+    // logos.js'deki logolarla birleştir
+    var all = {};
+    // Önce logos.js'den gelenleri al (window.LOGOS'ta ama IDB'de olmayan)
+    Object.keys(LOGOS).forEach(function(t){ all[t]=LOGOS[t]; });
+    // IDB'dekileri üzerine yaz/ekle
+    rows.forEach(function(r){ all[r.ticker]=r.data; });
+    var k = Object.keys(all);
+    if(!k.length){ alert('Henüz logo eklenmemiş.'); return; }
+    var j = "// BilancoAnaliz34 Logo Dosyasi — " + k.length + " logo\n";
+    j += "// Sunucunuzun kok dizinine /logos.js olarak yukleyin.\n";
+    j += "if(!window.LOGOS)window.LOGOS={};\nvar LOGOS=window.LOGOS;\n";
+    k.forEach(function(t){ j += "LOGOS['" + t + "']='" + all[t] + "';\n"; });
+    var b = new Blob([j],{type:"text/javascript"});
+    var u = URL.createObjectURL(b);
+    var a = document.createElement("a");
+    a.href=u; a.download="logos.js"; a.click();
+    URL.revokeObjectURL(u);
+    var el = document.getElementById("logo-status");
+    if(el){ el.className="onedrive-status ok"; el.textContent="✓ logos.js indirildi ("+k.length+" logo) — sunucunuza /logos.js olarak yukleyin"; }
+  }).catch(function(e){ alert("Hata: "+e.message); });
+}
 function handleLogoUpload(input){
   const file = input.files[0];
   if(!file) return;
@@ -898,24 +967,44 @@ function handleLogoUpload(input){
 
   if(!ticker){ status.className='onedrive-status err'; status.textContent='Hisse kodu girin!'; return; }
 
-  const reader = new FileReader();
-  reader.onload = function(e){
-    const base64 = e.target.result; // data:image/png;base64,...
-    // LOGOS objesine ekle
+  // Resmi küçült: büyük logolar gereksiz yer kaplar
+  const img = new Image();
+  const objectUrl = URL.createObjectURL(file);
+  img.onload = function(){
+    URL.revokeObjectURL(objectUrl);
+    const MAX = 128; // max 128x128 px
+    const canvas = document.createElement('canvas');
+    const scale  = Math.min(MAX/img.width, MAX/img.height, 1);
+    canvas.width  = Math.round(img.width  * scale);
+    canvas.height = Math.round(img.height * scale);
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    const base64 = canvas.toDataURL('image/png', 0.85);
+
+    // LOGOS objesine anında ekle (sayfada görünsün)
     if(!window.LOGOS) window.LOGOS = {};
     LOGOS[ticker] = base64;
-    // localStorage'a kaydet
-    try{
-      const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-      saved[ticker] = base64;
-      localStorage.setItem('ba34_logos', JSON.stringify(saved));
-    }catch(e){}
-    status.className='onedrive-status ok';
-    status.textContent='✓ '+ticker+' logosu eklendi';
+
+    // IndexedDB'ye kaydet (boyut limiti yok)
+    _idbPut(ticker, base64).then(function(){
+      status.className='onedrive-status ok';
+      status.textContent='✓ '+ticker+' logosu kaydedildi';
+    }).catch(function(e){
+      status.className='onedrive-status err';
+      status.textContent='⚠ Kayıt hatası: '+e.message;
+    });
+
     txt.textContent='📷 Logo seç';
     document.getElementById('logo-ticker-input').value='';
+
+    // Varsa tabloda hemen göster
+    if(typeof injectTableLogos === 'function') injectTableLogos();
+    // Varsa dash logosunu güncelle
+    if(typeof D !== 'undefined' && D.ticker === ticker){
+      const lw = document.getElementById('d-logo');
+      if(lw) lw.innerHTML='<img src="'+base64+'" alt="'+ticker+'" style="width:48px;height:48px;object-fit:contain">';
+    }
   };
-  reader.readAsDataURL(file);
+  img.src = objectUrl;
 }
 
 async function handleExcelUpload(input){
@@ -2515,15 +2604,18 @@ function buildDash(){
     return false;
   }
   if(!applyDashLogo()){
-    // localStorage (admin paneli)
-    try {
-      const saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
-      if(saved[D.ticker]){
-        logoWrap.innerHTML=`<img src="${saved[D.ticker]}" alt="${D.ticker}" style="width:48px;height:48px;object-fit:contain;border-radius:4px">`;
+    // IndexedDB'den kontrol et
+    _idbGetAll().then(function(rows){
+      var found = rows.find(function(r){ return r.ticker === D.ticker; });
+      if(found){
+        LOGOS[D.ticker] = found.data;
+        logoWrap.innerHTML='<img src="'+found.data+'" alt="'+D.ticker+'" style="width:48px;height:48px;object-fit:contain;border-radius:4px">';
       } else {
-        logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`;
+        logoWrap.innerHTML='<div class="logo-placeholder">'+D.ticker+'</div>';
       }
-    } catch(e){ logoWrap.innerHTML=`<div class="logo-placeholder">${D.ticker}</div>`; }
+    }).catch(function(){
+      logoWrap.innerHTML='<div class="logo-placeholder">'+D.ticker+'</div>';
+    });
   }
 
   // Dönem butonları (son 8)
