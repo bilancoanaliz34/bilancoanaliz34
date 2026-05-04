@@ -849,6 +849,15 @@ window.PORTFOY_STATIC = {
 if(!window.LOGOS) window.LOGOS={};
 var LOGOS=window.LOGOS;
 
+// localStorage'daki logolar (admin panelinden eklenenler) LOGOS objesine aktar
+// Bu sayede logos.js sunucuya yüklenmese bile logolar çalışır
+(function(){
+  try{
+    var saved = JSON.parse(localStorage.getItem('ba34_logos')||'{}');
+    Object.keys(saved).forEach(function(t){ if(!LOGOS[t]) LOGOS[t]=saved[t]; });
+  }catch(e){}
+})();
+
 // Katılım Endeksi — gömülü liste (Google Sheets'ten canlı güncellenir)
 var KATILIM_SET = new Set(["AAGYO","ACSEL","AHSGY","AKFYE","AKHAN","AKSA","AKYHO","ALBRK","ALCTL","ALKA","ALKIM","ALKLC","ALTNY","ALVES","ANGEN","ARASE","ARDYZ","ARFYE","ASELS","ATAKP","ATATP","AVPGY","AYEN","BAHKM","BAKAB","BANVT","BASGZ","BEGYO","BERA","BESTE","BIENY","BIMAS","BINBN","BINHO","BMSTL","BNTAS","BORSK","BOSSA","BRISA","BRKSN","BRLSM","BSOKE","BURCE","BURVA","CANTE","CATES","CELHA","CEMTS","CEMZY","CIMSA","CMBTN","COSMO","CVKMD","CWENE","DAPGM","DARDL","DCTTR","DENGE","DESPC","DGATE","DGNMO","DMSAS","DOFER","DOFRB","DOGUB","DYOBY","EBEBK","EDATA","EDIP","EFOR","EGEPO","EGGUB","EGPRO","EKGYO","EKSUN","ELITE","EMPAE","ENJSA","EREGL","ESCOM","EUPWR","EYGYO","FADE","FONET","FORMT","FORTE","FRMPL","FZLGY","GEDZA","GENIL","GENKM","GENTS","GEREL","GESAN","GLRMK","GOKNR","GOLTS","GOODY","GRSEL","GRTHO","GUBRF","GUNDG","HATSN","HKTM","HOROZ","HRKET","IDGYO","IHEVA","IHLAS","IHLGM","IHYAY","IMASM","INTEM","ISDMR","ISSEN","IZFAS","IZINV","JANTS","KARSN","KATMR","KBORU","KCAER","KIMMR","KLSYN","KNFRT","KOCMT","KONKA","KONTR","KONYA","KOPOL","KOTON","KRDMA","KRDMB","KRDMD","KRGYO","KRONT","KRPLS","KRSTL","KRVGD","KTLEV","KUTPO","KUYAS","KZBGY","LKMNH","LMKDC","LOGO","LXGYO","MAGEN","MAKIM","MARBL","MAVI","MCARD","MEDTR","MEKAG","MERCN","MEYSU","MNDRS","MNDTR","MOBTL","MPARK","NETAS","NTGAZ","OBAMS","OBASE","OFSYM","ONCSM","ORGE","OSTIM","OZRDN","OZYSR","PAGYO","PARSN","PASEU","PENGD","PENTA","PETKM","PETUN","PKART","PLTUR","PNLSN","POLHO","QUAGR","RGYAS","RNPOL","RODRG","RUBNS","SAFKR","SAMAT","SANEL","SANKO","SARKY","SAYAS","SEKUR","SELEC","SELVA","SILVR","SMART","SMRTG","SNGYO","SNICA","SOKE","SRVGY","SUNTK","SURGY","SUWEN","TARKM","TDGYO","TEZOL","TKNSA","TMSN","TNZTP","TUCLK","TUKAS","TUPRS","TUREX","UCAYM","ULAS","ULUSE","USAK","VAKKO","VANGD","VESBE","VRGYO","YATAS","YEOTK","YUNSA","ZEDUR","ZERGY"]);
 
@@ -879,7 +888,7 @@ function oneDriveToDownload(shareUrl){
   } catch(e){ return null; }
 }
 
-function exportLogos(){try{var s=JSON.parse(localStorage.getItem("ba34_logos")||"{}");var k=Object.keys(s);if(!k.length){alert("Logo yok");return;}var j="if(!window.LOGOS)window.LOGOS={};";k.forEach(function(t){j+=" LOGOS['"+t+"']='"+s[t]+"';";});var b=new Blob([j],{type:"text/javascript"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download="logos.js";a.click();URL.revokeObjectURL(u);var el=document.getElementById("logo-status");if(el){el.className="onedrive-status ok";el.textContent="logos.js indirildi";}}catch(e){alert(e.message);}}
+function exportLogos(){try{var s=JSON.parse(localStorage.getItem("ba34_logos")||"{}");var k=Object.keys(s);if(!k.length){alert("Henüz logo eklenmemiş. Önce hisse kodu girip logo seçin.");return;}var j="// BilancoAnaliz34 Logo Dosyası — "+k.length+" logo\n// Bu dosyayı sitenizin kök dizinine /logos.js olarak yükleyin.\nif(!window.LOGOS)window.LOGOS={};\nvar LOGOS=window.LOGOS;\n";k.forEach(function(t){j+="LOGOS['"+t+"']='"+s[t]+"';\n";});var b=new Blob([j],{type:"text/javascript"});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download="logos.js";a.click();URL.revokeObjectURL(u);var el=document.getElementById("logo-status");if(el){el.className="onedrive-status ok";el.textContent="✓ logos.js indirildi ("+k.length+" logo) — sunucunuza /logos.js olarak yükleyin";}}catch(e){alert(e.message);}}
 function handleLogoUpload(input){
   const file = input.files[0];
   if(!file) return;
@@ -2834,7 +2843,7 @@ function renderRasyo(){
     {n:'FD/NS',         key:'fdNs',    fmt:f2,   scale:'loGood',dir:'loGood'},
     {n:'NFK/PD',        key:'nfkPd',   fmt:f2,   scale:'hiGood',dir:'hiGood'},
     {n:'ÖZKAYNAK KAR.',
-     fn:p=>{const r=D.rows[p];if(!r)return null;const v=r.roe;if(v===null)return null;return v;},
+     fn:p=>{const r=D.rows[p];if(!r)return null;const v=r.roe;if(v===null)return null;return Math.abs(v)<=2?v*100:v;},
      fmt:fp1,scale:'hiGood',dir:'hiGood'},
     {n:'NET BORÇ/FAVÖK',key:'nbFavok', fmt:f2,   scale:'loGood',dir:'loGood'},
     {n:'EFK',           key:'efk',     fmt:f2,   scale:'hiGood',dir:'hiGood'},
