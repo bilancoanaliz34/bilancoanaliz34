@@ -2834,7 +2834,7 @@ function renderRasyo(){
     {n:'FD/NS',         key:'fdNs',    fmt:f2,   scale:'loGood',dir:'loGood'},
     {n:'NFK/PD',        key:'nfkPd',   fmt:f2,   scale:'hiGood',dir:'hiGood'},
     {n:'ÖZKAYNAK KAR.',
-     fn:p=>{const r=D.rows[p];if(!r)return null;const v=r.roe;if(v===null)return null;return Math.abs(v)<=2?v*100:v;},
+     fn:p=>{const r=D.rows[p];if(!r)return null;const v=r.roe;if(v===null)return null;return Math.abs(v)<=2?v:v;},
      fmt:fp1,scale:'hiGood',dir:'hiGood'},
     {n:'NET BORÇ/FAVÖK',key:'nbFavok', fmt:f2,   scale:'loGood',dir:'loGood'},
     {n:'EFK',           key:'efk',     fmt:f2,   scale:'hiGood',dir:'hiGood'},
