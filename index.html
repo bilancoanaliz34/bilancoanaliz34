@@ -2382,7 +2382,6 @@ function renderPortfoy(wrap, data){
       +'<td>'+fmtTL(h.girisTutar)+' ₺</td>'
       +'<td class="'+karCls+'">'+(karNum>0?'+':'')+fmtTL(h.kar)+' ₺</td>'
       +'<td>'+fmtTL(h.toplamTutar)+' ₺</td>'
-      +'<td class="'+perfClass(h.endeksT?((parseFloat((h.endeksT||'10000').replace(/\./g,'').replace(',','.'))-10000)/10000*100).toFixed(2)+'%':'—')+'">'+fmtTL(h.endeksT)+' ₺</td>'
       +'</tr>';
   }).join('');
 
@@ -2437,7 +2436,7 @@ function renderPortfoy(wrap, data){
     // Tarihçe tablosu
     +'<div class="portfoy-title" style="font-size:.85rem">İşlem Tarihçesi</div>'
     +'<div class="portfoy-tbl-wrap"><table class="portfoy-tbl">'
-    +'<thead><tr><th>Hisse</th><th>Giriş</th><th>Çıkış</th><th>Giriş F.</th><th>Çıkış F.</th><th>Tutar</th><th>Kar/Zarar</th><th>Toplam</th><th>Endeks Olsaydı</th></tr></thead>'
+    +'<thead><tr><th>Hisse</th><th>Giriş</th><th>Çıkış</th><th>Giriş F.</th><th>Çıkış F.</th><th>Tutar</th><th>Kar/Zarar</th><th>Toplam</th></tr></thead>'
     +'<tbody>'+tarihceRows+'</tbody>'
     +'</table></div>';
 
