@@ -201,6 +201,54 @@ if GUNCEL_ENDEKS is not None:
     for t in VERI:
         VERI[t]['guncelEndeks'] = GUNCEL_ENDEKS
 
+# ── Build anında SEO içerik bloğu (JS çalışmadan okunabilir metin) ────────────
+import html as _html
+
+def _fmt(v):
+    if v is None: return '—'
+    try: f = float(v)
+    except: return _html.escape(str(v))
+    if abs(f) >= 1000:
+        return f"{f:,.0f}".replace(',', '.')
+    if f == int(f):
+        return str(int(f))
+    return f"{f:.2f}".replace('.', ',')
+
+def make_seo_block(ticker, info):
+    company = _html.escape(str(info.get('company', ticker) or ticker))
+    sector  = _html.escape(str(info.get('sector', '') or ''))
+    periods = info.get('periods', []) or []
+    p0   = periods[0] if periods else ''
+    rows = info.get('rows', {}) or {}
+    r0   = rows.get(p0, {}) if p0 else {}
+    puan = info.get('puan')
+    puan_txt = f"{int(puan)}/100" if puan is not None else "—"
+    ol, no, ols = info.get('olumlu'), info.get('notr'), info.get('olumsuz')
+    ono_txt = f" ({ol} olumlu, {no} nötr, {ols} olumsuz kriter)" if None not in (ol, no, ols) else ""
+
+    rasyolar = [('F/K', r0.get('fk')), ('PD/DD', r0.get('pddd')),
+                ('FD/FAVÖK', r0.get('fdFavok')), ('Özkaynak Karlılığı (ROE)', r0.get('roe')),
+                ('Net Borç/FAVÖK', r0.get('nbFavok')), ('FD/Satışlar', r0.get('fdNs'))]
+    kalemler = [('Satışlar', r0.get('satislar')), ('FAVÖK', r0.get('favok')),
+                ('Net Kâr', r0.get('netKar')), ('Net Borç', r0.get('netBorc')),
+                ('Özkaynaklar', r0.get('oz'))]
+    def _tbl(items, baslik):
+        trs = ''.join(f'<tr><th scope="row">{_html.escape(l)}</th><td>{_fmt(v)}</td></tr>' for l, v in items)
+        return (f'<table class="seo-tbl"><caption>{_html.escape(baslik)} ({p0})</caption>'
+                f'<tbody>{trs}</tbody></table>')
+
+    para = (f"{company} ({ticker}), Borsa İstanbul'da {sector or 'ilgili'} sektöründe işlem gören bir hissedir. "
+            f"{p0} dönemine ait bilanço analizine göre ONO yatırım skoru {puan_txt} olarak hesaplanmıştır{ono_txt}. "
+            f"Aşağıda {ticker} hissesinin temel finansal rasyoları ve dönemsel bilanço kalemleri yer almaktadır. "
+            f"Veriler Kamuyu Aydınlatma Platformu (KAP) kaynaklıdır ve yatırım tavsiyesi niteliği taşımaz.")
+
+    return (f'<section class="seo-summary">'
+            f'<h1>{ticker} Bilanço Analizi — {company}</h1>'
+            f'<p class="seo-meta">{sector} · Son Dönem: {p0} · ONO Skoru: {puan_txt}</p>'
+            f'<p class="seo-para">{para}</p>'
+            f'<div class="seo-tables">{_tbl(rasyolar, "Temel Rasyolar")}{_tbl(kalemler, "Bilanço Kalemleri")}</div>'
+            f'</section>')
+
 # ── Hisse sayfası template ───────────────────────────────────────────────────
 def make_hisse_page(ticker, info):
     company   = info.get('company', ticker)
@@ -210,6 +258,7 @@ def make_hisse_page(ticker, info):
     desc = (f"{company} ({ticker}) bilanço analizi: {son_donem} dönemi finansal rasyolar, "
             f"dönemsel büyüme grafikleri ve ONO analiz skoru. Sektör: {sector}.")
     hisse_json = json.dumps({ticker: info}, ensure_ascii=False)
+    seo_block = make_seo_block(ticker, info)
 
     PAYLAS_BLOCK = '''<script data-cfasync="false">
 function trimCanvas(canvas){
@@ -479,9 +528,20 @@ async function xPaylas(){
   {main_css}
   #upload-screen {{ display: none !important; }}
   #dash {{ display: block !important; }}
+  .seo-summary{{max-width:900px;margin:1.5rem auto 0;padding:1.5rem;font-family:var(--body)}}
+  .seo-summary h1{{font-family:var(--serif);color:var(--gold);font-size:1.8rem;margin-bottom:.3rem;line-height:1.2}}
+  .seo-meta{{color:var(--muted);font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1rem}}
+  .seo-para{{line-height:1.7;margin-bottom:1.5rem;color:var(--text)}}
+  .seo-tables{{display:flex;gap:2rem;flex-wrap:wrap}}
+  .seo-tbl{{border-collapse:collapse;font-family:var(--mono);font-size:.8rem;min-width:240px}}
+  .seo-tbl caption{{text-align:left;color:var(--gold);font-weight:700;padding-bottom:.5rem}}
+  .seo-tbl th,.seo-tbl td{{padding:.4rem .8rem;border-bottom:1px solid var(--border);text-align:left}}
+  .seo-tbl th{{color:var(--text2);font-weight:500}}
+  .seo-tbl td{{color:var(--text);text-align:right;font-weight:600}}
   </style>
 </head>
 <body>
+{seo_block}
 <script data-cfasync="false">
 var VERI = {hisse_json};
 if(!window.LOGOS) window.LOGOS = {{}};
@@ -496,7 +556,6 @@ var activePeriod = '';
 {core_js}
 window.addEventListener('load', function() {{
   var ticker = '{ticker}';
-  var SHEET = 'https://docs.google.com/spreadsheets/d/1a43dQuEOx9C5qrZqpSLePc172U8fxH1ouFBYYk9YS48/gviz/tq?tqx=out:csv&sheet=veri';
 
   function initDash(info) {{
     var sp = [...info.periods].sort(function(a,b){{
@@ -530,26 +589,11 @@ window.addEventListener('load', function() {{
     }});
   }}
 
-  // Google Sheets'ten canlı veri çek - sayfa yüklendikten sonra
-  (window.requestIdleCallback || setTimeout)(function(){{ fetch(SHEET)
-    .then(function(r){{ return r.text(); }})
-    .then(function(csv){{
-      var fresh = parseCSV(csv);
-      if(fresh && fresh[ticker]) {{
-        // VERI'yi güncelle
-        VERI[ticker] = fresh[ticker];
-      }}
-      var info = VERI[ticker];
-      if(!info) {{ console.error('Hisse bulunamadı: ' + ticker); return; }}
-      initDash(info);
-    }})
-    .catch(function(){{
-      // Google Sheets başarısız → statik VERI kullan
-      var info = VERI[ticker];
-      if(!info) {{ console.error('Hisse bulunamadı: ' + ticker); return; }}
-      initDash(info);
-    }});
-  }}, {{timeout:3000}});
+  // Veri build anında gömülü ve günlük rebuild ile taze tutuluyor.
+  // Çalışma anında Sheets fetch YOK — anında gömülü veriden çiz (hızlı + güvenilir).
+  var info = VERI[ticker];
+  if(!info) {{ console.error('Hisse bulunamadı: ' + ticker); return; }}
+  initDash(info);
 }});
 function resetApp(){{ window.location.href='/'; }}
 function showErr(m){{ console.error(m); }}
