@@ -1349,11 +1349,12 @@ async function loadEmbeddedData(){
       if(aktifBtn) aktifBtn.click();
     }).catch(()=>{});
     initSearch(); setTimeout(injectTableLogos, 500);
-    // URL'de ?hisse=TICKER varsa direkt aç
+    // URL'de ?hisse=TICKER ile inişte kanonik statik sayfaya yönlendir (duplicate URL önlenir)
     const urlParams = new URLSearchParams(window.location.search);
     const hisseParam = urlParams.get('hisse');
-    if(hisseParam && VERI[hisseParam.toUpperCase()]){
-      selectTicker(hisseParam.toUpperCase());
+    if(hisseParam){
+      window.location.replace('/hisse/'+hisseParam.toLowerCase()+'.html');
+      return;
     }
   }catch(e){showErr('Veri yüklenemedi: '+e.message)}
 }
