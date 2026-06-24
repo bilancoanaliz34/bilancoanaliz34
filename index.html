@@ -16,28 +16,27 @@
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bilancoanaliz34.com.tr/">
-<meta property="og:image" content="https://bilancoanaliz34.com.tr/logo-512.png">
+<meta property="og:title" content="BilancoAnaliz34 — BIST Hisse Bilanço Analizi">
+<meta property="og:description" content="BIST hisselerinin bilanço analizini dönemsel verilerle inceleyin.">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="tr_TR">
 <meta property="og:site_name" content="BilancoAnaliz34">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@BilancoAnaliz34">
+<meta name="twitter:title" content="BilancoAnaliz34 — BIST Hisse Bilanço Analizi">
 <meta name="twitter:image" content="https://bilancoanaliz34.com.tr/logo-512.png">
 <link rel="sitemap" type="application/xml" href="/sitemap.xml">
-<meta name="robots" content="index, follow">
-<meta property="og:title" content="BilancoAnaliz34 — BIST Hisse Bilanço Analizi">
-<meta property="og:description" content="BIST hisselerinin bilanço analizini dönemsel verilerle inceleyin.">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:site" content="@bilancoanaliz34">
-<meta name="twitter:title" content="BilancoAnaliz34 — BIST Hisse Bilanço Analizi">
-<!-- AdSense: Publisher ID'nizi buraya ekleyin -->
+<!-- AdSense: Publisher ID buraya -->
 <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- Ağır kütüphaneler (xlsx ~900KB, html2canvas) yalnızca gerektiğinde yüklenir -->
+<script>
+window.loadScriptOnce=(function(){var c={};return function(src){if(c[src])return c[src];c[src]=new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.async=true;s.onload=res;s.onerror=function(){c[src]=null;rej(new Error('Script yuklenemedi: '+src))};document.head.appendChild(s)});return c[src]}})();
+window.ensureXLSX=function(){return window.XLSX?Promise.resolve():window.loadScriptOnce('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js')};
+window.ensureHtml2Canvas=function(){return window.html2canvas?Promise.resolve():window.loadScriptOnce('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js')};
+</script>
 <style>
 :root{
   --bg:#F5F0E8;--bg2:#EDE8DC;--bg3:#E4DED0;
@@ -1020,6 +1019,7 @@ async function handleExcelUpload(input){
   setStatus('loading', 'Excel okunuyor...');
 
   try {
+    await window.ensureXLSX();
     const ab = await file.arrayBuffer();
     const wb = XLSX.read(ab, {type:'array'});
     setStatus('loading', 'Veriler işleniyor...');
@@ -2539,11 +2539,6 @@ function selectTicker(ticker){
       sektor: D.sector || ''
     });
   }
-  // Görüntülenme sayacını artır (CountAPI)
-  fetch('https://api.countapi.xyz/hit/bilancoanaliz34.com.tr/'+ticker)
-    .then(r=>r.json())
-    .then(d=>{ window._viewCount = d.value; })
-    .catch(()=>{});
   buildDash();
 }
 
@@ -3267,6 +3262,7 @@ async function xPaylas(){
   btn.disabled = true;
 
   try {
+    await window.ensureHtml2Canvas();
     const p0   = D.periods[0];
     const r0   = D.rows[p0] || {};
     const ol   = r0.ol  ?? D.olumlu  ?? 0;
