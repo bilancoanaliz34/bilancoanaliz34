@@ -62,7 +62,10 @@ core_js = _re2.sub(r'\bconst\s+(POPULAR|CI|GID|FALLBACK|MAKS|SVG_UP|SVG_DN|SVG_N
 print(f'✓ core_js globals temizlendi: {len(core_js)} kar')
 
 idx_pm = c.find('<!-- Policy Modal -->')
-idx_en = c.find('</body>')
+# Ana JS script bloğunu modals'a DAHİL ETME — yoksa core_js ikinci kez girer
+# ve içindeki 'var VERI={}' gömülü hisse verisini ezer (dashboard boş kalır).
+_main_open = c.rfind('<script', 0, c.find('\n// GLOBALS\n'))
+idx_en = _main_open if _main_open > idx_pm else c.find('</body>')
 modals = c[idx_pm:idx_en].strip()
 
 print(f"✓ CSS: {len(main_css)} kar, JS: {len(core_js)} kar")
@@ -225,6 +228,10 @@ def make_seo_block(ticker, info):
     puan_txt = f"{int(puan)}/100" if puan is not None else "—"
     ol, no, ols = info.get('olumlu'), info.get('notr'), info.get('olumsuz')
     ono_txt = f" ({ol} olumlu, {no} nötr, {ols} olumsuz kriter)" if None not in (ol, no, ols) else ""
+    if puan is not None:
+        skor_cumle = f"ONO yatırım skoru {puan_txt} olarak hesaplanmıştır{ono_txt}."
+    else:
+        skor_cumle = f"Bu döneme ait ONO yatırım skoru henüz hesaplanmamıştır{ono_txt}."
 
     rasyolar = [('F/K', r0.get('fk')), ('PD/DD', r0.get('pddd')),
                 ('FD/FAVÖK', r0.get('fdFavok')), ('Özkaynak Karlılığı (ROE)', r0.get('roe')),
@@ -238,7 +245,7 @@ def make_seo_block(ticker, info):
                 f'<tbody>{trs}</tbody></table>')
 
     para = (f"{company} ({ticker}), Borsa İstanbul'da {sector or 'ilgili'} sektöründe işlem gören bir hissedir. "
-            f"{p0} dönemine ait bilanço analizine göre ONO yatırım skoru {puan_txt} olarak hesaplanmıştır{ono_txt}. "
+            f"{p0} dönemine ait bilanço analizine göre {skor_cumle} "
             f"Aşağıda {ticker} hissesinin temel finansal rasyoları ve dönemsel bilanço kalemleri yer almaktadır. "
             f"Veriler Kamuyu Aydınlatma Platformu (KAP) kaynaklıdır ve yatırım tavsiyesi niteliği taşımaz.")
 
@@ -260,7 +267,7 @@ def make_hisse_page(ticker, info):
     hisse_json = json.dumps({ticker: info}, ensure_ascii=False)
     seo_block = make_seo_block(ticker, info)
 
-    PAYLAS_BLOCK = '''<script data-cfasync="false">
+    PAYLAS_BLOCK = r'''<script data-cfasync="false">
 function trimCanvas(canvas){
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
