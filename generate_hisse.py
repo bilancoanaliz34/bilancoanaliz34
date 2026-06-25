@@ -266,6 +266,11 @@ def make_hisse_page(ticker, info):
             f"dönemsel büyüme grafikleri ve ONO analiz skoru. Sektör: {sector}.")
     hisse_json = json.dumps({ticker: info}, ensure_ascii=False)
     seo_block = make_seo_block(ticker, info)
+    # SEO metin bloğunu dashboard içinde, finansal rasyo tablosu altındaki
+    # reklam kutusunun (ad-dash-mid) hemen altına yerleştir.
+    _anchor = '<!-- Analiz bölümü -->'
+    dash_inj = (dash_html.replace(_anchor, seo_block + '\n    ' + _anchor, 1)
+                if _anchor in dash_html else dash_html + seo_block)
 
     PAYLAS_BLOCK = r'''<script data-cfasync="false">
 function trimCanvas(canvas){
@@ -535,7 +540,7 @@ async function xPaylas(){
   {main_css}
   #upload-screen {{ display: none !important; }}
   #dash {{ display: block !important; }}
-  .seo-summary{{max-width:900px;margin:1.5rem auto 0;padding:1.5rem;font-family:var(--body)}}
+  .seo-summary{{max-width:900px;margin:2.5rem auto;padding:1.5rem;font-family:var(--body)}}
   .seo-summary h1{{font-family:var(--serif);color:var(--gold);font-size:1.8rem;margin-bottom:.3rem;line-height:1.2}}
   .seo-meta{{color:var(--muted);font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1rem}}
   .seo-para{{line-height:1.7;margin-bottom:1.5rem;color:var(--text)}}
@@ -548,7 +553,6 @@ async function xPaylas(){
   </style>
 </head>
 <body>
-{seo_block}
 <script data-cfasync="false">
 var VERI = {hisse_json};
 if(!window.LOGOS) window.LOGOS = {{}};
@@ -556,7 +560,7 @@ var D = {{}};
 var CHS = [];
 var activePeriod = '';
 </script>
-{dash_html}
+{dash_inj}
 {modals}
 {PAYLAS_BLOCK}
 <script data-cfasync="false">
