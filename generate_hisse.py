@@ -9,14 +9,7 @@ import os, re, json, gzip, base64, sys
 # ── index.html'den bölümleri çıkar ───────────────────────────────────────────
 print("index.html okunuyor...")
 
-# ── logos.js'i oku ────────────────────────────────────────────────────────────
-logos_inline = "if(!window.LOGOS)window.LOGOS={};"
-if os.path.exists('logos.js'):
-    with open('logos.js', 'r', encoding='utf-8') as lf:
-        logos_inline = lf.read().strip()
-    print(f"✓ logos.js okundu ({len(logos_inline)} karakter)")
-else:
-    print("⚠ logos.js bulunamadı, boş LOGOS kullanılıyor")
+# ── logos.js artık inline gömülmüyor; sayfalar /logos.js'i harici (defer) yükler ──
 import os as _os
 _html_file = 'index.html' if _os.path.exists('index.html') else 'bilanco-dashboard.html'
 with open(_html_file, 'r', encoding='utf-8') as f:
@@ -533,9 +526,7 @@ async function xPaylas(){
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script data-cfasync="false">
-  {logos_inline}
-  </script>
+  <script src="/logos.js" data-cfasync="false" defer></script>
   <style>
   {main_css}
   #upload-screen {{ display: none !important; }}
