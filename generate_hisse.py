@@ -15,6 +15,9 @@ def temiz_sirket(name, ticker):
     """Şirket adının sonundaki '(TICKER)' ekini kaldırır (çift ticker önlemi)."""
     return re.sub(r'\s*\(\s*' + re.escape(ticker) + r'\s*\)\s*$', '', str(name)).strip()
 
+from datetime import date
+BUGUN = date.today().isoformat()  # sitemap lastmod + schema dateModified
+
 import os as _os
 _html_file = 'index.html' if _os.path.exists('index.html') else 'bilanco-dashboard.html'
 with open(_html_file, 'r', encoding='utf-8') as f:
@@ -527,7 +530,7 @@ async function xPaylas(){
   <meta property="og:image" content="https://bilancoanaliz34.com.tr/logo-512.png">
   <link rel="icon" href="/favicon.ico">
   <script type="application/ld+json">
-  {{"@context":"https://schema.org","@type":"FinancialProduct","name":"{company} ({ticker})","description":"{desc}","url":"https://bilancoanaliz34.com.tr/hisse/{ticker.lower()}.html","provider":{{"@type":"Organization","name":"BilancoAnaliz34","url":"https://bilancoanaliz34.com.tr"}}}}
+  {{"@context":"https://schema.org","@type":"WebPage","name":"{ticker} Bilanço Analizi — {company}","description":"{desc}","url":"https://bilancoanaliz34.com.tr/hisse/{ticker.lower()}.html","dateModified":"{BUGUN}","inLanguage":"tr","about":{{"@type":"Corporation","name":"{company}","tickerSymbol":"{ticker}"}},"publisher":{{"@type":"Organization","name":"BilancoAnaliz34","url":"https://bilancoanaliz34.com.tr"}}}}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
@@ -640,3 +643,30 @@ for ticker, info in VERI.items():
     count += 1
 
 print(f"✓ {count} hisse sayfası oluşturuldu → hisse/")
+
+# ── sitemap.xml üret ──────────────────────────────────────────────────────────
+BASE = 'https://bilancoanaliz34.com.tr'
+STATIK_SAYFALAR = [
+    ('/',                                 'daily',   '1.0'),
+    ('/blog.html',                        'weekly',  '0.9'),
+    ('/bilanco-analiz-skoru-nedir.html',  'monthly', '0.8'),
+    ('/finansal-oranlar-rehberi.html',    'monthly', '0.8'),
+    ('/bilanco-nasil-okunur.html',        'monthly', '0.8'),
+    ('/favok-nedir.html',                 'monthly', '0.8'),
+    ('/net-borc-nedir.html',              'monthly', '0.8'),
+    ('/temettu-analizi.html',             'monthly', '0.8'),
+    ('/hakkimizda.html',                  'monthly', '0.6'),
+    ('/gizlilik.html',                    'yearly',  '0.4'),
+    ('/kullanim-kosullari.html',          'yearly',  '0.4'),
+]
+sm = ['<?xml version="1.0" encoding="UTF-8"?>',
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+for yol, cf, pr in STATIK_SAYFALAR:
+    sm.append(f'  <url><loc>{BASE}{yol}</loc><changefreq>{cf}</changefreq><priority>{pr}</priority></url>')
+for t in sorted(VERI.keys()):
+    sm.append(f'  <url><loc>{BASE}/hisse/{t.lower()}.html</loc>'
+              f'<lastmod>{BUGUN}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>')
+sm.append('</urlset>')
+with open('sitemap.xml', 'w', encoding='utf-8') as f:
+    f.write('\n'.join(sm) + '\n')
+print(f"✓ sitemap.xml üretildi ({len(STATIK_SAYFALAR)} statik + {len(VERI)} hisse URL, lastmod={BUGUN})")
