@@ -537,6 +537,9 @@ async function xPaylas(){
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
   <script data-cfasync="false">window.ensureHtml2Canvas=function(){{return window.html2canvas?Promise.resolve():new Promise(function(res,rej){{var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';s.async=true;s.onload=res;s.onerror=function(){{rej(new Error('html2canvas yuklenemedi'))}};document.head.appendChild(s);}});}};</script>
   <script src="/logos.js" data-cfasync="false" defer></script>
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5073510636579335" crossorigin="anonymous"></script>
+  <script data-cfasync="false">window.addEventListener('load',function(){{try{{document.querySelectorAll('ins.adsbygoogle:not([data-adsbygoogle-status])').forEach(function(){{(window.adsbygoogle=window.adsbygoogle||[]).push({{}});}});}}catch(e){{}}}});</script>
   <style>
   {main_css}
   #upload-screen {{ display: none !important; }}
