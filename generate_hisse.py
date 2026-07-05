@@ -10,6 +10,11 @@ import os, re, json, gzip, base64, sys
 print("index.html okunuyor...")
 
 # ── logos.js artık inline gömülmüyor; sayfalar /logos.js'i harici (defer) yükler ──
+
+def temiz_sirket(name, ticker):
+    """Şirket adının sonundaki '(TICKER)' ekini kaldırır (çift ticker önlemi)."""
+    return re.sub(r'\s*\(\s*' + re.escape(ticker) + r'\s*\)\s*$', '', str(name)).strip()
+
 import os as _os
 _html_file = 'index.html' if _os.path.exists('index.html') else 'bilanco-dashboard.html'
 with open(_html_file, 'r', encoding='utf-8') as f:
@@ -211,7 +216,7 @@ def _fmt(v):
     return f"{f:.2f}".replace('.', ',')
 
 def make_seo_block(ticker, info):
-    company = _html.escape(str(info.get('company', ticker) or ticker))
+    company = _html.escape(temiz_sirket(info.get('company', ticker) or ticker, ticker))
     sector  = _html.escape(str(info.get('sector', '') or ''))
     periods = info.get('periods', []) or []
     p0   = periods[0] if periods else ''
@@ -251,7 +256,7 @@ def make_seo_block(ticker, info):
 
 # ── Hisse sayfası template ───────────────────────────────────────────────────
 def make_hisse_page(ticker, info):
-    company   = info.get('company', ticker)
+    company   = temiz_sirket(info.get('company', ticker), ticker)
     sector    = info.get('sector', '')
     son_donem = info.get('periods', [''])[0]
     puan      = info.get('puan', 0) or 0
