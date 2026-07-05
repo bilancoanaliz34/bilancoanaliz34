@@ -6,10 +6,16 @@ on:
     - cron: '0 6 * * *'
   # Manuel tetikleme
   workflow_dispatch:
-  # index.html değişince de çalış
+  # index.html veya generator değişince de çalış
   push:
     paths:
       - 'index.html'
+      - 'generate_hisse.py'
+
+# Aynı anda ikinci bir çalışma başlarsa kuyruğa al (üst üste deploy çakışmasını önler)
+concurrency:
+  group: hisse-guncelle
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -36,7 +42,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add hisse/
-          git diff --staged --quiet || git commit -m "Hisse sayfaları güncellendi [$(date '+%Y-%m-%d %H:%M')]"
-          git pull --rebase origin main || true
+          git add hisse/ sitemap.xml
+          if git diff --staged --quiet; then
+            echo "Değişiklik yok, commit atlanıyor"
+            exit 0
+          fi
+          git commit -m "Hisse sayfaları güncellendi [$(date '+%Y-%m-%d %H:%M')]"
+          git pull --rebase origin main
           git push
