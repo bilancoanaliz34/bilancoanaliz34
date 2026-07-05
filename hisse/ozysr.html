@@ -17,8 +17,8 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <script data-cfasync="false">window.ensureHtml2Canvas=function(){return window.html2canvas?Promise.resolve():new Promise(function(res,rej){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';s.async=true;s.onload=res;s.onerror=function(){rej(new Error('html2canvas yuklenemedi'))};document.head.appendChild(s);});};</script>
   <script src="/logos.js" data-cfasync="false" defer></script>
   <style>
   
@@ -752,6 +752,7 @@ async function xPaylas(){
     const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
     if(logoFromCDN) logoEl.style.visibility='hidden';
 
+    await window.ensureHtml2Canvas();
     const canvas = await html2canvas(pageEl, {
       scale: 2.5,
       useCORS: true,
@@ -855,6 +856,7 @@ async function xPaylas(){
     const logoFromCDN = logoImg && logoImg.src && logoImg.src.includes('fintables');
     if(logoFromCDN) logoEl.style.visibility='hidden';
 
+    await window.ensureHtml2Canvas();
     const canvas = await html2canvas(pageEl, {
       scale: 1.5,
       useCORS: true,
