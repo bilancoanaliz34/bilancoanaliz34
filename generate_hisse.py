@@ -218,6 +218,86 @@ def _fmt(v):
         return str(int(f))
     return f"{f:.2f}".replace('.', ',')
 
+# ── Dinamik yorum üretimi (sayfa başına benzersiz değerlendirme metni) ───────
+import statistics
+
+def _medyan_hazirla(veri):
+    """Son dönem verilerinden sektör bazlı F/K, PD/DD, ROE medyanları (min 5 hisse)."""
+    sekt = {}
+    for t, inf in veri.items():
+        p = (inf.get('periods') or [''])[0]
+        r = (inf.get('rows') or {}).get(p, {}) if p else {}
+        s = inf.get('sector') or 'DİĞER'
+        d = sekt.setdefault(s, {'fk': [], 'pddd': [], 'roe': []})
+        fk, pddd, roe = r.get('fk'), r.get('pddd'), r.get('roe')
+        if fk and 0 < fk < 200: d['fk'].append(fk)
+        if pddd and 0 < pddd < 100: d['pddd'].append(pddd)
+        if roe is not None and -1 < roe < 3: d['roe'].append(roe)
+    return {s: {k: (statistics.median(v) if len(v) >= 5 else None) for k, v in d.items()}
+            for s, d in sekt.items()}
+
+def _tr_sayi(v, nd=1):
+    """Türkçe biçimde sayı: 1.234,5"""
+    return f"{v:,.{nd}f}".replace(',', '§').replace('.', ',').replace('§', '.')
+
+def yorum_uret(ticker, info, medyan):
+    periods = info.get('periods') or []
+    if not periods: return ''
+    p0 = periods[0]
+    rows = info.get('rows') or {}
+    r0 = rows.get(p0) or {}
+    cumle = []
+    # 1) Yıllık (YoY) satış ve net kâr değişimi
+    p_yoy = None
+    try:
+        yil, ay = p0.split('/'); p_yoy = f"{int(yil)-1}/{ay}"
+    except Exception:
+        pass
+    r1 = rows.get(p_yoy) if p_yoy else None
+    if r1:
+        for alan, ad in (('satislar', 'satışlar'), ('netKar', 'net kâr')):
+            v0, v1 = r0.get(alan), r1.get(alan)
+            if v0 is None or v1 is None: continue
+            if alan == 'netKar' and (v0 <= 0 or v1 <= 0):
+                if v1 <= 0 < v0:
+                    cumle.append(f"Şirket, {p_yoy} dönemindeki zarardan {p0} döneminde net kâra geçmiştir.")
+                elif v0 <= 0 < v1:
+                    cumle.append(f"Şirket, {p_yoy} dönemindeki net kârın ardından {p0} dönemini zararla kapatmıştır.")
+                continue
+            if alan == 'satislar' and (v0 <= 0 or v1 <= 0):
+                continue
+            if v1 > 0:
+                dgs = (v0 - v1) / v1 * 100
+                if dgs > 500:
+                    cumle.append(f"{p0} döneminde {ad}, bir önceki yılın aynı dönemine göre yaklaşık {_tr_sayi(v0 / v1)} katına yükselmiştir.")
+                    continue
+                yon = 'artış' if dgs >= 0 else 'azalış'
+                cumle.append(f"{p0} döneminde {ad}, bir önceki yılın aynı dönemine göre %{_tr_sayi(abs(dgs))} {yon} göstermiştir.")
+    # 2) Borçluluk profili
+    nb, nbf = r0.get('netBorc'), r0.get('nbFavok')
+    if nb is not None and nb < 0:
+        cumle.append("Şirket net nakit pozisyonundadır; nakit ve benzeri varlıkları finansal borçlarının üzerindedir.")
+    elif nbf and nbf > 0:
+        seviye = 'düşük' if nbf < 1 else ('ılımlı' if nbf <= 3 else 'yüksek')
+        cumle.append(f"Net Borç/FAVÖK oranı {_tr_sayi(nbf)} ile {seviye} bir borçluluk seviyesine işaret etmektedir.")
+    # 3) ROE + sektör medyanı kıyası
+    m = medyan.get(info.get('sector') or '', {}) if medyan else {}
+    roe = r0.get('roe')
+    if roe is not None and -1 < roe < 3:
+        if m.get('roe') is not None:
+            kon = 'üzerindedir' if roe >= m['roe'] else 'altındadır'
+            cumle.append(f"Özkaynak kârlılığı (ROE) %{_tr_sayi(roe * 100)} ile sektör medyanı olan %{_tr_sayi(m['roe'] * 100)} düzeyinin {kon}.")
+        else:
+            cumle.append(f"Özkaynak kârlılığı (ROE) %{_tr_sayi(roe * 100)} seviyesindedir.")
+    # 4) F/K sektör kıyası
+    fk = r0.get('fk')
+    if fk and 0 < fk < 200 and m.get('fk'):
+        kon = 'üzerindedir' if fk >= m['fk'] else 'altındadır'
+        cumle.append(f"F/K oranı {_tr_sayi(fk)} ile sektör medyanı {_tr_sayi(m['fk'])} değerinin {kon}.")
+    if len(cumle) < 2: return ''
+    return ('<h2>Dönem Değerlendirmesi</h2><p class="seo-para">' + ' '.join(cumle) +
+            ' Bu değerlendirme, açıklanan finansal tablolardan otomatik hesaplanan göstergelere dayanır ve yatırım tavsiyesi değildir.</p>')
+
 def make_seo_block(ticker, info):
     company = _html.escape(temiz_sirket(info.get('company', ticker) or ticker, ticker))
     sector  = _html.escape(str(info.get('sector', '') or ''))
@@ -250,10 +330,12 @@ def make_seo_block(ticker, info):
             f"Aşağıda {ticker} hissesinin temel finansal rasyoları ve dönemsel bilanço kalemleri yer almaktadır. "
             f"Veriler Kamuyu Aydınlatma Platformu (KAP) kaynaklıdır ve yatırım tavsiyesi niteliği taşımaz.")
 
+    yorum = yorum_uret(ticker, info, globals().get('MEDYAN') or {})
     return (f'<section class="seo-summary">'
             f'<h1>{ticker} Bilanço Analizi — {company}</h1>'
             f'<p class="seo-meta">{sector} · Son Dönem: {p0} · ONO Skoru: {puan_txt}</p>'
             f'<p class="seo-para">{para}</p>'
+            f'{yorum}'
             f'<div class="seo-tables">{_tbl(rasyolar, "Temel Rasyolar")}{_tbl(kalemler, "Bilanço Kalemleri")}</div>'
             f'</section>')
 
@@ -545,6 +627,7 @@ async function xPaylas(){
   #upload-screen {{ display: none !important; }}
   #dash {{ display: block !important; }}
   .seo-summary{{max-width:900px;margin:2.5rem auto;padding:1.5rem;font-family:var(--body)}}
+  .seo-summary h2{{font-family:var(--serif);color:var(--gold);font-size:1.25rem;margin:1.4rem 0 .4rem}}
   .seo-summary h1{{font-family:var(--serif);color:var(--gold);font-size:1.8rem;margin-bottom:.3rem;line-height:1.2}}
   .seo-meta{{color:var(--muted);font-family:var(--mono);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1rem}}
   .seo-para{{line-height:1.7;margin-bottom:1.5rem;color:var(--text)}}
@@ -638,6 +721,8 @@ document.addEventListener('click',function(){{
 </html>"""
 
 # ── Sayfaları oluştur ─────────────────────────────────────────────────────────
+MEDYAN = _medyan_hazirla(VERI)
+print(f"✓ {len(MEDYAN)} sektör için medyan hesaplandı")
 os.makedirs('hisse', exist_ok=True)
 count = 0
 for ticker, info in VERI.items():
