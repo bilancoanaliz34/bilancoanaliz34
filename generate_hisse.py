@@ -737,6 +737,7 @@ BASE = 'https://bilancoanaliz34.com.tr'
 STATIK_SAYFALAR = [
     ('/',                                 'daily',   '1.0'),
     ('/blog.html',                        'weekly',  '0.9'),
+    ('/net-nakit-pozisyonu.html',         'monthly', '0.8'),
     ('/bilanco-sezonu-karnesi.html',      'monthly', '0.8'),
     ('/bist-sektor-medyanlari.html',      'monthly', '0.8'),
     ('/enflasyon-muhasebesi-nedir.html',   'monthly', '0.8'),
