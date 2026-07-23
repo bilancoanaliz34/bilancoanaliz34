@@ -720,6 +720,25 @@ document.addEventListener('click',function(){{
 </body>
 </html>"""
 
+# ── Skor (yo) eksikse kriterlerden türet ─────────────────────────────────────
+# Sheets'teki skor sütunu boş gelirse geçmiş skor tablosu ve güncel skor bozuluyor.
+# Güvenlik ağı: olumlu / (olumlu+nötr+olumsuz) * 100. Sütun doluysa Sheets değeri korunur.
+_turetilen = 0
+for _inf in VERI.values():
+    for _r in (_inf.get('rows') or {}).values():
+        if _r.get('yo') is None:
+            _ol, _no, _ols = _r.get('ol'), _r.get('no'), _r.get('ols')
+            _tot = sum(x for x in (_ol, _no, _ols) if isinstance(x, (int, float)))
+            if isinstance(_ol, (int, float)) and _tot:
+                _r['yo'] = round(_ol / _tot * 100)
+                _turetilen += 1
+    _ps = _inf.get('periods') or []
+    if _ps and _inf.get('puan') is None:
+        _r0 = (_inf.get('rows') or {}).get(_ps[0], {})
+        if _r0.get('yo') is not None:
+            _inf['puan'] = _r0['yo']
+print(f"✓ {_turetilen} dönem için ONO skoru kriterlerden türetildi")
+
 # ── Sayfaları oluştur ─────────────────────────────────────────────────────────
 MEDYAN = _medyan_hazirla(VERI)
 print(f"✓ {len(MEDYAN)} sektör için medyan hesaplandı")
