@@ -101,6 +101,16 @@ def numi(v):
     n = num(v)
     return None if n is None else int(round(n))
 
+def num_pct(v):
+    """Yüzde biçimli hücreleri okur: '64%', '%64', '64,00%', '0,64', '64' -> 64"""
+    if v is None: return None
+    s = str(v).strip()
+    yuzde = '%' in s
+    n = num(s.replace('%', ''))
+    if n is None: return None
+    if yuzde: return int(round(n))              # '64%' -> 64
+    return int(round(n)) if n > 1 else int(round(n * 100))   # 0,64 -> 64
+
 def sort_key(p):
     y, m = str(p).split('/')
     return int(y)*100 + int(m or 0)
@@ -134,8 +144,7 @@ try:
         dm = re.match(r'^(\d{1,2})\.(\d{1,2})\.(\d{4})$', bilTarih)
         if dm: bilTarih = f"{dm.group(3)}-{dm.group(2).zfill(2)}-{dm.group(1).zfill(2)}"
 
-        yo_raw = num(row[30])
-        yo_val = None if yo_raw is None else (round(yo_raw) if yo_raw > 1 else round(yo_raw*100))
+        yo_val = num_pct(row[30])
 
 
         row_data = {
@@ -720,24 +729,15 @@ document.addEventListener('click',function(){{
 </body>
 </html>"""
 
-# ── Skor (yo) eksikse kriterlerden türet ─────────────────────────────────────
-# Sheets'teki skor sütunu boş gelirse geçmiş skor tablosu ve güncel skor bozuluyor.
-# Güvenlik ağı: olumlu / (olumlu+nötr+olumsuz) * 100. Sütun doluysa Sheets değeri korunur.
-_turetilen = 0
+# ── Skor (yo) sağlık kontrolü — skor ASLA türetilmez, kaynaktan gelir ────────
+_dolu = _bos = 0
 for _inf in VERI.values():
     for _r in (_inf.get('rows') or {}).values():
-        if _r.get('yo') is None:
-            _ol, _no, _ols = _r.get('ol'), _r.get('no'), _r.get('ols')
-            _tot = sum(x for x in (_ol, _no, _ols) if isinstance(x, (int, float)))
-            if isinstance(_ol, (int, float)) and _tot:
-                _r['yo'] = round(_ol / _tot * 100)
-                _turetilen += 1
-    _ps = _inf.get('periods') or []
-    if _ps and _inf.get('puan') is None:
-        _r0 = (_inf.get('rows') or {}).get(_ps[0], {})
-        if _r0.get('yo') is not None:
-            _inf['puan'] = _r0['yo']
-print(f"✓ {_turetilen} dönem için ONO skoru kriterlerden türetildi")
+        if _r.get('yo') is None: _bos += 1
+        else: _dolu += 1
+print(f"✓ ONO skoru: {_dolu} dönemde dolu, {_bos} dönemde boş")
+if _dolu == 0:
+    print("⚠ HİÇBİR dönemde skor yok — Sheets'teki YO sütununu (AE) kontrol edin!")
 
 # ── Sayfaları oluştur ─────────────────────────────────────────────────────────
 MEDYAN = _medyan_hazirla(VERI)
