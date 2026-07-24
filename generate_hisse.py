@@ -101,6 +101,17 @@ def numi(v):
     n = num(v)
     return None if n is None else int(round(n))
 
+_TR_HARITA = str.maketrans({
+    'İ': 'i', 'I': 'i', 'ı': 'i', 'Ş': 's', 'ş': 's', 'Ğ': 'g', 'ğ': 'g',
+    'Ü': 'u', 'ü': 'u', 'Ö': 'o', 'ö': 'o', 'Ç': 'c', 'ç': 'c',
+})
+def slug(ticker):
+    """Türkçe karakterleri ASCII'ye çevirip güvenli dosya adı/URL üretir.
+    Python'ın lower()'ı 'İ' harfini bozduğu için (i + combining dot) şart."""
+    import re as _re
+    s = str(ticker).strip().translate(_TR_HARITA).lower()
+    return _re.sub(r'[^a-z0-9]', '', s)
+
 def num_pct(v):
     """Yüzde biçimli hücreleri okur: '64%', '%64', '64,00%', '0,64', '64' -> 64"""
     if v is None: return None
@@ -615,13 +626,13 @@ async function xPaylas(){
   <meta name="description" content="{desc}">
   <meta name="keywords" content="{ticker}, {company}, {ticker} bilanço, {ticker} analiz, {sector.lower()}, BIST hisse analizi">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://bilancoanaliz34.com.tr/hisse/{ticker.lower()}.html">
+  <link rel="canonical" href="https://bilancoanaliz34.com.tr/hisse/{slug(ticker)}.html">
   <meta property="og:title" content="{ticker} Bilanço Analizi | BilancoAnaliz34">
   <meta property="og:description" content="{desc}">
   <meta property="og:image" content="https://bilancoanaliz34.com.tr/logo-512.png">
   <link rel="icon" href="/favicon.ico">
   <script type="application/ld+json">
-  {{"@context":"https://schema.org","@type":"WebPage","name":"{ticker} Bilanço Analizi — {company}","description":"{desc}","url":"https://bilancoanaliz34.com.tr/hisse/{ticker.lower()}.html","dateModified":"{BUGUN}","inLanguage":"tr","about":{{"@type":"Corporation","name":"{company}","tickerSymbol":"{ticker}"}},"publisher":{{"@type":"Organization","name":"BilancoAnaliz34","url":"https://bilancoanaliz34.com.tr"}}}}
+  {{"@context":"https://schema.org","@type":"WebPage","name":"{ticker} Bilanço Analizi — {company}","description":"{desc}","url":"https://bilancoanaliz34.com.tr/hisse/{slug(ticker)}.html","dateModified":"{BUGUN}","inLanguage":"tr","about":{{"@type":"Corporation","name":"{company}","tickerSymbol":"{ticker}"}},"publisher":{{"@type":"Organization","name":"BilancoAnaliz34","url":"https://bilancoanaliz34.com.tr"}}}}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@700;900&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
@@ -745,7 +756,7 @@ print(f"✓ {len(MEDYAN)} sektör için medyan hesaplandı")
 os.makedirs('hisse', exist_ok=True)
 count = 0
 for ticker, info in VERI.items():
-    with open(f'hisse/{ticker.lower()}.html', 'w', encoding='utf-8', errors='replace') as f:
+    with open(f'hisse/{slug(ticker)}.html', 'w', encoding='utf-8', errors='replace') as f:
         f.write(make_hisse_page(ticker, info).encode('utf-8', errors='replace').decode('utf-8'))
     count += 1
 
@@ -776,7 +787,7 @@ sm = ['<?xml version="1.0" encoding="UTF-8"?>',
 for yol, cf, pr in STATIK_SAYFALAR:
     sm.append(f'  <url><loc>{BASE}{yol}</loc><changefreq>{cf}</changefreq><priority>{pr}</priority></url>')
 for t in sorted(VERI.keys()):
-    sm.append(f'  <url><loc>{BASE}/hisse/{t.lower()}.html</loc>'
+    sm.append(f'  <url><loc>{BASE}/hisse/{slug(t)}.html</loc>'
               f'<lastmod>{BUGUN}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>')
 sm.append('</urlset>')
 with open('sitemap.xml', 'w', encoding='utf-8') as f:
