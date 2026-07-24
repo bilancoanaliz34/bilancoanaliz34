@@ -143,12 +143,19 @@ try:
     print(f"✓ {len(lines)} satır geldi")
 
     VERI_NEW = {}
+    _atlanan = []
     for line in lines[2:]:
         row = parse_line(line)
-        if len(row) < 40: continue
+        # CSV sondaki boş hücreleri kırpar; row[39]'a kadar erişildiği için
+        # satırı en az 41 sütuna tamamla. Kısa satır artık ATLANMAZ.
+        if len(row) < 41:
+            row = row + [''] * (41 - len(row))
         ticker = row[1].strip().upper()
         donem  = row[3].strip()
-        if not ticker or not donem or '/' not in donem: continue
+        # Sadece gerçekten zorunlu alanlar: kod + geçerli dönem
+        if not ticker or not donem or '/' not in donem:
+            if ticker or donem: _atlanan.append(f"{ticker or '?'}/{donem or '?'}")
+            continue
 
         # Bilanço tarihi
         bilTarih = row[6].strip()
@@ -199,6 +206,8 @@ try:
     if len(VERI_NEW) > 100:
         VERI = VERI_NEW
         print(f"✓ Google Sheets'ten {len(VERI)} hisse güncellendi")
+        if _atlanan:
+            print(f"  ⚠ {len(_atlanan)} satır atlandı (kod/dönem eksik): {_atlanan[:10]}")
     else:
         print(f"⚠ Google Sheets sadece {len(VERI_NEW)} hisse döndürdü, VDATA kullanılıyor")
 
