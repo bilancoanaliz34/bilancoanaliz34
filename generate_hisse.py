@@ -139,15 +139,17 @@ try:
     print("Google Sheets'ten veri çekiliyor...")
     resp = requests.get(SHEET_URL, timeout=30)
     resp.raise_for_status()
-    lines = resp.text.strip().split('\n')
-    print(f"✓ {len(lines)} satır geldi")
+    # csv modülü tırnak içindeki satır sonlarını doğru işler; şirket adı hücresinde
+    # yanlışlıkla Enter olsa bile satır bölünmez (MOGAN sorununun kalıcı çözümü).
+    import csv as _csv, io as _io
+    _rows = list(_csv.reader(_io.StringIO(resp.text)))
+    print(f"✓ {len(_rows)} satır geldi")
 
     VERI_NEW = {}
     _atlanan = []
-    for line in lines[2:]:
-        row = parse_line(line)
-        # CSV sondaki boş hücreleri kırpar; row[39]'a kadar erişildiği için
-        # satırı en az 41 sütuna tamamla. Kısa satır artık ATLANMAZ.
+    for row in _rows[2:]:
+        row = [(''.join(c.split('\n'))).strip() for c in row]  # hücre içi satır sonlarını temizle
+        # row[39]'a kadar erişildiği için satırı en az 41 sütuna tamamla.
         if len(row) < 41:
             row = row + [''] * (41 - len(row))
         ticker = row[1].strip().upper()
